@@ -24,9 +24,18 @@ interface AgentResponse {
 // Orquestador principal que gestiona todos los agentes
 export class AgentOrchestrator {
   private agents: Map<string, SpecializedAgent>;
+  private conversationHistory: Array<{
+    userInput: string;
+    agentType: string;
+    action?: string;
+    response: string;
+    timestamp: Date;
+  }>;
+  private lastTaskId: number | null = null;
   
   constructor() {
     this.agents = new Map();
+    this.conversationHistory = [];
     
     // Registrar los agentes especializados
     this.registerAgent('task', new TaskAgent());
