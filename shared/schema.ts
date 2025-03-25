@@ -23,10 +23,10 @@ export const tasks = pgTable("tasks", {
   description: text("description"),
   status: text("status").notNull().default("pending"),
   priority: text("priority"),
-  categoryId: integer("category_id"),
+  categoryId: integer("categoryId"),
   deadline: timestamp("deadline"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  assignedTo: integer("assigned_to"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  assignedTo: integer("assignedTo"),
 });
 
 // Insert schemas

@@ -322,10 +322,10 @@ export class PostgresStorage implements IStorage {
     completed: number;
   }> {
     const allTasks = await this.getTasks();
-    const pending = allTasks.filter(t => t.status === 'pendiente').length;
-    const inProgress = allTasks.filter(t => t.status === 'en_progreso').length;
-    const review = allTasks.filter(t => t.status === 'revision').length;
-    const completed = allTasks.filter(t => t.status === 'completada').length;
+    const pending = allTasks.filter(t => t.status === TaskStatus.PENDING).length;
+    const inProgress = allTasks.filter(t => t.status === TaskStatus.IN_PROGRESS).length;
+    const review = allTasks.filter(t => t.status === TaskStatus.REVIEW).length;
+    const completed = allTasks.filter(t => t.status === TaskStatus.COMPLETED).length;
     
     return {
       total: allTasks.length,
