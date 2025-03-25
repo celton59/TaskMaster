@@ -164,7 +164,7 @@ Solicitud del usuario: ${input}`
         const newTask: InsertTask = {
           title: params.title,
           description: params.description,
-          status: 'pendiente',
+          status: 'pending', // Usando el valor correcto del enum TaskStatus
           priority: params.priority,
           categoryId: params.categoryId || 1,
           deadline: params.deadline ? new Date(params.deadline) : null,
@@ -323,7 +323,7 @@ export async function createTaskFromExtraction(extraction: TaskExtraction): Prom
     const newTask: InsertTask = {
       title: extraction.title,
       description: extraction.description,
-      status: 'pendiente',
+      status: 'pending', // Usando el valor correcto del enum TaskStatus
       priority: extraction.priority || 'media',
       categoryId: extraction.categoryId || 1, // Por defecto, categoría 1 (Trabajo)
       deadline: extraction.deadline ? extraction.deadline : null,
