@@ -121,6 +121,37 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Task Board */}
+      <Card className="border-neutral-100 shadow-md overflow-hidden mb-8">
+        <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neutral-100 bg-neutral-50/50">
+          <div className="space-y-0.5">
+            <CardTitle className="text-base font-medium text-neutral-800">Tablero de tareas</CardTitle>
+            <CardDescription>Gestión visual por estado</CardDescription>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+              <LayoutDashboard className="h-5 w-5" />
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => navigate("/tasks")}
+              className="h-8 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 text-neutral-700 rounded-md"
+            >
+              Ver completo
+              <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-5">
+          <TaskBoard 
+            tasks={tasks} 
+            categories={categories}
+            isLoading={isLoadingTasks || isLoadingCategories} 
+          />
+        </CardContent>
+      </Card>
+
       {/* Metric Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
@@ -350,36 +381,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Task Board */}
-      <Card className="border-neutral-100 shadow-md overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neutral-100 bg-neutral-50/50">
-          <div className="space-y-0.5">
-            <CardTitle className="text-base font-medium text-neutral-800">Tablero de tareas</CardTitle>
-            <CardDescription>Gestión visual por estado</CardDescription>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
-              <LayoutDashboard className="h-5 w-5" />
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => navigate("/tasks")}
-              className="h-8 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 text-neutral-700 rounded-md"
-            >
-              Ver completo
-              <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-5">
-          <TaskBoard 
-            tasks={tasks} 
-            categories={categories}
-            isLoading={isLoadingTasks || isLoadingCategories} 
-          />
-        </CardContent>
-      </Card>
+
       
       {/* Task Form Modal */}
       <TaskForm 
