@@ -256,7 +256,7 @@ class TaskAgent extends SpecializedAgent {
   private systemPrompt = `Eres un agente especializado en la gestión de tareas. 
 Tu objetivo es crear nuevas tareas, actualizar tareas existentes, eliminar tareas o proporcionar información sobre tareas.
 
-IMPORTANTE: Si el usuario describe algo que suena como una tarea (por ejemplo, "tengo que hacer contabilidad", "necesito preparar una presentación", etc.), SIEMPRE debes interpretar esto como una solicitud para CREAR una nueva tarea, incluso si no lo pide explícitamente.
+IMPORTANTE: Si el usuario describe algo que suena como una tarea (por ejemplo, "tengo que hacer contabilidad", "necesito preparar una presentación", etc.), SIEMPRE debes interpretar esto como una solicitud para CREAR una nueva tarea, incluso si no lo pide explícitamente. Si el usuario menciona una fecha, SIEMPRE debes incluir esa fecha en la creación de la tarea.
 
 Debes responder en formato JSON con la siguiente estructura:
 {
@@ -270,9 +270,9 @@ Debes responder en formato JSON con la siguiente estructura:
 Para createTask, los parámetros deben incluir:
   - title: título de la tarea (extráelo de la descripción del usuario)
   - description: descripción detallada (elabora basado en la solicitud)
-  - priority: 'high', 'medium', o 'low' (deduce la prioridad apropiada)
+  - priority: 'alta', 'media', o 'baja' (deduce la prioridad apropiada)
   - categoryId: ID de la categoría (opcional, usa 1 por defecto)
-  - deadline: fecha límite (opcional)
+  - deadline: fecha límite (INCLUIR SIEMPRE que el usuario mencione una fecha) en formato YYYY-MM-DD
 
 Para updateTask:
   - taskId: ID de la tarea a actualizar
@@ -284,6 +284,8 @@ Para deleteTask:
 Para listTasks, puedes incluir filtros opcionales.
 
 Para respond, no requiere parámetros, sólo usa cuando no necesites crear/modificar tareas.
+
+IMPORTANTE: Si el usuario menciona o sugiere una fecha (por ejemplo: "para mañana", "para el viernes", "para el 27 de marzo", etc.), DEBES incluir esa fecha en el campo deadline al crear la tarea. Convierte expresiones de tiempo relativas a fechas absolutas.
 
 No intentes responder a chistes, saludos o conversación casual; interpreta todo como un intento de gestionar tareas.`;
   
@@ -628,6 +630,16 @@ Proporciona respuestas detalladas y útiles sobre planificación y organización
               
               if (updatedTask) {
                 data = updatedTask;
+                
+                // Formatear la fecha para mostrarla amigablemente en español
+                const friendlyDate = targetDate.toLocaleDateString('es-ES', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                });
+                
+                // Actualizar la respuesta para mayor claridad
+                parsedResponse.response = `✅ He actualizado la tarea "${contabilidadTask.title}" y la he programado para el ${friendlyDate}. Puedes verla en tu tablero de tareas.`;
               }
             }
           }
@@ -670,20 +682,30 @@ Proporciona respuestas detalladas y útiles sobre planificación y organización
             if (updatedTask) {
               data = updatedTask;
               
-              // Actualizar la respuesta para confirmar que se estableció la fecha
-              parsedResponse.response = `He actualizado la tarea "${contabilidadTask.title}" para el ${targetDate.toLocaleDateString('es-ES', { 
+              // Formatear la fecha para mostrarla amigablemente en español
+              const friendlyDate = targetDate.toLocaleDateString('es-ES', { 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
-              })}.`;
+              });
+              
+              // Actualizar la respuesta para confirmar CLARAMENTE que se actualizó la fecha
+              parsedResponse.response = `✅ He actualizado la tarea existente: "${contabilidadTask.title}" y la he programado para el ${friendlyDate}. La tarea ya aparecerá con esta fecha en tu tablero.`;
             }
           } else {
             // Si la tarea no existe, crear una nueva tarea de contabilidad
             const categoryId = 1; // Asumimos categoría "Trabajo" con ID 1
             
+            // Formatear la fecha para mostrarla amigablemente en español
+            const friendlyDate = targetDate.toLocaleDateString('es-ES', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            });
+            
             const newTask: InsertTask = {
               title: "Hacer la contabilidad de la empresa",
-              description: "Tarea creada automáticamente por el asistente",
+              description: "Tarea creada automáticamente por el asistente con fecha: " + friendlyDate,
               status: "pendiente",
               priority: "alta",
               categoryId: categoryId,
@@ -693,12 +715,8 @@ Proporciona respuestas detalladas y útiles sobre planificación y organización
             const createdTask = await storage.createTask(newTask);
             data = createdTask;
             
-            // Actualizar la respuesta para confirmar la creación de la tarea
-            parsedResponse.response = `He creado una nueva tarea "Hacer la contabilidad de la empresa" programada para el ${targetDate.toLocaleDateString('es-ES', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}.`;
+            // Actualizar la respuesta para confirmar CLARAMENTE la creación de la tarea CON su fecha
+            parsedResponse.response = `✅ He creado una nueva tarea: "Hacer la contabilidad de la empresa" y la he programado para el ${friendlyDate}. Puedes verla en tu tablero de tareas.`;
           }
         }
         
