@@ -51,7 +51,7 @@ function loadSavedChats(): ChatSession[] {
 }
 
 const DEFAULT_WELCOME_MESSAGE: Message = {
-  text: "¡Hola! Soy tu asistente AI con sistema orquestado multi-agente para gestión de tareas. Tengo varios agentes especializados trabajando juntos:\n\n• Agente de Tareas: experto en crear y gestionar tareas\n• Agente de Categorías: especializado en organización por categorías\n• Agente de Análisis: para estadísticas e informes detallados\n• Agente de Planificación: para programación y fechas límite\n\nSimplemente dime lo que necesitas, y el agente más adecuado se encargará. ¿En qué puedo ayudarte hoy?",
+  text: "¡Hola! Soy tu asistente AI con sistema orquestado multi-agente para gestión de tareas. Tengo varios agentes especializados trabajando juntos:\n\n• Agente de Tareas: experto en crear y gestionar tareas\n• Agente de Categorías: especializado en organización por categorías\n• Agente de Análisis: para estadísticas e informes detallados\n• Agente de Planificación: para programación y fechas límite\n• Agente de Marketing Digital: especialista en estrategias digitales, campañas y contenido\n• Agente de Gestión de Proyectos: experto en planificación y gestión de equipos\n\nSimplemente dime lo que necesitas, y el agente más adecuado se encargará. ¿En qué puedo ayudarte hoy?",
   isUser: false,
   timestamp: new Date()
 };
@@ -381,7 +381,8 @@ export default function AIAssistant() {
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Sistema Multi-Agente IA</h3>
                   <p className="text-gray-500 max-w-md">
                     El sistema inteligente orquestará automáticamente múltiples agentes especializados según tu necesidad.
-                    Ejemplo: "Analiza mis tareas pendientes y priorízalas según fechas límite"
+                    Ahora con expertos en marketing digital y gestión de proyectos.
+                    Ejemplo: "Analiza mis tareas pendientes y priorízalas según fechas límite" o "Desarrolla una estrategia de marketing para mi proyecto"
                   </p>
                 </div>
               )}
