@@ -160,12 +160,20 @@ Solicitud del usuario: ${input}`
           params.priority = 'media';
         }
         
+        // Convertir prioridad de español a inglés
+        let priorityInEnglish = 'medium';
+        if (params.priority === 'alta') {
+          priorityInEnglish = 'high';
+        } else if (params.priority === 'baja') {
+          priorityInEnglish = 'low';
+        }
+        
         // Preparar la tarea para su creación
         const newTask: InsertTask = {
           title: params.title,
           description: params.description,
           status: 'pending', // Usando el valor correcto del enum TaskStatus
-          priority: params.priority,
+          priority: priorityInEnglish, // Usando prioridad en inglés
           categoryId: params.categoryId || 1,
           deadline: params.deadline ? new Date(params.deadline) : null,
         };
@@ -320,11 +328,19 @@ export async function extractTaskFromText(input: string): Promise<TaskExtraction
 
 export async function createTaskFromExtraction(extraction: TaskExtraction): Promise<any> {
   try {
+    // Convertir prioridad de español a inglés
+    let priorityInEnglish = 'medium';
+    if (extraction.priority === 'alta') {
+      priorityInEnglish = 'high';
+    } else if (extraction.priority === 'baja') {
+      priorityInEnglish = 'low';
+    }
+    
     const newTask: InsertTask = {
       title: extraction.title,
       description: extraction.description,
       status: 'pending', // Usando el valor correcto del enum TaskStatus
-      priority: extraction.priority || 'media',
+      priority: priorityInEnglish, // Usando prioridad en inglés
       categoryId: extraction.categoryId || 1, // Por defecto, categoría 1 (Trabajo)
       deadline: extraction.deadline ? extraction.deadline : null,
     };
