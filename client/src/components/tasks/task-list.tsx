@@ -255,7 +255,7 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
     if (status === "overdue") {
       return <AlertTriangle size={14} className="text-rose-500" />;
     } else if (status === "soon") {
-      return <AlertCircle size={14} className="text-amber-500" />;
+      return <AlertTriangle size={14} className="text-amber-500" />;
     } else {
       return <Calendar size={14} className="text-blue-500" />;
     }
@@ -272,7 +272,7 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
     switch (status) {
       case "completed":
         return {
-          icon: <CircleCheck className="h-4 w-4 text-emerald-500" />,
+          icon: <CheckCircle className="h-4 w-4 text-emerald-500" />,
           label: "Completada",
           className: "bg-emerald-50 text-emerald-700 border-emerald-200"
         };
@@ -284,14 +284,14 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
         };
       case "review":
         return {
-          icon: <AlertCircle className="h-4 w-4 text-purple-500" />,
+          icon: <AlertTriangle className="h-4 w-4 text-purple-500" />,
           label: "Revisión",
           className: "bg-purple-50 text-purple-700 border-purple-200"
         };
       case "in_progress":
       case "in-progress":
         return {
-          icon: <CircleEllipsis className="h-4 w-4 text-blue-500" />,
+          icon: <Clock className="h-4 w-4 text-blue-500" />,
           label: "En progreso",
           className: "bg-blue-50 text-blue-700 border-blue-200"
         };
