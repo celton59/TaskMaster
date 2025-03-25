@@ -202,12 +202,12 @@ export default function CalendarPage() {
                     }
                   }}
                   components={{
-                    DayContent: (props) => {
+                    DayContent: (props: DayContentProps) => {
                       const date = props.date;
                       const isWithTasks = daysWithTasks.has(format(date, 'yyyy-MM-dd'));
                       return (
                         <div className="relative w-full h-full flex items-center justify-center">
-                          {props.children}
+                          <div>{props.day}</div>
                           {isWithTasks && (
                             <div className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
                           )}
