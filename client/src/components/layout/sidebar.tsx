@@ -84,7 +84,7 @@ export function Sidebar() {
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-white border-r border-neutral-100 h-full shrink-0 shadow-lg overflow-hidden">
-        <div className="py-5 px-5 flex items-center justify-between">
+        <div className="py-4 px-5 flex items-center justify-between">
           <div className="flex items-center">
             <div className="h-9 w-9 rounded-lg bg-primary-600 flex items-center justify-center text-white">
               <Home className="h-5 w-5" />
@@ -100,18 +100,7 @@ export function Sidebar() {
           </Button>
         </div>
         
-        <div className="px-4 py-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
-            <input 
-              type="text" 
-              placeholder="Buscar..." 
-              className="w-full bg-neutral-50 border border-neutral-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
-            />
-          </div>
-        </div>
-        
-        <div className="px-4 pt-2 pb-3">
+        <div className="px-4 py-1 mb-1">
           <Button 
             className="w-full bg-primary-600 hover:bg-primary-700 text-white shadow-sm"
             size="sm"
@@ -121,8 +110,8 @@ export function Sidebar() {
           </Button>
         </div>
         
-        <nav className="flex-1 px-3 py-3 flex flex-col overflow-hidden">
-          <div className="space-y-1 px-1 flex-shrink-0">            
+        <nav className="flex-1 px-3 py-1 flex flex-col overflow-hidden">
+          <div className="space-y-0.5 px-1 flex-shrink-0">            
             <NavLink 
               href="/" 
               icon={<Home className="h-5 w-5" />} 
@@ -137,7 +126,8 @@ export function Sidebar() {
               
             {/* Tareas section with dropdown - Always visible links */}
             <div>
-              <div 
+              <Link 
+                to="/tasks"
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg",
                   location.includes('/tasks') ? "bg-primary-50 text-primary-700" : "text-neutral-700 hover:bg-neutral-50"
@@ -147,7 +137,7 @@ export function Sidebar() {
                   <ListTodo className={`h-5 w-5 ${location.includes('/tasks') ? 'text-primary-600' : 'text-neutral-500'}`} />
                   <span className="ml-3">Gestión de tareas</span>
                 </div>
-              </div>
+              </Link>
             </div>
             
             <NavLink 
