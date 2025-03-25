@@ -1892,115 +1892,127 @@ Para analyzeMetrics:
   
 Para respond, no requiere parámetros adicionales.`;
 
-  getFunctions(): Array<OpenAIFunction> {
+  getFunctions(): Array<OpenAITool> {
     return [
       {
-        name: "createMarketingPlan",
-        description: "Crea un plan de marketing digital",
-        parameters: {
-          type: "object",
-          properties: {
-            title: { 
-              type: "string",
-              description: "Título del plan de marketing" 
-            },
-            objective: { 
-              type: "string",
-              description: "Objetivo principal del plan" 
-            },
-            channels: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Array de canales (ej. ['email', 'social_media', 'seo'])" 
-            },
-            timeline: { 
-              type: "string",
-              description: "Periodo de implementación (ej. '3 meses', 'Q2 2025')" 
-            },
-            kpis: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Métricas para medir el éxito del plan" 
-            },
-            tasks: { 
-              type: "array",
-              items: { 
-                type: "object",
-                properties: {
-                  title: { type: "string" },
-                  description: { type: "string" },
-                  priority: { type: "string", enum: ["alta", "media", "baja"] },
-                  deadline: { type: "string", format: "date" }
-                },
-                required: ["title"]
+        type: "function",
+        function: {
+          name: "createMarketingPlan",
+          description: "Crea un plan de marketing digital",
+          parameters: {
+            type: "object",
+            properties: {
+              title: { 
+                type: "string",
+                description: "Título del plan de marketing" 
               },
-              description: "Array de tareas relacionadas que podrían crearse" 
-            }
-          },
-          required: ["title", "objective"]
+              objective: { 
+                type: "string",
+                description: "Objetivo principal del plan" 
+              },
+              channels: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Array de canales (ej. ['email', 'social_media', 'seo'])" 
+              },
+              timeline: { 
+                type: "string",
+                description: "Periodo de implementación (ej. '3 meses', 'Q2 2025')" 
+              },
+              kpis: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Métricas para medir el éxito del plan" 
+              },
+              tasks: { 
+                type: "array",
+                items: { 
+                  type: "object",
+                  properties: {
+                    title: { type: "string" },
+                    description: { type: "string" },
+                    priority: { type: "string", enum: ["alta", "media", "baja"] },
+                    deadline: { type: "string", format: "date" }
+                  },
+                  required: ["title"]
+                },
+                description: "Array de tareas relacionadas que podrían crearse" 
+              }
+            },
+            required: ["title", "objective"]
+          }
         }
       },
       {
-        name: "suggestContent",
-        description: "Sugiere ideas de contenido para marketing digital",
-        parameters: {
-          type: "object",
-          properties: {
-            contentType: { 
-              type: "string",
-              enum: ["blog", "social", "email", "video", "podcast", "infographic"],
-              description: "Tipo de contenido a sugerir" 
+        type: "function",
+        function: {
+          name: "suggestContent",
+          description: "Sugiere ideas de contenido para marketing digital",
+          parameters: {
+            type: "object",
+            properties: {
+              contentType: { 
+                type: "string",
+                enum: ["blog", "social", "email", "video", "podcast", "infographic"],
+                description: "Tipo de contenido a sugerir" 
+              },
+              topics: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Array de temas sugeridos" 
+              },
+              frequency: { 
+                type: "string",
+                description: "Frecuencia recomendada (ej. 'semanal', 'quincenal')" 
+              },
+              platforms: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Plataformas recomendadas para publicar contenido" 
+              }
             },
-            topics: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Array de temas sugeridos" 
-            },
-            frequency: { 
-              type: "string",
-              description: "Frecuencia recomendada (ej. 'semanal', 'quincenal')" 
-            },
-            platforms: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Plataformas recomendadas para publicar contenido" 
-            }
-          },
-          required: ["contentType", "topics"]
+            required: ["contentType", "topics"]
+          }
         }
       },
       {
-        name: "analyzeMetrics",
-        description: "Analiza métricas de marketing digital",
-        parameters: {
-          type: "object",
-          properties: {
-            insightType: { 
-              type: "string",
-              enum: ["conversion", "engagement", "traffic", "branding"],
-              description: "Tipo de análisis a realizar" 
+        type: "function",
+        function: {
+          name: "analyzeMetrics",
+          description: "Analiza métricas de marketing digital",
+          parameters: {
+            type: "object",
+            properties: {
+              insightType: { 
+                type: "string",
+                enum: ["conversion", "engagement", "traffic", "branding"],
+                description: "Tipo de análisis a realizar" 
+              },
+              recommendations: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Array de recomendaciones basadas en los datos" 
+              }
             },
-            recommendations: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Array de recomendaciones basadas en los datos" 
-            }
-          },
-          required: ["insightType", "recommendations"]
+            required: ["insightType", "recommendations"]
+          }
         }
       },
       {
-        name: "respond",
-        description: "Responder al usuario sin realizar ninguna acción específica",
-        parameters: {
-          type: "object",
-          properties: {
-            message: { 
-              type: "string",
-              description: "Mensaje para el usuario" 
-            }
-          },
-          required: ["message"]
+        type: "function",
+        function: {
+          name: "respond",
+          description: "Responder al usuario sin realizar ninguna acción específica",
+          parameters: {
+            type: "object",
+            properties: {
+              message: { 
+                type: "string",
+                description: "Mensaje para el usuario" 
+              }
+            },
+            required: ["message"]
+          }
         }
       }
     ];
@@ -2204,184 +2216,199 @@ Para manageRisks:
   
 Para respond, no requiere parámetros adicionales.`;
 
-  getFunctions(): Array<OpenAIFunction> {
+  getFunctions(): Array<OpenAITool> {
     return [
       {
-        name: "createProject",
-        description: "Crea un nuevo proyecto con sus tareas asociadas",
-        parameters: {
-          type: "object",
-          properties: {
-            title: { 
-              type: "string",
-              description: "Título del proyecto" 
-            },
-            objective: { 
-              type: "string",
-              description: "Objetivo principal del proyecto" 
-            },
-            startDate: { 
-              type: "string",
-              format: "date",
-              description: "Fecha de inicio del proyecto en formato YYYY-MM-DD" 
-            },
-            endDate: { 
-              type: "string",
-              format: "date",
-              description: "Fecha estimada de finalización del proyecto en formato YYYY-MM-DD" 
-            },
-            phases: { 
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  description: { type: "string" },
-                  startDate: { type: "string", format: "date" },
-                  endDate: { type: "string", format: "date" }
-                },
-                required: ["name"]
+        type: "function",
+        function: {
+          name: "createProject",
+          description: "Crea un nuevo proyecto con sus tareas asociadas",
+          parameters: {
+            type: "object",
+            properties: {
+              title: { 
+                type: "string",
+                description: "Título del proyecto" 
               },
-              description: "Fases del proyecto" 
-            },
-            tasks: { 
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  title: { type: "string" },
-                  description: { type: "string" },
-                  priority: { type: "string", enum: ["alta", "media", "baja"] },
-                  deadline: { type: "string", format: "date" }
-                },
-                required: ["title"]
+              objective: { 
+                type: "string",
+                description: "Objetivo principal del proyecto" 
               },
-              description: "Tareas principales a crear para el proyecto" 
-            }
-          },
-          required: ["title", "objective"]
+              startDate: { 
+                type: "string",
+                format: "date",
+                description: "Fecha de inicio del proyecto en formato YYYY-MM-DD" 
+              },
+              endDate: { 
+                type: "string",
+                format: "date",
+                description: "Fecha estimada de finalización del proyecto en formato YYYY-MM-DD" 
+              },
+              phases: { 
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    name: { type: "string" },
+                    description: { type: "string" },
+                    startDate: { type: "string", format: "date" },
+                    endDate: { type: "string", format: "date" }
+                  },
+                  required: ["name"]
+                },
+                description: "Fases del proyecto" 
+              },
+              tasks: { 
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string" },
+                    description: { type: "string" },
+                    priority: { type: "string", enum: ["alta", "media", "baja"] },
+                    deadline: { type: "string", format: "date" }
+                  },
+                  required: ["title"]
+                },
+                description: "Tareas principales a crear para el proyecto" 
+              }
+            },
+            required: ["title", "objective"]
+          }
         }
       },
       {
-        name: "assignResources",
-        description: "Asigna recursos a tareas específicas",
-        parameters: {
-          type: "object",
-          properties: {
-            resources: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Recursos disponibles (personas, equipos)" 
-            },
-            assignments: { 
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  resource: { type: "string" },
-                  taskId: { type: "integer" },
-                  timeAllocation: { type: "string" }
-                },
-                required: ["resource", "taskId"]
+        type: "function",
+        function: {
+          name: "assignResources",
+          description: "Asigna recursos a tareas específicas",
+          parameters: {
+            type: "object",
+            properties: {
+              resources: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Recursos disponibles (personas, equipos)" 
               },
-              description: "Asignaciones de recursos a tareas específicas"
+              assignments: { 
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    resource: { type: "string" },
+                    taskId: { type: "integer" },
+                    timeAllocation: { type: "string" }
+                  },
+                  required: ["resource", "taskId"]
+                },
+                description: "Asignaciones de recursos a tareas específicas"
+              },
+              constraints: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Limitaciones a considerar en la asignación de recursos" 
+              }
             },
-            constraints: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Limitaciones a considerar en la asignación de recursos" 
-            }
-          },
-          required: ["resources", "assignments"]
+            required: ["resources", "assignments"]
+          }
         }
       },
       {
-        name: "trackProgress",
-        description: "Realiza seguimiento del progreso de un proyecto",
-        parameters: {
-          type: "object",
-          properties: {
-            projectId: { 
-              type: "integer",
-              description: "Identificador del proyecto"
+        type: "function",
+        function: {
+          name: "trackProgress",
+          description: "Realiza seguimiento del progreso de un proyecto",
+          parameters: {
+            type: "object",
+            properties: {
+              projectId: { 
+                type: "integer",
+                description: "Identificador del proyecto"
+              },
+              status: { 
+                type: "string",
+                enum: ["on-track", "delayed", "at-risk"],
+                description: "Estado actual del proyecto" 
+              },
+              completionRate: { 
+                type: "number",
+                minimum: 0,
+                maximum: 100,
+                description: "Porcentaje de avance del proyecto" 
+              },
+              issues: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Problemas o bloqueos identificados" 
+              },
+              recommendations: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Recomendaciones para mejorar el progreso" 
+              }
             },
-            status: { 
-              type: "string",
-              enum: ["on-track", "delayed", "at-risk"],
-              description: "Estado actual del proyecto" 
-            },
-            completionRate: { 
-              type: "number",
-              minimum: 0,
-              maximum: 100,
-              description: "Porcentaje de avance del proyecto" 
-            },
-            issues: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Problemas o bloqueos identificados" 
-            },
-            recommendations: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Recomendaciones para mejorar el progreso" 
-            }
-          },
-          required: ["status", "completionRate"]
+            required: ["status", "completionRate"]
+          }
         }
       },
       {
-        name: "manageRisks",
-        description: "Gestiona los riesgos asociados a un proyecto",
-        parameters: {
-          type: "object",
-          properties: {
-            risks: { 
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  description: { type: "string" },
-                  impact: { type: "string", enum: ["alto", "medio", "bajo"] },
-                  probability: { type: "string", enum: ["alta", "media", "baja"] }
+        type: "function",
+        function: {
+          name: "manageRisks",
+          description: "Gestiona los riesgos asociados a un proyecto",
+          parameters: {
+            type: "object",
+            properties: {
+              risks: { 
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    description: { type: "string" },
+                    impact: { type: "string", enum: ["alto", "medio", "bajo"] },
+                    probability: { type: "string", enum: ["alta", "media", "baja"] }
+                  },
+                  required: ["description"]
                 },
-                required: ["description"]
+                description: "Riesgos identificados para el proyecto" 
               },
-              description: "Riesgos identificados para el proyecto" 
-            },
-            mitigationStrategies: { 
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  riskIndex: { type: "integer" },
-                  strategy: { type: "string" }
+              mitigationStrategies: { 
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    riskIndex: { type: "integer" },
+                    strategy: { type: "string" }
+                  },
+                  required: ["riskIndex", "strategy"]
                 },
-                required: ["riskIndex", "strategy"]
+                description: "Estrategias para mitigar cada riesgo identificado" 
               },
-              description: "Estrategias para mitigar cada riesgo identificado" 
+              contingencyPlans: { 
+                type: "array",
+                items: { type: "string" },
+                description: "Planes de contingencia generales" 
+              }
             },
-            contingencyPlans: { 
-              type: "array",
-              items: { type: "string" },
-              description: "Planes de contingencia generales" 
-            }
-          },
-          required: ["risks"]
+            required: ["risks"]
+          }
         }
       },
       {
-        name: "respond",
-        description: "Responder al usuario sin realizar ninguna acción específica",
-        parameters: {
-          type: "object",
-          properties: {
-            message: { 
-              type: "string",
-              description: "Mensaje para el usuario" 
-            }
-          },
-          required: ["message"]
+        type: "function",
+        function: {
+          name: "respond",
+          description: "Responder al usuario sin realizar ninguna acción específica",
+          parameters: {
+            type: "object",
+            properties: {
+              message: { 
+                type: "string",
+                description: "Mensaje para el usuario" 
+              }
+            },
+            required: ["message"]
+          }
         }
       }
     ];
@@ -2604,6 +2631,7 @@ Para respond, no requiere parámetros adicionales.`;
         
         default:
           userResponse = "No pude procesar correctamente tu solicitud de gestión de proyectos.";
+          break;
       }
       
       return {
