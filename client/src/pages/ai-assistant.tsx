@@ -78,7 +78,7 @@ export default function AIAssistant() {
       
       console.log("Respuesta del agente:", result);
       
-      // Invalidar consultas si se creó una tarea o categoría
+      // Invalidar consultas basadas en la acción realizada
       if (result.action === 'createTask') {
         // Invalidar la caché para asegurar que la nueva tarea aparezca
         queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
@@ -90,12 +90,40 @@ export default function AIAssistant() {
           description: "La tarea se ha creado correctamente",
           variant: "default"
         });
+      } else if (result.action === 'updateTask' || result.action === 'setDeadlines') {
+        // Invalidar la caché cuando se actualiza una tarea
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks/stats'] });
+        
+        toast({
+          title: "Tarea actualizada",
+          description: "La tarea se ha actualizado correctamente",
+          variant: "default"
+        });
+      } else if (result.action === 'deleteTask') {
+        // Invalidar la caché cuando se elimina una tarea
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks/stats'] });
+        
+        toast({
+          title: "Tarea eliminada",
+          description: "La tarea se ha eliminado correctamente",
+          variant: "default"
+        });
       } else if (result.action === 'createCategory') {
         queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
         
         toast({
           title: "Categoría creada",
           description: "La categoría se ha creado correctamente",
+          variant: "default"
+        });
+      } else if (result.action === 'updateCategory' || result.action === 'deleteCategory') {
+        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+        
+        toast({
+          title: result.action === 'updateCategory' ? "Categoría actualizada" : "Categoría eliminada",
+          description: result.action === 'updateCategory' ? "La categoría se ha actualizado correctamente" : "La categoría se ha eliminado correctamente",
           variant: "default"
         });
       }
