@@ -277,15 +277,17 @@ export default function AIAssistant() {
       console.log("Respuesta del agente:", result);
       
       // Invalidar consultas basadas en la acción realizada
-      if (result.action === 'createTask') {
+      if (result.action === 'createTask' || result.action === 'createTasks') {
         // Invalidar la caché para asegurar que la nueva tarea aparezca
         queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
         // Además invalidar las estadísticas
         queryClient.invalidateQueries({ queryKey: ['/api/tasks/stats'] });
         
         toast({
-          title: "Tarea creada",
-          description: "La tarea se ha creado correctamente",
+          title: result.action === 'createTask' ? "Tarea creada" : "Tareas creadas",
+          description: result.action === 'createTask' 
+            ? "La tarea se ha creado correctamente" 
+            : `Se han creado ${result.data?.length || 'múltiples'} tareas correctamente`,
           variant: "default"
         });
       } else if (result.action === 'updateTask' || result.action === 'setDeadlines') {
