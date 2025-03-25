@@ -102,39 +102,50 @@ export class AgentOrchestrator {
         return response;
       }
       
-      // 4. Si el usuario pregunta por una tarea o acción reciente, intentamos detectarlo
+      // 4. Si el usuario pregunta por una tarea o acción reciente, o pide una explicación
       const recentTaskCheck = this.checkForRecentTaskReference(userInput);
-      if (recentTaskCheck.hasRecentReference && this.lastTaskId !== null) {
-        const agentType = recentTaskCheck.suggestedAgentType || 'planner';
+      
+      // Si se detecta una solicitud de explicación o referencia a acción reciente
+      if (recentTaskCheck.hasRecentReference) {
+        // Para explicaciones, preferimos usar el último agente usado en vez del detector genérico
+        const agentType = recentTaskCheck.suggestedAgentType || 'task';
         const agent = this.agents.get(agentType);
         
         if (agent) {
-          // Añadir contexto específico sobre la última tarea
-          const lastTask = await storage.getTask(this.lastTaskId);
+          // Obtener contexto relevante para el agente
+          const context = await this.getContextForAgent(agentType);
           
-          if (lastTask) {
-            // Obtener contexto relevante para el agente con el contexto adicional
-            const context = await this.getContextForAgent(agentType);
-            // Añadir la última tarea explícitamente al contexto
-            context.lastTask = lastTask;
-            const result = await agent.process({ userInput, context });
-            
-            // Registrar en el historial
-            this.conversationHistory.push({
-              userInput,
-              agentType,
-              action: result.action,
-              response: result.response,
-              timestamp: new Date()
-            });
-            
-            return {
-              action: result.action,
-              message: result.response,
-              data: result.data,
-              agentUsed: agentType
-            };
+          // Si hay una última tarea y no es una explicación general, añadirla al contexto
+          if (this.lastTaskId !== null) {
+            try {
+              const lastTask = await storage.getTask(this.lastTaskId);
+              if (lastTask) {
+                // Añadir la última tarea explícitamente al contexto
+                context.lastTask = lastTask;
+              }
+            } catch (error) {
+              console.error("Error al obtener la última tarea:", error);
+              // No añadir lastTask al contexto si hay un error
+            }
           }
+          
+          const result = await agent.process({ userInput, context });
+          
+          // Registrar en el historial
+          this.conversationHistory.push({
+            userInput,
+            agentType,
+            action: result.action,
+            response: result.response,
+            timestamp: new Date()
+          });
+          
+          return {
+            action: result.action,
+            message: result.response,
+            data: result.data,
+            agentUsed: agentType
+          };
         }
       }
       
@@ -203,6 +214,20 @@ export class AgentOrchestrator {
       /pusiste/i
     ];
     
+    // Patrones para detectar peticiones de explicación
+    const explanationPatterns = [
+      /explica/i,
+      /explicame/i,
+      /explícame/i,
+      /que (has|hiciste|acabas de hacer)/i,
+      /qué (has|hiciste|acabas de hacer)/i,
+      /por que/i,
+      /por qué/i,
+      /detalles/i,
+      /como funciona/i,
+      /cómo funciona/i
+    ];
+    
     // Patrones para fechas
     const datePatterns = [
       /fecha/i,
@@ -218,6 +243,11 @@ export class AgentOrchestrator {
       pattern.test(userInput)
     );
     
+    // Verificar si hay patrones de explicación
+    const hasExplanationPattern = explanationPatterns.some(pattern => 
+      pattern.test(userInput)
+    );
+    
     // Verificar si hay patrones de fecha
     const hasDatePattern = datePatterns.some(pattern => 
       pattern.test(userInput)
@@ -228,6 +258,21 @@ export class AgentOrchestrator {
       return {
         hasRecentReference: true,
         suggestedAgentType: 'planner'
+      };
+    }
+    
+    // Si hay patrones de explicación, debe mantener el último agente usado
+    if (hasExplanationPattern && this.conversationHistory.length > 0) {
+      // Obtener el último agente que no sea "error"
+      const lastAgent = this.conversationHistory
+        .filter(h => h.agentType !== 'error')
+        .slice(-1)[0]?.agentType || 'task';
+      
+      console.log(`Detectada solicitud de explicación, usando último agente: ${lastAgent}`);
+      
+      return {
+        hasRecentReference: true,
+        suggestedAgentType: lastAgent
       };
     }
     
