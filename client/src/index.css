@@ -17,6 +17,7 @@
   height: 5px;
   border-radius: 50%;
   background-color: #3b82f6; /* blue-500 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
   transition: all 0.2s ease;
 }
 
@@ -24,12 +25,60 @@
   width: 6px;
   height: 6px;
   background-color: #2563eb; /* blue-600 */
-  box-shadow: 0 0 3px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 4px rgba(59, 130, 246, 0.5);
 }
 
 /* Estilo para el día seleccionado con tareas */
 .rdp-day_selected.with-task-indicator::after {
   background-color: white;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Mejorar aspecto general del calendario */
+.rdp-month {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.rdp-caption {
+  margin-bottom: 0.75rem;
+}
+
+.rdp-day {
+  transition: all 0.2s ease;
+  border-radius: 0.5rem !important;
+  font-weight: 500;
+}
+
+.rdp-day:not(.rdp-day_selected):hover {
+  background-color: #f1f5ff !important;
+}
+
+.rdp-day_today:not(.rdp-day_selected) {
+  background-color: #f3f4f6 !important;
+  font-weight: 600;
+}
+
+.rdp-day_selected {
+  background-color: #3b82f6 !important;
+  font-weight: 600;
+}
+
+/* Personalizar cabecera de días */
+.rdp-head_cell {
+  font-weight: 600;
+  color: #4b5563;
+  padding-bottom: 0.75rem;
+}
+
+/* Estilos para las tarjetas de tareas */
+.task-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
 }
 
 @layer base {
