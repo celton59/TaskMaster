@@ -88,7 +88,7 @@ export function Sidebar() {
         <div className="py-2 px-4 flex items-center justify-between">
           <div className="flex items-center">
             <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center text-white">
-              <Home className="h-4 w-4" />
+              <CheckCircle2 className="h-4 w-4" />
             </div>
             <h1 className="font-bold text-base ml-2 text-neutral-900">Aitorin</h1>
           </div>
@@ -228,7 +228,7 @@ export function Sidebar() {
             {/* Mobile menu content - mirror of desktop sidebar */}
             <div className="py-5 px-6 border-b border-neutral-200 flex items-center">
               <div className="h-10 w-10 rounded-md bg-primary-700 flex items-center justify-center text-white">
-                <LayoutDashboard className="h-6 w-6" />
+                <CheckCircle2 className="h-6 w-6" />
               </div>
               <h1 className="font-bold text-xl ml-3 text-neutral-900">Aitorin</h1>
             </div>
