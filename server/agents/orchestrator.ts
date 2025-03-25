@@ -962,42 +962,80 @@ Asegúrate de asignar un color apropiado basado en el contexto. Por ejemplo, tar
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
-      const responseContent = await this.callModel(this.systemPrompt, request.userInput, request.context);
+      // Usar el método callModelWithFunctions en lugar de callModel
+      const response = await this.callModelWithFunctions(this.systemPrompt, request.userInput, request.context);
       
-      try {
-        const parsedResponse = JSON.parse(responseContent);
-        let data = null;
-        
-        if (parsedResponse.action === "createCategory" && parsedResponse.parameters) {
+      // Si no hay una llamada a función, usar el contenido de texto como respuesta
+      if (!response.functionCall) {
+        return {
+          response: response.content || "No pude entender tu solicitud relacionada con categorías.",
+          confidence: 0.5
+        };
+      }
+      
+      // Procesar la llamada a función
+      let data = null;
+      let action = response.functionCall.name;
+      let userResponse = "";
+      
+      switch (action) {
+        case "createCategory": {
+          const args = response.functionCall.arguments;
           const newCategory = {
-            name: parsedResponse.parameters.name,
-            color: parsedResponse.parameters.color || 'blue',
+            name: args.name,
+            color: args.color || 'blue',
           };
           
           data = await storage.createCategory(newCategory);
-        } else if (parsedResponse.action === "updateCategory" && parsedResponse.parameters) {
-          data = await storage.updateCategory(
-            parsedResponse.parameters.categoryId,
-            parsedResponse.parameters.updates
-          );
-        } else if (parsedResponse.action === "deleteCategory" && parsedResponse.parameters) {
-          data = await storage.deleteCategory(parsedResponse.parameters.categoryId);
-        } else if (parsedResponse.action === "listCategories") {
-          data = await storage.getCategories();
+          userResponse = `He creado la categoría "${args.name}" con color ${args.color || 'blue'}.`;
+          break;
         }
         
-        return {
-          action: parsedResponse.action,
-          response: parsedResponse.response,
-          data,
-          confidence: parsedResponse.confidence || 0.8
-        };
-      } catch (e) {
-        return {
-          response: "No pude procesar correctamente la solicitud relacionada con categorías. Por favor, intenta de nuevo.",
-          confidence: 0.3
-        };
+        case "updateCategory": {
+          const args = response.functionCall.arguments;
+          data = await storage.updateCategory(args.categoryId, args.updates);
+          userResponse = `He actualizado la categoría con ID ${args.categoryId}.`;
+          break;
+        }
+        
+        case "deleteCategory": {
+          const args = response.functionCall.arguments;
+          data = await storage.deleteCategory(args.categoryId);
+          userResponse = `He eliminado la categoría con ID ${args.categoryId}.`;
+          break;
+        }
+        
+        case "listCategories": {
+          const categories = await storage.getCategories();
+          data = categories;
+          
+          if (categories.length === 0) {
+            userResponse = "No encontré categorías en el sistema.";
+          } else {
+            userResponse = "Aquí están las categorías disponibles:";
+            categories.forEach((category, index) => {
+              userResponse += `\n${index + 1}. ${category.name} (Color: ${category.color}, ID: ${category.id})`;
+            });
+          }
+          break;
+        }
+        
+        case "respond": {
+          const args = response.functionCall.arguments;
+          userResponse = args.message;
+          break;
+        }
+        
+        default:
+          userResponse = "No pude procesar correctamente tu solicitud relacionada con categorías.";
       }
+      
+      return {
+        action,
+        response: userResponse,
+        data,
+        confidence: 0.9
+      };
     } catch (error) {
       console.error("Error en CategoryAgent:", error);
       return {
@@ -1091,35 +1129,172 @@ Asegúrate de proporcionar insights valiosos y accionables basados en los datos 
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
-      const responseContent = await this.callModel(this.systemPrompt, request.userInput, request.context);
+      // Usar el método callModelWithFunctions en lugar de callModel
+      const response = await this.callModelWithFunctions(this.systemPrompt, request.userInput, request.context);
       
-      try {
-        const parsedResponse = JSON.parse(responseContent);
-        let data = null;
-        
-        if (parsedResponse.action === "getTaskStats") {
-          data = await storage.getTaskStats();
-        } else if (parsedResponse.action === "analyzeTrends" || parsedResponse.action === "generateReport") {
-          // En una implementación completa, aquí se realizarían análisis más detallados
-          data = {
-            taskStats: await storage.getTaskStats(),
-            tasks: await storage.getTasks(),
-            categories: await storage.getCategories(),
-          };
-        }
-        
+      // Si no hay una llamada a función, usar el contenido de texto como respuesta
+      if (!response.functionCall) {
         return {
-          action: parsedResponse.action,
-          response: parsedResponse.response,
-          data,
-          confidence: parsedResponse.confidence || 0.8
-        };
-      } catch (e) {
-        return {
-          response: "No pude generar el análisis solicitado. Por favor, intenta con una solicitud más específica.",
-          confidence: 0.3
+          response: response.content || "No pude entender tu solicitud relacionada con análisis.",
+          confidence: 0.5
         };
       }
+      
+      // Procesar la llamada a función
+      let data = null;
+      let action = response.functionCall.name;
+      let userResponse = "";
+      
+      switch (action) {
+        case "getTaskStats": {
+          const taskStats = await storage.getTaskStats();
+          data = taskStats;
+          
+          // Formular una respuesta más detallada con los datos obtenidos
+          userResponse = `Aquí están las estadísticas de tus tareas:
+- Total de tareas: ${taskStats.total}
+- Tareas pendientes: ${taskStats.pending}
+- Tareas en progreso: ${taskStats.inProgress}
+- Tareas en revisión: ${taskStats.review}
+- Tareas completadas: ${taskStats.completed}
+- Tasa de finalización: ${((taskStats.completed / taskStats.total) * 100).toFixed(1)}%`;
+          break;
+        }
+        
+        case "analyzeTrends": {
+          const args = response.functionCall.arguments;
+          const timeframe = args.timeframe || 'week';
+          
+          // Obtener datos para análisis
+          const taskStats = await storage.getTaskStats();
+          const tasks = await storage.getTasks();
+          const categories = await storage.getCategories();
+          
+          // Crear un análisis básico basado en los datos disponibles
+          // En una implementación completa, se haría un análisis más sofisticado
+          
+          // Agrupar tareas por categoría
+          const tasksByCategory: Record<string, number> = {};
+          tasks.forEach(task => {
+            const categoryName = categories.find(c => c.id === task.categoryId)?.name || 'Sin categoría';
+            tasksByCategory[categoryName] = (tasksByCategory[categoryName] || 0) + 1;
+          });
+          
+          // Contar tareas por prioridad
+          const tasksByPriority: Record<string, number> = { alta: 0, media: 0, baja: 0 };
+          tasks.forEach(task => {
+            const priority = task.priority === 'high' ? 'alta' : 
+                            (task.priority === 'medium' ? 'media' : 'baja');
+            tasksByPriority[priority]++;
+          });
+          
+          data = {
+            taskStats,
+            tasksByCategory,
+            tasksByPriority,
+            timeframe
+          };
+          
+          // Generar respuesta basada en el análisis
+          userResponse = `Análisis de tendencias (${timeframe}):
+          
+Distribución por categoría:
+${Object.entries(tasksByCategory)
+  .map(([category, count]) => `- ${category}: ${count} tareas (${((count / taskStats.total) * 100).toFixed(1)}%)`)
+  .join('\n')}
+
+Distribución por prioridad:
+- Alta: ${tasksByPriority.alta} tareas
+- Media: ${tasksByPriority.media} tareas
+- Baja: ${tasksByPriority.baja} tareas
+
+Estado general: ${taskStats.completed} de ${taskStats.total} tareas completadas (${((taskStats.completed / taskStats.total) * 100).toFixed(1)}%)`;
+          break;
+        }
+        
+        case "generateReport": {
+          const args = response.functionCall.arguments;
+          const reportType = args.reportType || 'summary';
+          
+          // Obtener datos para el informe
+          const taskStats = await storage.getTaskStats();
+          const tasks = await storage.getTasks();
+          const categories = await storage.getCategories();
+          
+          data = {
+            reportType,
+            taskStats,
+            tasks: tasks.slice(0, 10), // Limitar para evitar respuestas muy largas
+            categories
+          };
+          
+          // Generar informe básico
+          if (reportType === 'summary') {
+            userResponse = `Informe resumido:
+            
+- Total de tareas: ${taskStats.total}
+- Tareas completadas: ${taskStats.completed} (${((taskStats.completed / taskStats.total) * 100).toFixed(1)}%)
+- Tareas pendientes: ${taskStats.pending}
+- Tareas en progreso: ${taskStats.inProgress}
+- Tareas en revisión: ${taskStats.review}
+
+Las categorías con más tareas son:
+${categories
+  .map(c => ({ 
+    name: c.name, 
+    count: tasks.filter(t => t.categoryId === c.id).length 
+  }))
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 3)
+  .map(c => `- ${c.name}: ${c.count} tareas`)
+  .join('\n')}`;
+          } else {
+            // Para informes detallados o de rendimiento
+            userResponse = `Informe detallado del sistema de tareas:
+            
+Estadísticas generales:
+- Total de tareas: ${taskStats.total}
+- Tareas completadas: ${taskStats.completed} (${((taskStats.completed / taskStats.total) * 100).toFixed(1)}%)
+- Tareas pendientes: ${taskStats.pending}
+- Tareas en progreso: ${taskStats.inProgress}
+- Tareas en revisión: ${taskStats.review}
+
+Desglose por categorías:
+${categories.map(c => {
+  const categoryTasks = tasks.filter(t => t.categoryId === c.id);
+  const completed = categoryTasks.filter(t => t.status === 'completed').length;
+  const total = categoryTasks.length;
+  const completionRate = total > 0 ? (completed / total * 100).toFixed(1) : 0;
+  
+  return `- ${c.name}: ${total} tareas, ${completed} completadas (${completionRate}%)`;
+}).join('\n')}
+
+Tareas recientes:
+${tasks
+  .sort((a, b) => Number(b.id) - Number(a.id))
+  .slice(0, 5)
+  .map(t => `- ${t.title} (${t.status}, prioridad: ${t.priority})`)
+  .join('\n')}`;
+          }
+          break;
+        }
+        
+        case "respond": {
+          const args = response.functionCall.arguments;
+          userResponse = args.message;
+          break;
+        }
+        
+        default:
+          userResponse = "No pude procesar correctamente tu solicitud de análisis.";
+      }
+      
+      return {
+        action,
+        response: userResponse,
+        data,
+        confidence: 0.9
+      };
     } catch (error) {
       console.error("Error en AnalyticsAgent:", error);
       return {
@@ -1492,7 +1667,7 @@ Para analyzeMetrics:
   
 Para respond, no requiere parámetros adicionales.`;
 
-  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+  getFunctions(): Array<OpenAIFunction> {
     return [
       {
         name: "createMarketingPlan",
@@ -1734,7 +1909,7 @@ Para manageRisks:
   
 Para respond, no requiere parámetros adicionales.`;
 
-  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+  getFunctions(): Array<OpenAIFunction> {
     return [
       {
         name: "createProject",
