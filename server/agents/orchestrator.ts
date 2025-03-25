@@ -373,6 +373,48 @@ Responde con un JSON que contenga:
             .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime())
         };
         break;
+        
+      case "marketing":
+        specificContext = {
+          tasks: await storage.getTasks(),
+          categories: await storage.getCategories(),
+          // Incluir tareas relacionadas con marketing
+          marketingTasks: (await storage.getTasks())
+            .filter(task => {
+              const titleIncludesMarketing = task.title.toLowerCase().includes('marketing') || 
+                                           task.title.toLowerCase().includes('digital') ||
+                                           task.title.toLowerCase().includes('campaña') ||
+                                           task.title.toLowerCase().includes('promoción');
+              const descriptionIncludesMarketing = task.description && 
+                (task.description.toLowerCase().includes('marketing') ||
+                 task.description.toLowerCase().includes('digital') ||
+                 task.description.toLowerCase().includes('campaña') ||
+                 task.description.toLowerCase().includes('promoción'));
+              
+              return titleIncludesMarketing || descriptionIncludesMarketing;
+            })
+        };
+        break;
+        
+      case "project":
+        specificContext = {
+          tasks: await storage.getTasks(),
+          categories: await storage.getCategories(),
+          // Incluir tareas relacionadas con proyectos
+          projectTasks: (await storage.getTasks())
+            .filter(task => {
+              const titleIncludesProject = task.title.toLowerCase().includes('proyecto') || 
+                                         task.title.toLowerCase().includes('project') ||
+                                         task.title.toLowerCase().includes('fase');
+              const descriptionIncludesProject = task.description && 
+                (task.description.toLowerCase().includes('proyecto') ||
+                 task.description.toLowerCase().includes('project') ||
+                 task.description.toLowerCase().includes('fase'));
+              
+              return titleIncludesProject || descriptionIncludesProject;
+            })
+        };
+        break;
     }
     
     // Combinar el contexto con tarea con el específico
@@ -1019,7 +1061,7 @@ Para respond, no requiere parámetros adicionales.`;
                   priority: taskInfo.priority || 'media',
                   categoryId: marketingCategoryId,
                   deadline: taskInfo.deadline ? new Date(taskInfo.deadline) : null,
-                  userId: 1, // Por defecto, asignar al usuario 1
+                  assignedTo: 1 // Por defecto, asignar al usuario 1
                 };
                 
                 const createdTask = await storage.createTask(newTask);
@@ -1147,7 +1189,7 @@ Para respond, no requiere parámetros adicionales.`;
                   priority: taskInfo.priority || 'alta',
                   categoryId: projectCategoryId,
                   deadline: taskInfo.deadline ? new Date(taskInfo.deadline) : null,
-                  userId: 1, // Por defecto, asignar al usuario 1
+                  assignedTo: 1 // Por defecto, asignar al usuario 1
                 };
                 
                 const createdTask = await storage.createTask(newTask);
@@ -1180,7 +1222,7 @@ Para respond, no requiere parámetros adicionales.`;
                   priority: 'alta',
                   categoryId: projectCategoryId,
                   deadline: phase.endDate ? new Date(phase.endDate) : null,
-                  userId: 1,
+                  assignedTo: 1,
                 };
                 
                 const createdTask = await storage.createTask(newTask);
