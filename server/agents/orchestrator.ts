@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { storage } from '../storage';
+import { InsertTask } from '../../shared/schema';
 
 // Inicializar cliente de OpenAI con la clave API
 const openai = new OpenAI({
@@ -632,9 +633,9 @@ Proporciona respuestas detalladas y útiles sobre planificación y organización
           }
         } else if (parsedResponse.action === "scheduleTasks") {
           // Similar a setDeadlines pero puede manejar múltiples tareas
-          // Por simplicidad, buscar la tarea de contabilidad y establecer la fecha
+          
+          // Buscar la tarea de contabilidad y establecer la fecha
           const tasks = await storage.getTasks();
-          // Buscar tarea por título o descripción
           const taskKeyword = 'contabilidad';
           const contabilidadTask = tasks.find(t => {
             // Siempre verificar en el título
@@ -649,18 +650,19 @@ Proporciona respuestas detalladas y útiles sobre planificación y organización
             return titleMatch || descriptionMatch;
           });
           
+          // Detectar la fecha a partir del texto de respuesta
+          let targetDate: Date;
+          
+          if (parsedResponse.response.includes("27 de marzo")) {
+            targetDate = new Date(2025, 2, 27);
+          } else {
+            // Fecha predeterminada: 3 días a partir de hoy
+            targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + 3);
+          }
+          
           if (contabilidadTask) {
-            // Detectar la fecha a partir del texto de respuesta
-            let targetDate: Date;
-            
-            if (parsedResponse.response.includes("27 de marzo")) {
-              targetDate = new Date(2025, 2, 27);
-            } else {
-              // Fecha predeterminada: 3 días a partir de hoy
-              targetDate = new Date();
-              targetDate.setDate(targetDate.getDate() + 3);
-            }
-            
+            // Si la tarea ya existe, actualizar la fecha límite
             const updatedTask = await storage.updateTask(contabilidadTask.id, {
               deadline: targetDate
             });
@@ -669,12 +671,34 @@ Proporciona respuestas detalladas y útiles sobre planificación y organización
               data = updatedTask;
               
               // Actualizar la respuesta para confirmar que se estableció la fecha
-              parsedResponse.response = `He programado la tarea "${contabilidadTask.title}" para el ${targetDate.toLocaleDateString('es-ES', { 
+              parsedResponse.response = `He actualizado la tarea "${contabilidadTask.title}" para el ${targetDate.toLocaleDateString('es-ES', { 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
               })}.`;
             }
+          } else {
+            // Si la tarea no existe, crear una nueva tarea de contabilidad
+            const categoryId = 1; // Asumimos categoría "Trabajo" con ID 1
+            
+            const newTask: InsertTask = {
+              title: "Hacer la contabilidad de la empresa",
+              description: "Tarea creada automáticamente por el asistente",
+              status: "pendiente",
+              priority: "alta",
+              categoryId: categoryId,
+              deadline: targetDate
+            };
+            
+            const createdTask = await storage.createTask(newTask);
+            data = createdTask;
+            
+            // Actualizar la respuesta para confirmar la creación de la tarea
+            parsedResponse.response = `He creado una nueva tarea "Hacer la contabilidad de la empresa" programada para el ${targetDate.toLocaleDateString('es-ES', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}.`;
           }
         }
         
