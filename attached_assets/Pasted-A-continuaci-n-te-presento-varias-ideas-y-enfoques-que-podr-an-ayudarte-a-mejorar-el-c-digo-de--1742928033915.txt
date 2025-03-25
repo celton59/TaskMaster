@@ -1,0 +1,190 @@
+A continuación, te presento varias ideas y enfoques que podrían ayudarte a **mejorar** el código de tu orquestador y de los agentes especializados. Estas recomendaciones abarcan tanto aspectos de **arquitectura**, **mantenibilidad**, **seguridad**, **eficiencia**, como también mejoras de **prompt engineering** y **gestión de errores**. 
+
+---
+
+## 1. Separar lógica en archivos independientes
+
+Actualmente, todo el código del orquestador, los agentes y el almacenamiento (`storage`) se encuentra en un solo archivo (o muy concentrado). Esto puede dificultar la mantenibilidad, la lectura y la escalabilidad del proyecto. Una forma de organizarlo mejor:
+
+1. **src/orchestrator/AgentOrchestrator.ts**  
+   - Contiene la clase `AgentOrchestrator`.
+2. **src/orchestrator/SpecializedAgent.ts**  
+   - Clase abstracta `SpecializedAgent`.
+   - Interfaz `AgentRequest` y `AgentResponse`.
+3. **src/agents/TaskAgent.ts**  
+4. **src/agents/CategoryAgent.ts**  
+5. **src/agents/AnalyticsAgent.ts**  
+6. **src/agents/PlannerAgent.ts**  
+7. **src/agents/MarketingAgent.ts**  
+8. **src/agents/ProjectManagerAgent.ts**  
+   - Cada uno con su respectiva clase, prompts y lógica interna.
+9. **src/storage/index.ts** (o un módulo con DAO/Repos específicos)  
+   - Lógica de interacción con tu base de datos o almacenamiento.  
+
+Con esta estructura, podrás **importar** y registrar tus agentes en el orquestador sin tener un archivo extremadamente largo.
+
+---
+
+## 2. Manejo de “function calling” (nuevo feature de OpenAI)
+
+OpenAI introdujo un nuevo método de **function calling** en las Chat Completions. Este método facilita mucho la “parseada” de JSON y la orquestación de la lógica. En lugar de hacer que el modelo devuelva un JSON arbitrario con `response_format: { type: "json_object" }`, podrías **definir tus funciones** (con parámetros tipados) y dejar que GPT-4 haga la llamada directa a la función adecuada. Por ejemplo:
+
+```ts
+const functions = [
+  {
+    name: "createTask",
+    description: "Crea una nueva tarea en el sistema",
+    parameters: {
+      type: "object",
+      properties: {
+        title: { type: "string" },
+        description: { type: "string" },
+        priority: { type: "string", enum: ["alta", "media", "baja"] },
+        categoryId: { type: "number" },
+        deadline: { type: "string", format: "date-time" }
+      },
+      required: ["title"]
+    }
+  },
+  // ... Otras funciones, como updateTask, deleteTask, etc.
+];
+
+const response = await openai.chat.completions.create({
+  model: "gpt-4-0613", // Versión que soporta function calling
+  messages: [ /* tu conversación aquí */ ],
+  functions, // Se las pasas al modelo
+  function_call: "auto"
+});
+```
+
+Cuando GPT-4 detecta que el usuario quiere “crear una tarea”, en vez de devolverte un JSON arbitrario dentro de `message.content`, te devolverá un “call” a la función con su `arguments` parseados de forma confiable. Ejemplo:
+
+```json
+{
+  "name": "createTask",
+  "arguments": {
+    "title": "Preparar informe mensual",
+    "description": "Necesito consolidar los datos de ventas...",
+    "priority": "alta",
+    "categoryId": 1,
+    "deadline": "2025-03-28T00:00:00Z"
+  }
+}
+```
+
+Esto **reduce en gran medida los errores** de parseo y te da una capa adicional de seguridad y robustez. Podrías definir funciones para cada acción de tus agentes. Reemplazaría la lógica de parsear la respuesta manualmente y haría tu sistema más resiliente.
+
+---
+
+## 3. Mejorar la arquitectura de “determinación de agente”
+
+Actualmente, usas un método `determineAgentType` que llama al modelo con un prompt para que decida el agente. Luego, vuelves a llamar al modelo con el prompt del agente correspondiente. Esto genera **dos llamadas** a la API por cada interacción del usuario. 
+
+**Algunas mejoras posibles**:
+
+1. **Modelo único con "roles"**:  
+   Mantener un solo prompt de sistema que explique en su “preamble” que existen varios “roles” (TaskAgent, CategoryAgent, etc.), y pedirle al LLM que **directamente** llame a la función correspondiente a ese rol. Esto se combina muy bien con la funcionalidad de function calling descrita antes. 
+2. **Heurísticas complementarias**:  
+   Mantener la lógica actual, pero si la confianza de `determineAgentType` es muy baja, hacer un fallback a un “agente general” (por ejemplo, `TaskAgent` o un “GeneralAgent”).  
+3. **Indexación semántica**:  
+   Podrías entrenar embeddings rápidos con la librería `openai` o `langchain`, clasificando la intención del usuario. Un “clasificador semántico” entrenado en local podría decidir la mejor categoría sin usar una segunda llamada a GPT.
+
+---
+
+## 4. Manejo de errores y logs más detallados
+
+En varios lugares, simplemente haces `console.error("Error en X:", error)` y devuelves un objeto de respuesta genérico. Para mejorar:
+
+- **Logs estructurados**: usar un logger como [pino](https://www.npmjs.com/package/pino) o [winston](https://www.npmjs.com/package/winston) para tener logs con timestamp, niveles (info, error, warn), etc.
+- **Manejo de excepciones**: crear clases de Error personalizadas (p.ej. `AgentError`, `StorageError`) y capturarlas con un bloque try-catch unificado en el orquestador, devolviendo mensajes más específicos al usuario si algo sale mal.
+- **Reporte de errores**: si el proyecto está en producción, considerar un servicio como Sentry o similar para monitorear excepciones.
+
+---
+
+## 5. Contexto y memoria de conversaciones
+
+Estás almacenando un historial de las últimas 5 interacciones en `conversationHistory`, pero a la hora de construir `contextString`, no estás filtrando cuidadosamente la parte más relevante. Recomendaciones:
+
+1. **Almacena la conversación con un vector store** (ejemplo: usando [Supabase vector DB](https://supabase.com/blog/openai-embeddings-postgres-vector) o [Pinecone](https://www.pinecone.io/)), para luego hacer un retrieval de la parte relevante de la conversación, en vez de pasar simplemente “las últimas 5 interacciones”.
+2. **Filtra por relevancia**: no todas las últimas 5 interacciones serán útiles. Quizá sólo necesitas interacciones donde se mencionen tareas, si el usuario está pidiendo algo sobre “tareas”.
+3. **Segmentar la conversación**: en vez de meter `conversationHistory` entero en un “mensaje system” o “user”, podrías usar la nueva funcionalidad de “message role = system” o “function” para retener la información.
+
+---
+
+## 6. Validación y normalización de fechas
+
+En tus agentes, realizas parsing manual de la fecha (por ejemplo, “si el usuario dice 27 de marzo, coloco 2025, 2, 27”). Para robustecer:
+
+- Usa librerías como [dayjs](https://day.js.org/) o [date-fns](https://date-fns.org/) que simplifican la detección y el formateo de fechas.
+- Si tu aplicación está pensada en español, hay librerías de NLP como [compromise](https://github.com/spencermountain/compromise) (aunque más orientada a inglés) o [chrono](https://github.com/wanasit/chrono) que detectan expresiones naturales en varios idiomas.
+
+---
+
+## 7. Testing e integración continua
+
+Para garantizar que tus agentes y el orquestador funcionen correctamente en diferentes escenarios, conviene:
+
+1. **Unit tests**:  
+   - Para cada agente, pruebas unitarias que verifiquen que la “respuesta” se parsea correctamente.
+   - Mocks de la API de OpenAI para no hacer llamadas reales durante los tests.
+2. **Integration tests**:  
+   - Testear flujos completos del orquestador: 
+     - Un usuario crea una tarea, luego la actualiza, luego cambia de agente a “planner”, etc.  
+   - Usar herramientas como [Jest](https://jestjs.io/) o [Vitest](https://vitest.dev/).
+
+3. **GitHub Actions** (o cualquier otra CI) para automatizar la ejecución de tests y linting al hacer push/pull request.
+
+---
+
+## 8. Optimización de prompts y reducción de tokens
+
+Cada agente usa un `this.systemPrompt` bastante detallado. Para reducir el consumo de tokens y mejorar la velocidad de respuesta, podrías:
+
+1. **Segmentar roles**: Explicar una sola vez el “rol” de cada agente (o la lista de agentes) en el mensaje de sistema general, y luego pasar un “mensaje de sistema” más corto con la parte específica de cada agente.  
+2. **Usar instructores**: Dejar la parte universal (qué formato JSON se espera, qué prioridades usar, etc.) en un único lugar y que cada agente importe esa parte, evitando duplicar trozos de prompt.  
+3. **Revisar el wording**: Quitar explicaciones redundantes o que GPT-4 pueda deducir por contexto.
+
+---
+
+## 9. Limpieza y refactor en la lógica de “PlannerAgent”
+
+El `PlannerAgent` tiene varios `if`/`else` para detectar tareas con “contabilidad”, buscar coincidencias en título/descripción, etc. Esto puede crecer en complejidad y es un foco de bugs. Alternativas:
+
+1. **Manejar la intención con function calling**: en lugar de parsear la respuesta en el front, define la función `setDeadline(taskId: number, deadline: string)` y deja que GPT-4 devuelva:  
+   ```json
+   {
+     "name": "setDeadline",
+     "arguments": {
+       "taskId": 42,
+       "deadline": "2025-03-27T00:00:00Z"
+     }
+   }
+   ```
+   De esta forma, no es necesario hacer “string matching” de `"27 de marzo"` en la respuesta. GPT-4 ya te daría la fecha exacta en formato ISO.
+2. **Desacoplar la lógica**: en caso de querer mantener el parseo manual, extrae esa lógica a un método helper que busque la palabra clave (“contabilidad”) y decida la fecha. Así el `PlannerAgent` se mantiene más limpio.
+
+---
+
+## 10. Fallback de “colaborativeProcess”
+
+Tu método `collaborativeProcess` llama a todos los agentes en paralelo (`Promise.all`) para ver cuál da la “mejor” respuesta. Podrías mejorar:
+
+- **Limitar la concurrencia**: si llegan a ser muchos agentes, `Promise.all` podría saturar la API. Usa [p-limit](https://www.npmjs.com/package/p-limit) si es necesario.  
+- **Mejor criterio de decisión**: en lugar de solo mirar la `confidence`, podrías:
+  - Hacer un “voto” ponderado, si varios agentes devuelven la misma acción.  
+  - Combinar la salida de varios agentes si tienen funcionalidades complementarias.  
+
+---
+
+## Conclusión
+
+Siguiendo estas recomendaciones, podrás:
+
+- **Reducir** la probabilidad de errores en el parseo JSON.
+- **Mejorar** la mantenibilidad al separar responsabilidades y extraer lógica repetitiva.
+- **Escalar** el sistema a medida que aumente el número de agentes o la complejidad de las solicitudes.
+- **Aprovechar** las últimas características de la API de OpenAI (function calling) para hacer el sistema más robusto y “limpio”.
+
+Te animo especialmente a explorar la **integración de function calling** (punto 2) y a **refactorizar** el código en archivos separados (punto 1). Ambas mejoras suelen dar un gran salto en la calidad y mantenibilidad del proyecto. 
+
+¡Éxitos con la implementación!

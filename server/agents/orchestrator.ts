@@ -519,6 +519,7 @@ Responde con un JSON que contenga:
 // Interfaz para los agentes especializados
 abstract class SpecializedAgent {
   abstract process(request: AgentRequest): Promise<AgentResponse>;
+  abstract getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function>;
   
   protected async callModel(systemPrompt: string, userInput: string, context?: any): Promise<string> {
     const contextString = context ? `\nContexto del sistema:\n${JSON.stringify(context, null, 2)}` : '';
@@ -540,6 +541,51 @@ abstract class SpecializedAgent {
     
     return response.choices[0]?.message?.content || "";
   }
+  
+  protected async callModelWithFunctions(systemPrompt: string, userInput: string, context?: any): Promise<{
+    functionCall?: {
+      name: string;
+      arguments: any;
+    };
+    content?: string;
+  }> {
+    const contextString = context ? `\nContexto del sistema:\n${JSON.stringify(context, null, 2)}` : '';
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // Usar el modelo más reciente de OpenAI
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: `${contextString}\n\nSolicitud del usuario: ${userInput}`
+        }
+      ],
+      functions: this.getFunctions(),
+      function_call: "auto"
+    });
+    
+    const message = response.choices[0]?.message;
+    
+    if (message?.function_call) {
+      try {
+        const args = JSON.parse(message.function_call.arguments);
+        return {
+          functionCall: {
+            name: message.function_call.name,
+            arguments: args
+          }
+        };
+      } catch (error) {
+        console.error("Error al parsear argumentos de function call:", error);
+        return { content: message.content || "" };
+      }
+    }
+    
+    return { content: message?.content || "" };
+  }
 }
 
 // Implementación del Agente de Tareas
@@ -547,89 +593,234 @@ class TaskAgent extends SpecializedAgent {
   private systemPrompt = `Eres un agente especializado en la gestión de tareas. 
 Tu objetivo es crear nuevas tareas, actualizar tareas existentes, eliminar tareas o proporcionar información sobre tareas.
 
-IMPORTANTE: Si el usuario describe algo que suena como una tarea (por ejemplo, "tengo que hacer contabilidad", "necesito preparar una presentación", etc.), SIEMPRE debes interpretar esto como una solicitud para CREAR una nueva tarea, incluso si no lo pide explícitamente. Si el usuario menciona una fecha, SIEMPRE debes incluir esa fecha en la creación de la tarea.
+IMPORTANTE: Si el usuario describe algo que suena como una tarea (por ejemplo, "tengo que hacer contabilidad", "necesito preparar una presentación", etc.), SIEMPRE debes interpretar esto como una solicitud para CREAR una nueva tarea, incluso si no lo pide explícitamente. Si el usuario menciona una fecha, SIEMPRE debes incluir esa fecha al crear la tarea.
 
-Debes responder en formato JSON con la siguiente estructura:
-{
-  "action": "createTask | updateTask | deleteTask | listTasks | respond",
-  "parameters": { (parámetros específicos para la acción) },
-  "response": "Mensaje para el usuario",
-  "confidence": (valor entre 0 y 1),
-  "reasoning": "Tu razonamiento interno"
-}
-
-Para createTask, los parámetros deben incluir:
-  - title: título de la tarea (extráelo de la descripción del usuario)
-  - description: descripción detallada (elabora basado en la solicitud)
-  - priority: 'alta', 'media', o 'baja' (deduce la prioridad apropiada)
-  - categoryId: ID de la categoría (opcional, usa 1 por defecto)
-  - deadline: fecha límite (INCLUIR SIEMPRE que el usuario mencione una fecha) en formato YYYY-MM-DD
-
-Para updateTask:
-  - taskId: ID de la tarea a actualizar
-  - updates: objeto con los campos a actualizar
-
-Para deleteTask:
-  - taskId: ID de la tarea a eliminar
-
-Para listTasks, puedes incluir filtros opcionales.
-
-Para respond, no requiere parámetros, sólo usa cuando no necesites crear/modificar tareas.
+Si es necesario, usa una de las funciones disponibles para gestionar tareas. Siempre proporciona una explicación clara de lo que has hecho o de lo que el usuario debería hacer a continuación.
 
 IMPORTANTE: Si el usuario menciona o sugiere una fecha (por ejemplo: "para mañana", "para el viernes", "para el 27 de marzo", etc.), DEBES incluir esa fecha en el campo deadline al crear la tarea. Convierte expresiones de tiempo relativas a fechas absolutas.
 
 No intentes responder a chistes, saludos o conversación casual; interpreta todo como un intento de gestionar tareas.`;
   
+  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+    return [
+      {
+        name: "createTask",
+        description: "Crea una nueva tarea en el sistema",
+        parameters: {
+          type: "object",
+          properties: {
+            title: { 
+              type: "string",
+              description: "Título de la tarea (extráelo de la descripción del usuario)"
+            },
+            description: { 
+              type: "string",
+              description: "Descripción detallada (elabora basado en la solicitud)"
+            },
+            priority: { 
+              type: "string", 
+              enum: ["alta", "media", "baja"],
+              description: "Prioridad de la tarea (deduce la prioridad apropiada)"
+            },
+            categoryId: { 
+              type: "integer",
+              description: "ID de la categoría (opcional, usa 1 por defecto)" 
+            },
+            deadline: { 
+              type: "string", 
+              format: "date",
+              description: "Fecha límite en formato YYYY-MM-DD. INCLUIR SIEMPRE que el usuario mencione una fecha. Convierte expresiones relativas ('mañana', 'el viernes', etc.) a fechas absolutas."
+            }
+          },
+          required: ["title", "description", "priority"]
+        }
+      },
+      {
+        name: "updateTask",
+        description: "Actualiza una tarea existente",
+        parameters: {
+          type: "object",
+          properties: {
+            taskId: { 
+              type: "integer",
+              description: "ID de la tarea a actualizar" 
+            },
+            updates: { 
+              type: "object",
+              description: "Objeto con los campos a actualizar",
+              properties: {
+                title: { type: "string" },
+                description: { type: "string" },
+                status: { 
+                  type: "string", 
+                  enum: ["pending", "in_progress", "review", "completed"] 
+                },
+                priority: { 
+                  type: "string", 
+                  enum: ["high", "medium", "low"] 
+                },
+                categoryId: { type: "integer" },
+                deadline: { 
+                  type: "string", 
+                  format: "date" 
+                }
+              }
+            }
+          },
+          required: ["taskId", "updates"]
+        }
+      },
+      {
+        name: "deleteTask",
+        description: "Elimina una tarea existente",
+        parameters: {
+          type: "object",
+          properties: {
+            taskId: { 
+              type: "integer",
+              description: "ID de la tarea a eliminar" 
+            }
+          },
+          required: ["taskId"]
+        }
+      },
+      {
+        name: "listTasks",
+        description: "Lista las tareas existentes, opcionalmente filtradas",
+        parameters: {
+          type: "object",
+          properties: {
+            status: { 
+              type: "string", 
+              enum: ["pending", "in_progress", "review", "completed"],
+              description: "Filtrar por estatus (opcional)" 
+            },
+            categoryId: { 
+              type: "integer",
+              description: "Filtrar por categoría (opcional)" 
+            }
+          }
+        }
+      },
+      {
+        name: "respond",
+        description: "Responder al usuario sin realizar ninguna acción en el sistema",
+        parameters: {
+          type: "object",
+          properties: {
+            message: { 
+              type: "string",
+              description: "Mensaje para el usuario" 
+            }
+          },
+          required: ["message"]
+        }
+      }
+    ];
+  }
+  
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
-      const responseContent = await this.callModel(this.systemPrompt, request.userInput, request.context);
+      // Usar el método callModelWithFunctions en lugar de callModel
+      const response = await this.callModelWithFunctions(this.systemPrompt, request.userInput, request.context);
       
-      try {
-        const parsedResponse = JSON.parse(responseContent);
-        // Implementar la lógica para ejecutar la acción
-        let data = null;
-        
-        if (parsedResponse.action === "createTask" && parsedResponse.parameters) {
+      // Si no hay una llamada a función, usar el contenido de texto como respuesta
+      if (!response.functionCall) {
+        return {
+          response: response.content || "No pude entender tu solicitud relacionada con tareas.",
+          confidence: 0.5
+        };
+      }
+      
+      // Procesar la llamada a función
+      let data = null;
+      let action = response.functionCall.name;
+      let userResponse = "";
+      
+      switch (action) {
+        case "createTask": {
+          const args = response.functionCall.arguments;
           // Convertir prioridad si es necesario
-          let priority = parsedResponse.parameters.priority;
+          let priority = args.priority;
           if (priority === 'alta') priority = 'high';
           else if (priority === 'media') priority = 'medium';
           else if (priority === 'baja') priority = 'low';
           
           const newTask = {
-            title: parsedResponse.parameters.title,
-            description: parsedResponse.parameters.description,
+            title: args.title,
+            description: args.description,
             status: 'pending',
             priority,
-            categoryId: parsedResponse.parameters.categoryId || 1,
-            deadline: parsedResponse.parameters.deadline ? new Date(parsedResponse.parameters.deadline) : null,
+            categoryId: args.categoryId || 1,
+            deadline: args.deadline ? new Date(args.deadline) : null,
           };
           
           data = await storage.createTask(newTask);
-        } else if (parsedResponse.action === "updateTask" && parsedResponse.parameters) {
-          data = await storage.updateTask(
-            parsedResponse.parameters.taskId,
-            parsedResponse.parameters.updates
-          );
-        } else if (parsedResponse.action === "deleteTask" && parsedResponse.parameters) {
-          data = await storage.deleteTask(parsedResponse.parameters.taskId);
-        } else if (parsedResponse.action === "listTasks") {
-          data = await storage.getTasks();
+          userResponse = `He creado la tarea "${args.title}" con prioridad ${args.priority}.`;
+          if (args.deadline) {
+            userResponse += ` La fecha límite es ${args.deadline}.`;
+          }
+          break;
         }
         
-        return {
-          action: parsedResponse.action,
-          response: parsedResponse.response,
-          data,
-          confidence: parsedResponse.confidence || 0.8
-        };
-      } catch (e) {
-        // Si no podemos parsear la respuesta JSON
-        return {
-          response: "No pude procesar correctamente la solicitud relacionada con tareas. Por favor, intenta de nuevo.",
-          confidence: 0.3
-        };
+        case "updateTask": {
+          const args = response.functionCall.arguments;
+          data = await storage.updateTask(args.taskId, args.updates);
+          userResponse = `He actualizado la tarea con ID ${args.taskId}.`;
+          break;
+        }
+        
+        case "deleteTask": {
+          const args = response.functionCall.arguments;
+          data = await storage.deleteTask(args.taskId);
+          userResponse = `He eliminado la tarea con ID ${args.taskId}.`;
+          break;
+        }
+        
+        case "listTasks": {
+          const args = response.functionCall.arguments;
+          let tasks = await storage.getTasks();
+          
+          // Aplicar filtros si se proporcionan
+          if (args.status) {
+            tasks = tasks.filter(task => task.status === args.status);
+          }
+          if (args.categoryId) {
+            tasks = tasks.filter(task => task.categoryId === args.categoryId);
+          }
+          
+          data = tasks;
+          userResponse = "Aquí están las tareas que encontré:";
+          if (tasks.length === 0) {
+            userResponse = "No encontré tareas con los criterios especificados.";
+          } else {
+            tasks.slice(0, 5).forEach((task, index) => {
+              userResponse += `\n${index + 1}. ${task.title} (ID: ${task.id}) - Prioridad: ${task.priority}, Estado: ${task.status}`;
+            });
+            
+            if (tasks.length > 5) {
+              userResponse += `\n...y ${tasks.length - 5} tareas más.`;
+            }
+          }
+          break;
+        }
+        
+        case "respond": {
+          const args = response.functionCall.arguments;
+          userResponse = args.message;
+          break;
+        }
+        
+        default:
+          userResponse = "No pude procesar correctamente tu solicitud.";
       }
+      
+      return {
+        action,
+        response: userResponse,
+        data,
+        confidence: 0.9
+      };
     } catch (error) {
       console.error("Error en TaskAgent:", error);
       return {
@@ -672,6 +863,91 @@ Para listCategories, no se requieren parámetros adicionales.
 Para respond, no requiere parámetros, sólo usa cuando no necesites crear/modificar categorías.
 
 Asegúrate de asignar un color apropiado basado en el contexto. Por ejemplo, tareas financieras podrían usar green, tareas urgentes podrían usar red, etc.`;
+  
+  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+    return [
+      {
+        name: "createCategory",
+        description: "Crea una nueva categoría en el sistema",
+        parameters: {
+          type: "object",
+          properties: {
+            name: { 
+              type: "string",
+              description: "Nombre de la categoría (extráelo de la descripción del usuario)"
+            },
+            color: { 
+              type: "string", 
+              enum: ["blue", "green", "red", "purple", "orange"],
+              description: "Color de la categoría (blue, green, red, purple, orange)"
+            }
+          },
+          required: ["name"]
+        }
+      },
+      {
+        name: "updateCategory",
+        description: "Actualiza una categoría existente",
+        parameters: {
+          type: "object",
+          properties: {
+            categoryId: { 
+              type: "integer",
+              description: "ID de la categoría a actualizar" 
+            },
+            updates: { 
+              type: "object",
+              description: "Objeto con los campos a actualizar",
+              properties: {
+                name: { type: "string" },
+                color: { 
+                  type: "string", 
+                  enum: ["blue", "green", "red", "purple", "orange"] 
+                }
+              }
+            }
+          },
+          required: ["categoryId", "updates"]
+        }
+      },
+      {
+        name: "deleteCategory",
+        description: "Elimina una categoría existente",
+        parameters: {
+          type: "object",
+          properties: {
+            categoryId: { 
+              type: "integer",
+              description: "ID de la categoría a eliminar" 
+            }
+          },
+          required: ["categoryId"]
+        }
+      },
+      {
+        name: "listCategories",
+        description: "Lista las categorías existentes",
+        parameters: {
+          type: "object",
+          properties: {}
+        }
+      },
+      {
+        name: "respond",
+        description: "Responder al usuario sin realizar ninguna acción en el sistema",
+        parameters: {
+          type: "object",
+          properties: {
+            message: { 
+              type: "string",
+              description: "Mensaje para el usuario" 
+            }
+          },
+          required: ["message"]
+        }
+      }
+    ];
+  }
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
@@ -746,6 +1022,61 @@ Para generateReport, puedes incluir parámetros como reportType (summary, detail
 Para respond, no requiere parámetros, sólo usa cuando ninguna otra acción sea apropiada.
 
 Asegúrate de proporcionar insights valiosos y accionables basados en los datos disponibles.`;
+  
+  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+    return [
+      {
+        name: "getTaskStats",
+        description: "Obtener estadísticas básicas de tareas",
+        parameters: {
+          type: "object",
+          properties: {}
+        }
+      },
+      {
+        name: "analyzeTrends",
+        description: "Analizar tendencias en las tareas",
+        parameters: {
+          type: "object",
+          properties: {
+            timeframe: { 
+              type: "string", 
+              enum: ["day", "week", "month"],
+              description: "Período de tiempo para analizar" 
+            }
+          }
+        }
+      },
+      {
+        name: "generateReport",
+        description: "Generar un informe detallado",
+        parameters: {
+          type: "object",
+          properties: {
+            reportType: { 
+              type: "string", 
+              enum: ["summary", "detailed", "performance"],
+              description: "Tipo de informe a generar" 
+            }
+          }
+        }
+      },
+      {
+        name: "respond",
+        description: "Responder al usuario sin realizar ninguna acción en el sistema",
+        parameters: {
+          type: "object",
+          properties: {
+            message: { 
+              type: "string",
+              description: "Mensaje para el usuario" 
+            }
+          },
+          required: ["message"]
+        }
+      }
+    ];
+  }
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
