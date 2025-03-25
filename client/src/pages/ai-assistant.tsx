@@ -72,11 +72,28 @@ export default function AIAssistant() {
       
       setMessages(prev => [...prev, assistantMessage]);
       
+      console.log("Respuesta del agente:", result);
+      
       // Invalidar consultas si se creó una tarea o categoría
       if (result.action === 'createTask') {
+        // Invalidar la caché para asegurar que la nueva tarea aparezca
         queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+        // Además invalidar las estadísticas
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks/stats'] });
+        
+        toast({
+          title: "Tarea creada",
+          description: "La tarea se ha creado correctamente",
+          variant: "default"
+        });
       } else if (result.action === 'createCategory') {
         queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+        
+        toast({
+          title: "Categoría creada",
+          description: "La categoría se ha creado correctamente",
+          variant: "default"
+        });
       }
       
     } catch (error) {

@@ -83,6 +83,11 @@ export async function processAgentMessage(input: string): Promise<{
   result?: any;
   message: string;
   thought?: string;
+  // Añadiendo campos específicos para la respuesta
+  task?: any;
+  tasks?: any[];
+  category?: any;
+  categories?: any[];
 }> {
   try {
     // Obtener información actual para el contexto del agente
