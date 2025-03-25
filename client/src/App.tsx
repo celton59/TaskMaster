@@ -8,6 +8,7 @@ import Tasks from "@/pages/tasks";
 import TaskDetails from "@/pages/task-details";
 import Reports from "@/pages/reports";
 import AIAssistant from "@/pages/ai-assistant";
+import Calendar from "@/pages/calendar";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 
@@ -26,6 +27,7 @@ function Router() {
             <Route path="/tasks/:id" component={TaskDetails} />
             <Route path="/reports" component={Reports} />
             <Route path="/assistant" component={AIAssistant} />
+            <Route path="/calendar" component={Calendar} />
             <Route component={NotFound} />
           </Switch>
         </main>
