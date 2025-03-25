@@ -610,6 +610,8 @@ IMPORTANTE: NUNCA respondas con texto en formato JSON. En su lugar, debes usar l
 
 IMPORTANTE: Si el usuario menciona o sugiere una fecha (por ejemplo: "para mañana", "para el viernes", "para el 27 de marzo", etc.), DEBES incluir esa fecha en el campo deadline al crear la tarea. Convierte expresiones de tiempo relativas a fechas absolutas.
 
+IMPORTANTE: Si el usuario solicita eliminar varias tareas (por ejemplo: "borra las tareas 1, 2 y 3" o "elimina las tareas 4-7"), DEBES usar la función deleteTasks con todos los IDs mencionados. Asegúrate de extraer correctamente todos los números de ID, incluso si están en una lista, separados por comas o guiones.
+
 No intentes responder a chistes, saludos o conversación casual; interpreta todo como un intento de gestionar tareas.`;
   
   getFunctions(): Array<OpenAIFunction> {
@@ -682,17 +684,20 @@ No intentes responder a chistes, saludos o conversación casual; interpreta todo
         }
       },
       {
-        name: "deleteTask",
-        description: "Elimina una tarea existente",
+        name: "deleteTasks",
+        description: "Elimina una o varias tareas existentes",
         parameters: {
           type: "object",
           properties: {
-            taskId: { 
-              type: "integer",
-              description: "ID de la tarea a eliminar" 
+            taskIds: { 
+              type: "array",
+              items: {
+                type: "integer"
+              },
+              description: "Lista de IDs de las tareas a eliminar" 
             }
           },
-          required: ["taskId"]
+          required: ["taskIds"]
         }
       },
       {
@@ -785,6 +790,40 @@ No intentes responder a chistes, saludos o conversación casual; interpreta todo
           const args = response.functionCall.arguments;
           data = await storage.deleteTask(args.taskId);
           userResponse = `He eliminado la tarea con ID ${args.taskId}.`;
+          break;
+        }
+        
+        case "deleteTasks": {
+          const args = response.functionCall.arguments;
+          let deletedTasks = [];
+          let failedTasks = [];
+          
+          // Procesar cada ID de tarea
+          for (const taskId of args.taskIds) {
+            try {
+              const success = await storage.deleteTask(taskId);
+              if (success) {
+                deletedTasks.push(taskId);
+              } else {
+                failedTasks.push(taskId);
+              }
+            } catch (error) {
+              console.error(`Error al eliminar tarea con ID ${taskId}:`, error);
+              failedTasks.push(taskId);
+            }
+          }
+          
+          // Crear mensaje de respuesta
+          if (deletedTasks.length > 0) {
+            userResponse = `He eliminado las siguientes tareas: ${deletedTasks.join(', ')}.`;
+            if (failedTasks.length > 0) {
+              userResponse += ` No pude eliminar las tareas: ${failedTasks.join(', ')}. Puede que ya no existan o haya ocurrido un error.`;
+            }
+          } else {
+            userResponse = `No pude eliminar ninguna de las tareas solicitadas: ${args.taskIds.join(', ')}.`;
+          }
+          
+          data = { deletedTasks, failedTasks };
           break;
         }
         
