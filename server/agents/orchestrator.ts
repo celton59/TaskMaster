@@ -7,6 +7,17 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Definir tipo para las funciones que usamos con OpenAI
+type OpenAIFunction = {
+  name: string;
+  description: string;
+  parameters: {
+    type: string;
+    properties: Record<string, any>;
+    required?: string[];
+  };
+};
+
 // Interfaces para los agentes
 interface AgentRequest {
   userInput: string;
@@ -1150,6 +1161,86 @@ Para getUpcomingDeadlines, puedes incluir parámetros como timeframe (day, week,
 Para respond, no requiere parámetros, sólo usa cuando ninguna otra acción sea apropiada.
 
 Proporciona respuestas detalladas y útiles sobre planificación y organización temporal.`;
+
+  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+    return [
+      {
+        name: "scheduleTasks",
+        description: "Programa tareas para una fecha específica",
+        parameters: {
+          type: "object",
+          properties: {
+            taskIds: { 
+              type: "array",
+              items: { type: "integer" },
+              description: "IDs de las tareas a programar" 
+            },
+            date: { 
+              type: "string", 
+              format: "date",
+              description: "Fecha propuesta en formato YYYY-MM-DD" 
+            }
+          },
+          required: ["date"]
+        }
+      },
+      {
+        name: "setDeadlines",
+        description: "Establece la fecha límite para una tarea específica",
+        parameters: {
+          type: "object",
+          properties: {
+            taskId: { 
+              type: "integer",
+              description: "ID de la tarea a la que establecer fecha límite" 
+            },
+            deadline: { 
+              type: "string", 
+              format: "date",
+              description: "Nueva fecha límite en formato YYYY-MM-DD" 
+            }
+          },
+          required: ["taskId", "deadline"]
+        }
+      },
+      {
+        name: "getPrioritizedTasks",
+        description: "Obtiene una lista de tareas ordenadas por prioridad",
+        parameters: {
+          type: "object",
+          properties: {}
+        }
+      },
+      {
+        name: "getUpcomingDeadlines",
+        description: "Obtiene una lista de próximas fechas límite",
+        parameters: {
+          type: "object",
+          properties: {
+            timeframe: { 
+              type: "string", 
+              enum: ["day", "week", "month"],
+              description: "Período de tiempo para filtrar las fechas límite" 
+            }
+          }
+        }
+      },
+      {
+        name: "respond",
+        description: "Responder al usuario sin realizar ninguna acción en el sistema",
+        parameters: {
+          type: "object",
+          properties: {
+            message: { 
+              type: "string",
+              description: "Mensaje para el usuario" 
+            }
+          },
+          required: ["message"]
+        }
+      }
+    ];
+  }
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
@@ -1401,6 +1492,120 @@ Para analyzeMetrics:
   
 Para respond, no requiere parámetros adicionales.`;
 
+  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+    return [
+      {
+        name: "createMarketingPlan",
+        description: "Crea un plan de marketing digital",
+        parameters: {
+          type: "object",
+          properties: {
+            title: { 
+              type: "string",
+              description: "Título del plan de marketing" 
+            },
+            objective: { 
+              type: "string",
+              description: "Objetivo principal del plan" 
+            },
+            channels: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Array de canales (ej. ['email', 'social_media', 'seo'])" 
+            },
+            timeline: { 
+              type: "string",
+              description: "Periodo de implementación (ej. '3 meses', 'Q2 2025')" 
+            },
+            kpis: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Métricas para medir el éxito del plan" 
+            },
+            tasks: { 
+              type: "array",
+              items: { 
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  description: { type: "string" },
+                  priority: { type: "string", enum: ["alta", "media", "baja"] },
+                  deadline: { type: "string", format: "date" }
+                },
+                required: ["title"]
+              },
+              description: "Array de tareas relacionadas que podrían crearse" 
+            }
+          },
+          required: ["title", "objective"]
+        }
+      },
+      {
+        name: "suggestContent",
+        description: "Sugiere ideas de contenido para marketing digital",
+        parameters: {
+          type: "object",
+          properties: {
+            contentType: { 
+              type: "string",
+              enum: ["blog", "social", "email", "video", "podcast", "infographic"],
+              description: "Tipo de contenido a sugerir" 
+            },
+            topics: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Array de temas sugeridos" 
+            },
+            frequency: { 
+              type: "string",
+              description: "Frecuencia recomendada (ej. 'semanal', 'quincenal')" 
+            },
+            platforms: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Plataformas recomendadas para publicar contenido" 
+            }
+          },
+          required: ["contentType", "topics"]
+        }
+      },
+      {
+        name: "analyzeMetrics",
+        description: "Analiza métricas de marketing digital",
+        parameters: {
+          type: "object",
+          properties: {
+            insightType: { 
+              type: "string",
+              enum: ["conversion", "engagement", "traffic", "branding"],
+              description: "Tipo de análisis a realizar" 
+            },
+            recommendations: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Array de recomendaciones basadas en los datos" 
+            }
+          },
+          required: ["insightType", "recommendations"]
+        }
+      },
+      {
+        name: "respond",
+        description: "Responder al usuario sin realizar ninguna acción específica",
+        parameters: {
+          type: "object",
+          properties: {
+            message: { 
+              type: "string",
+              description: "Mensaje para el usuario" 
+            }
+          },
+          required: ["message"]
+        }
+      }
+    ];
+  }
+
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
       const { userInput, context } = request;
@@ -1528,6 +1733,189 @@ Para manageRisks:
   - contingencyPlans: planes de contingencia
   
 Para respond, no requiere parámetros adicionales.`;
+
+  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+    return [
+      {
+        name: "createProject",
+        description: "Crea un nuevo proyecto con sus tareas asociadas",
+        parameters: {
+          type: "object",
+          properties: {
+            title: { 
+              type: "string",
+              description: "Título del proyecto" 
+            },
+            objective: { 
+              type: "string",
+              description: "Objetivo principal del proyecto" 
+            },
+            startDate: { 
+              type: "string",
+              format: "date",
+              description: "Fecha de inicio del proyecto en formato YYYY-MM-DD" 
+            },
+            endDate: { 
+              type: "string",
+              format: "date",
+              description: "Fecha estimada de finalización del proyecto en formato YYYY-MM-DD" 
+            },
+            phases: { 
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  description: { type: "string" },
+                  startDate: { type: "string", format: "date" },
+                  endDate: { type: "string", format: "date" }
+                },
+                required: ["name"]
+              },
+              description: "Fases del proyecto" 
+            },
+            tasks: { 
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  description: { type: "string" },
+                  priority: { type: "string", enum: ["alta", "media", "baja"] },
+                  deadline: { type: "string", format: "date" }
+                },
+                required: ["title"]
+              },
+              description: "Tareas principales a crear para el proyecto" 
+            }
+          },
+          required: ["title", "objective"]
+        }
+      },
+      {
+        name: "assignResources",
+        description: "Asigna recursos a tareas específicas",
+        parameters: {
+          type: "object",
+          properties: {
+            resources: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Recursos disponibles (personas, equipos)" 
+            },
+            assignments: { 
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  resource: { type: "string" },
+                  taskId: { type: "integer" },
+                  timeAllocation: { type: "string" }
+                },
+                required: ["resource", "taskId"]
+              },
+              description: "Asignaciones de recursos a tareas específicas"
+            },
+            constraints: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Limitaciones a considerar en la asignación de recursos" 
+            }
+          },
+          required: ["resources", "assignments"]
+        }
+      },
+      {
+        name: "trackProgress",
+        description: "Realiza seguimiento del progreso de un proyecto",
+        parameters: {
+          type: "object",
+          properties: {
+            projectId: { 
+              type: "integer",
+              description: "Identificador del proyecto"
+            },
+            status: { 
+              type: "string",
+              enum: ["on-track", "delayed", "at-risk"],
+              description: "Estado actual del proyecto" 
+            },
+            completionRate: { 
+              type: "number",
+              minimum: 0,
+              maximum: 100,
+              description: "Porcentaje de avance del proyecto" 
+            },
+            issues: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Problemas o bloqueos identificados" 
+            },
+            recommendations: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Recomendaciones para mejorar el progreso" 
+            }
+          },
+          required: ["status", "completionRate"]
+        }
+      },
+      {
+        name: "manageRisks",
+        description: "Gestiona los riesgos asociados a un proyecto",
+        parameters: {
+          type: "object",
+          properties: {
+            risks: { 
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  description: { type: "string" },
+                  impact: { type: "string", enum: ["alto", "medio", "bajo"] },
+                  probability: { type: "string", enum: ["alta", "media", "baja"] }
+                },
+                required: ["description"]
+              },
+              description: "Riesgos identificados para el proyecto" 
+            },
+            mitigationStrategies: { 
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  riskIndex: { type: "integer" },
+                  strategy: { type: "string" }
+                },
+                required: ["riskIndex", "strategy"]
+              },
+              description: "Estrategias para mitigar cada riesgo identificado" 
+            },
+            contingencyPlans: { 
+              type: "array",
+              items: { type: "string" },
+              description: "Planes de contingencia generales" 
+            }
+          },
+          required: ["risks"]
+        }
+      },
+      {
+        name: "respond",
+        description: "Responder al usuario sin realizar ninguna acción específica",
+        parameters: {
+          type: "object",
+          properties: {
+            message: { 
+              type: "string",
+              description: "Mensaje para el usuario" 
+            }
+          },
+          required: ["message"]
+        }
+      }
+    ];
+  }
 
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
