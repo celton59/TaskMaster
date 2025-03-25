@@ -13,10 +13,23 @@
   bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background-color: #3b82f6; /* blue-500 */
+  transition: all 0.2s ease;
+}
+
+.with-task-indicator:hover::after {
+  width: 6px;
+  height: 6px;
+  background-color: #2563eb; /* blue-600 */
+  box-shadow: 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* Estilo para el día seleccionado con tareas */
+.rdp-day_selected.with-task-indicator::after {
+  background-color: white;
 }
 
 @layer base {
