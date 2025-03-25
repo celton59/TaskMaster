@@ -224,9 +224,50 @@ export default function AIAssistant() {
       
       const result = await response.json();
       
-      // Agregar respuesta del asistente
+      // Construir el mensaje del asistente con información adicional cuando sea relevante
+      let messageText = result.message || "Recibí tu mensaje pero no pude procesarlo adecuadamente.";
+      
+      // Añadir detalles adicionales según la acción, especialmente para explicaciones
+      if (input.toLowerCase().includes("que hiciste") || 
+          input.toLowerCase().includes("qué hiciste") || 
+          input.toLowerCase().includes("explica") || 
+          input.toLowerCase().includes("explicame") || 
+          input.toLowerCase().includes("explícame")) {
+        
+        // Añadir detalles según la acción previa
+        if (result.action === 'createMarketingPlan' && result.data?.marketingPlan) {
+          const plan = result.data.marketingPlan;
+          messageText += `\n\nDetalles del plan de marketing creado:\n`;
+          messageText += `• Título: ${plan.title}\n`;
+          messageText += `• Objetivo: ${plan.objective}\n`;
+          
+          if (plan.channels && plan.channels.length > 0) {
+            messageText += `• Canales: ${plan.channels.join(', ')}\n`;
+          }
+          
+          if (plan.timeline) {
+            messageText += `• Plazo: ${plan.timeline}\n`;
+          }
+          
+          if (plan.kpis && plan.kpis.length > 0) {
+            messageText += `• KPIs: ${plan.kpis.join(', ')}\n`;
+          }
+          
+          if (plan.tasks && plan.tasks.length > 0) {
+            messageText += `\nTareas creadas para este plan:\n`;
+            plan.tasks.forEach((task: string, index: number) => {
+              messageText += `${index + 1}. ${task}\n`;
+            });
+          }
+          
+          if (result.data.createdTasks && result.data.createdTasks.length > 0) {
+            messageText += `\n**Se han creado ${result.data.createdTasks.length} tareas en el sistema para implementar este plan.**`;
+          }
+        }
+      }
+      
       const assistantMessage: Message = {
-        text: result.message || "Recibí tu mensaje pero no pude procesarlo adecuadamente.",
+        text: messageText,
         isUser: false,
         timestamp: new Date()
       };
