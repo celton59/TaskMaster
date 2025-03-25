@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilos personalizados para el calendario */
+.with-task-indicator {
+  position: relative;
+}
+
+.with-task-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #3b82f6; /* blue-500 */
+}
+
 @layer base {
   * {
     @apply border-border;

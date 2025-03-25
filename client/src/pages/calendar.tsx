@@ -191,26 +191,11 @@ export default function CalendarPage() {
                   modifiersStyles={{
                     withTasks: {
                       // Estilo personalizado para días con tareas
-                      color: 'inherit',
-                      position: 'relative',
+                      fontWeight: "bold"
                     }
                   }}
-                  components={{
-                    Day: (props) => {
-                      const isWithTasks = daysWithTasks.has(format(props.date, 'yyyy-MM-dd'));
-                      return (
-                        <div
-                          className={`relative flex h-9 w-9 items-center justify-center rounded-md p-0 text-sm ${
-                            isWithTasks ? 'font-semibold' : ''
-                          }`}
-                        >
-                          {props.day}
-                          {isWithTasks && (
-                            <div className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                          )}
-                        </div>
-                      );
-                    },
+                  modifiersClassNames={{
+                    withTasks: "with-task-indicator"
                   }}
                   className="border-0"
                 />
