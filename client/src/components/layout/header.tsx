@@ -40,7 +40,7 @@ export function Header() {
             <Menu className="h-6 w-6" />
           </button>
           <div className="md:hidden ml-2 flex items-center">
-            <img src="/images/logo.png" alt="Aitorin Logo" className="h-8 w-auto" />
+            <span className="font-bold text-lg text-neutral-900">Aitorin</span>
           </div>
         </div>
         
