@@ -60,22 +60,104 @@ export class AgentOrchestrator {
       
       // 2. Si la confianza es baja, usar un enfoque colaborativo
       if (confidence < 0.7) {
-        return await this.collaborativeProcess(userInput);
+        const result = await this.collaborativeProcess(userInput);
+        
+        // Registrar en el historial
+        if (result.action) {
+          this.conversationHistory.push({
+            userInput,
+            agentType: 'collaborative',
+            action: result.action,
+            response: result.message,
+            timestamp: new Date()
+          });
+          
+          // Si la acción es relacionada con una tarea, guardar su ID
+          if (result.action === 'createTask' && result.data?.id) {
+            this.lastTaskId = result.data.id;
+          }
+        }
+        
+        return result;
       }
       
       // 3. Delegar al agente especializado
       const agent = this.agents.get(agentType);
       
       if (!agent) {
-        return {
+        const response = {
           message: "No he podido procesar tu solicitud. Por favor, intenta ser más específico.",
           agentUsed: "orchestrator"
         };
+        
+        this.conversationHistory.push({
+          userInput,
+          agentType: 'orchestrator',
+          response: response.message,
+          timestamp: new Date()
+        });
+        
+        return response;
       }
       
-      // Obtener contexto relevante para el agente
+      // 4. Si el usuario pregunta por una tarea o acción reciente, intentamos detectarlo
+      const recentTaskCheck = this.checkForRecentTaskReference(userInput);
+      if (recentTaskCheck.hasRecentReference && this.lastTaskId !== null) {
+        const agentType = recentTaskCheck.suggestedAgentType || 'planner';
+        const agent = this.agents.get(agentType);
+        
+        if (agent) {
+          // Añadir contexto específico sobre la última tarea
+          const lastTask = await storage.getTask(this.lastTaskId);
+          
+          if (lastTask) {
+            // Obtener contexto relevante para el agente con el contexto adicional
+            const context = await this.getContextForAgent(agentType);
+            // Añadir la última tarea explícitamente al contexto
+            context.lastTask = lastTask;
+            const result = await agent.process({ userInput, context });
+            
+            // Registrar en el historial
+            this.conversationHistory.push({
+              userInput,
+              agentType,
+              action: result.action,
+              response: result.response,
+              timestamp: new Date()
+            });
+            
+            return {
+              action: result.action,
+              message: result.response,
+              data: result.data,
+              agentUsed: agentType
+            };
+          }
+        }
+      }
+      
+      // 5. Procesamiento normal si no se detectó referencia a tarea reciente
+      // Obtener contexto relevante para el agente, incluyendo historial de conversación
       const context = await this.getContextForAgent(agentType);
       const result = await agent.process({ userInput, context });
+      
+      // 6. Registrar en el historial
+      this.conversationHistory.push({
+        userInput,
+        agentType,
+        action: result.action,
+        response: result.response,
+        timestamp: new Date()
+      });
+      
+      // Si la acción es relacionada con una tarea, guardar su ID
+      if (result.action === 'createTask' && result.data?.id) {
+        this.lastTaskId = result.data.id;
+      } else if (result.action === 'updateTask' && result.data?.id) {
+        this.lastTaskId = result.data.id;
+      } else if ((result.action === 'setDeadlines' || result.action === 'scheduleTasks') && result.data?.id) {
+        this.lastTaskId = result.data.id;
+      }
       
       return {
         action: result.action,
@@ -85,11 +167,79 @@ export class AgentOrchestrator {
       };
     } catch (error) {
       console.error("Error en el orquestador:", error);
-      return {
+      
+      const response = {
         message: "Ha ocurrido un error al procesar tu solicitud. Por favor, intenta de nuevo.",
         agentUsed: "orchestrator"
       };
+      
+      this.conversationHistory.push({
+        userInput,
+        agentType: 'error',
+        response: response.message,
+        timestamp: new Date()
+      });
+      
+      return response;
     }
+  }
+  
+  /**
+   * Verifica si el mensaje del usuario hace referencia a una tarea o acción reciente
+   */
+  private checkForRecentTaskReference(userInput: string): {
+    hasRecentReference: boolean;
+    suggestedAgentType?: string;
+  } {
+    // Patrones para detectar referencias a tareas recientes
+    const confirmationPatterns = [
+      /se ha (creado|actualizado|guardado|registrado|completado)/i,
+      /se la has puesto/i,
+      /ya (está|esta|lo has hecho|terminaste)/i,
+      /actualiz[a|ó|o]/i,
+      /lo has/i,
+      /pusiste/i
+    ];
+    
+    // Patrones para fechas
+    const datePatterns = [
+      /fecha/i,
+      /plazo/i,
+      /deadline/i,
+      /cuándo/i,
+      /cuando/i,
+      /para (cuándo|cuando)/i
+    ];
+    
+    // Verificar si hay patrones de confirmación
+    const hasConfirmationPattern = confirmationPatterns.some(pattern => 
+      pattern.test(userInput)
+    );
+    
+    // Verificar si hay patrones de fecha
+    const hasDatePattern = datePatterns.some(pattern => 
+      pattern.test(userInput)
+    );
+    
+    // Si hay patrones de fecha, sugerir el agente planificador
+    if (hasDatePattern) {
+      return {
+        hasRecentReference: true,
+        suggestedAgentType: 'planner'
+      };
+    }
+    
+    // Si hay patrones de confirmación pero no de fecha, probablemente es sobre estado general
+    if (hasConfirmationPattern) {
+      return {
+        hasRecentReference: true,
+        suggestedAgentType: 'task'
+      };
+    }
+    
+    return {
+      hasRecentReference: false
+    };
   }
   
   private async determineAgentType(userInput: string): Promise<{
@@ -151,16 +301,48 @@ Responde con un JSON que contenga:
     }
   }
   
-  private async getContextForAgent(agentType: string): Promise<any> {
-    // Obtener contexto relevante según el tipo de agente
+  private async getContextForAgent(agentType: string, lastTask?: any): Promise<any> {
+    // Preparar el historial de conversación reciente (últimas 5 interacciones)
+    const recentHistory = this.conversationHistory
+      .slice(-5)
+      .map(h => ({
+        userInput: h.userInput,
+        agentType: h.agentType,
+        action: h.action,
+        response: h.response,
+        timestamp: h.timestamp.toISOString()
+      }));
+    
+    // Contexto base común para todos los agentes
+    const baseContext = {
+      conversationHistory: recentHistory,
+      lastTaskId: this.lastTaskId
+    };
+    
+    // Si hay una tarea específica, añadirla al contexto
+    type ContextWithTask = typeof baseContext & { lastTask?: any };
+    let contextWithTask: ContextWithTask = baseContext;
+    
+    if (lastTask) {
+      contextWithTask = {
+        ...baseContext,
+        lastTask: lastTask
+      };
+    }
+    
+    // Obtener contexto específico según el tipo de agente
+    let specificContext = {};
+    
     switch (agentType) {
       case "task":
-        return {
+        specificContext = {
           recentTasks: await storage.getTasks(),
           categories: await storage.getCategories()
         };
+        break;
+        
       case "category":
-        return {
+        specificContext = {
           categories: await storage.getCategories(),
           tasksByCategory: await Promise.all(
             (await storage.getCategories()).map(async category => ({
@@ -169,22 +351,31 @@ Responde con un JSON que contenga:
             }))
           )
         };
+        break;
+        
       case "analytics":
-        return {
+        specificContext = {
           taskStats: await storage.getTaskStats(),
           categories: await storage.getCategories(),
           recentTasks: await storage.getTasks()
         };
+        break;
+        
       case "planner":
-        return {
+        specificContext = {
           tasks: await storage.getTasks(),
           upcomingDeadlines: (await storage.getTasks())
             .filter(task => task.deadline && new Date(task.deadline) > new Date())
             .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime())
         };
-      default:
-        return {};
+        break;
     }
+    
+    // Combinar el contexto con tarea con el específico
+    return {
+      ...contextWithTask,
+      ...specificContext
+    };
   }
   
   private async collaborativeProcess(userInput: string): Promise<{
