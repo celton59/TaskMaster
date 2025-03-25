@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { getQueryFn, queryClient } from '@/lib/queryClient';
+import { getQueryFn } from '@/lib/queryClient';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfDay, endOfDay, isWithinInterval, parseISO, addDays, subDays } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -31,9 +30,6 @@ interface Category {
   color: string;
   userId?: number | null;
 }
-
-// Las interfaces para los componentes del calendario se importan automáticamente 
-// desde la biblioteca react-day-picker
 
 // Componente principal de Calendario
 export default function CalendarPage() {
@@ -112,107 +108,17 @@ export default function CalendarPage() {
     }
   };
 
-  // Función para obtener color de categoría
-  const getCategoryColor = (categoryId: number | null) => {
-    if (!categoryId) return 'gray';
-    
-    const category = categories.find((cat: Category) => cat.id === categoryId);
-    return category ? category.color : 'gray';
-  };
-
   // Función para abrir el formulario de tarea
   const openTaskForm = (taskId?: number) => {
     setSelectedTaskId(taskId);
     setIsTaskFormOpen(true);
   };
 
-  // Renderizado de la interfaz
-  return (
-    <div className="container py-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Calendario de Tareas</h1>
-      </div>
-
-      <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-semibold text-gray-800">
-            {format(date, view === 'day' ? 'EEEE, d MMMM yyyy' : view === 'week' ? "'Semana del' d 'de' MMMM" : 'MMMM yyyy', { locale: es })}
-          </h2>
-          
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setDate(new Date())}
-              className="text-xs h-8 px-3 border-primary-200 text-primary-700 hover:bg-primary-50"
-            >
-              Hoy
-            </Button>
-            <div className="flex border rounded-md overflow-hidden">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => navigateDate('previous')}
-                className="h-8 w-8 rounded-none border-r hover:bg-gray-50"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => navigateDate('next')}
-                className="h-8 w-8 rounded-none hover:bg-gray-50"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex justify-between items-center mb-2">
-          <div className="grid grid-cols-3 gap-1 p-1 bg-white border rounded-lg">
-            <Button 
-              variant={view === 'month' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setView('month')}
-              className="h-8 rounded-md px-4 text-sm"
-            >
-              Mes
-            </Button>
-            <Button 
-              variant={view === 'week' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setView('week')}
-              className="h-8 rounded-md px-4 text-sm"
-            >
-              Semana
-            </Button>
-            <Button 
-              variant={view === 'day' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setView('day')}
-              className="h-8 rounded-md px-4 text-sm"
-            >
-              Día
-            </Button>
-          </div>
-          
-          <div className="flex items-center">
-            <Button
-              onClick={() => openTaskForm()}
-              size="sm"
-              className="h-8 gap-1 text-xs bg-primary-600 hover:bg-primary-700"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Nueva tarea
-            </Button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Vista de mes */}
-      {view === 'month' && (
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-6 mb-8">
+  // Renderizado del contenido según la vista seleccionada
+  const renderContent = () => {
+    if (view === 'month') {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-7 gap-6">
           <Card className="md:col-span-5">
             <CardContent className="p-4">
               <CalendarComponent
@@ -225,7 +131,6 @@ export default function CalendarPage() {
                 }}
                 modifiersStyles={{
                   withTasks: {
-                    // Estilo personalizado para días con tareas
                     fontWeight: "bold"
                   }
                 }}
@@ -328,11 +233,10 @@ export default function CalendarPage() {
             </CardContent>
           </Card>
         </div>
-      )}
-
-      {/* Vista de semana */}
-      {view === 'week' && (
-        <Card className="mb-8">
+      );
+    } else if (view === 'week') {
+      return (
+        <Card>
           <CardContent className="p-4">
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Vista Semanal - En desarrollo</h3>
@@ -349,11 +253,10 @@ export default function CalendarPage() {
             </div>
           </CardContent>
         </Card>
-      )}
-
-      {/* Vista de día */}
-      {view === 'day' && (
-        <Card className="mb-8">
+      );
+    } else {
+      return (
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="h-5 w-5 text-blue-600" />
@@ -438,7 +341,97 @@ export default function CalendarPage() {
             )}
           </CardContent>
         </Card>
-      )}
+      );
+    }
+  };
+
+  // Renderizado de la interfaz
+  return (
+    <div className="container py-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">Calendario de Tareas</h1>
+      </div>
+
+      <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            {format(date, view === 'day' ? 'EEEE, d MMMM yyyy' : view === 'week' ? "'Semana del' d 'de' MMMM" : 'MMMM yyyy', { locale: es })}
+          </h2>
+          
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setDate(new Date())}
+              className="text-xs h-8 px-3 border-primary-200 text-primary-700 hover:bg-primary-50"
+            >
+              Hoy
+            </Button>
+            <div className="flex border rounded-md overflow-hidden">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => navigateDate('previous')}
+                className="h-8 w-8 rounded-none border-r hover:bg-gray-50"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => navigateDate('next')}
+                className="h-8 w-8 rounded-none hover:bg-gray-50"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex justify-between items-center mb-2">
+          <div className="grid grid-cols-3 gap-1 p-1 bg-white border rounded-lg">
+            <Button 
+              variant={view === 'month' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setView('month')}
+              className="h-8 rounded-md px-4 text-sm"
+            >
+              Mes
+            </Button>
+            <Button 
+              variant={view === 'week' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setView('week')}
+              className="h-8 rounded-md px-4 text-sm"
+            >
+              Semana
+            </Button>
+            <Button 
+              variant={view === 'day' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setView('day')}
+              className="h-8 rounded-md px-4 text-sm"
+            >
+              Día
+            </Button>
+          </div>
+          
+          <div className="flex items-center">
+            <Button
+              onClick={() => openTaskForm()}
+              size="sm"
+              className="h-8 gap-1 text-xs bg-primary-600 hover:bg-primary-700"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Nueva tarea
+            </Button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="mb-8">
+        {renderContent()}
+      </div>
 
       {/* Formulario de tarea */}
       <TaskForm
