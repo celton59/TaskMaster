@@ -17,7 +17,7 @@ export default function AIAssistant() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "¡Hola! Soy tu asistente AI para gestión de tareas. Puedo hacer lo siguiente:\n\n• Crear nuevas tareas\n• Listar tareas existentes\n• Crear y listar categorías\n• Responder preguntas sobre gestión de tareas\n\nCuéntame, ¿en qué puedo ayudarte hoy?",
+      text: "¡Hola! Soy tu asistente AI con sistema orquestado multi-agente para gestión de tareas. Tengo varios agentes especializados trabajando juntos:\n\n• Agente de Tareas: experto en crear y gestionar tareas\n• Agente de Categorías: especializado en organización por categorías\n• Agente de Análisis: para estadísticas e informes detallados\n• Agente de Planificación: para programación y fechas límite\n\nSimplemente dime lo que necesitas, y el agente más adecuado se encargará. ¿En qué puedo ayudarte hoy?",
       isUser: false,
       timestamp: new Date()
     }
@@ -52,8 +52,8 @@ export default function AIAssistant() {
     setIsLoading(true);
     
     try {
-      // Enviar el mensaje a la API del agente
-      const response = await fetch('/api/ai/agent', {
+      // Enviar el mensaje al sistema orquestado de agentes
+      const response = await fetch('/api/ai/orchestrator', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,11 +142,11 @@ export default function AIAssistant() {
         <Card className="bg-white shadow-lg border-0">
           <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
             <CardTitle className="flex items-center text-2xl">
-              <MessagesSquare className="mr-2" size={24} />
-              Asistente para Tareas
+              <Bot className="mr-2" size={24} />
+              Sistema Multi-Agente Orquestado
             </CardTitle>
             <CardDescription className="text-blue-100">
-              Conversación natural para crear nuevas tareas
+              Inteligencia artificial avanzada para gestión completa de tareas
             </CardDescription>
           </CardHeader>
           
@@ -155,12 +155,12 @@ export default function AIAssistant() {
               {messages.length === 1 && messages[0].isUser === false && (
                 <div className="h-full flex flex-col items-center justify-center text-center p-4">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <MessagesSquare className="h-8 w-8 text-blue-600" />
+                    <Bot className="h-8 w-8 text-blue-600" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Asistente de tareas IA</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Sistema Multi-Agente IA</h3>
                   <p className="text-gray-500 max-w-md">
-                    Describe tu tarea de forma natural y el asistente la creará para ti.
-                    Ejemplo: "Necesito preparar una presentación para el cliente ABC el próximo jueves"
+                    El sistema inteligente orquestará automáticamente múltiples agentes especializados según tu necesidad.
+                    Ejemplo: "Analiza mis tareas pendientes y priorízalas según fechas límite"
                   </p>
                 </div>
               )}
@@ -206,7 +206,7 @@ export default function AIAssistant() {
           <CardFooter className="p-4 bg-white border-t">
             <form onSubmit={handleSubmit} className="flex w-full gap-2">
               <Textarea
-                placeholder="Describe tu tarea aquí..."
+                placeholder="Escribe tu solicitud para el sistema multi-agente..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 className="min-h-[60px]"
