@@ -203,15 +203,15 @@ export default function CalendarPage() {
                           priorityLabel = "Baja";
                         }
                         
-                        // Determinar colores según estado
+                        // Determinar colores según estado (soportando inglés y español)
                         let statusColor = "";
-                        if (task.status === 'pendiente') {
+                        if (task.status === 'pendiente' || task.status === 'pending') {
                           statusColor = "bg-neutral-100 text-neutral-600";
-                        } else if (task.status === 'en_progreso') {
+                        } else if (task.status === 'en_progreso' || task.status === 'in-progress') {
                           statusColor = "bg-blue-100 text-blue-700";
-                        } else if (task.status === 'revision') {
+                        } else if (task.status === 'revision' || task.status === 'review') {
                           statusColor = "bg-purple-100 text-purple-700";
-                        } else if (task.status === 'completada') {
+                        } else if (task.status === 'completada' || task.status === 'completed') {
                           statusColor = "bg-green-100 text-green-700";
                         }
                         
@@ -348,13 +348,13 @@ export default function CalendarPage() {
                     }
                     
                     let statusColor = "";
-                    if (task.status === 'pendiente') {
+                    if (task.status === 'pendiente' || task.status === 'pending') {
                       statusColor = "bg-neutral-100 text-neutral-600";
-                    } else if (task.status === 'en_progreso') {
+                    } else if (task.status === 'en_progreso' || task.status === 'in-progress') {
                       statusColor = "bg-blue-100 text-blue-700";
-                    } else if (task.status === 'revision') {
+                    } else if (task.status === 'revision' || task.status === 'review') {
                       statusColor = "bg-purple-100 text-purple-700";
-                    } else if (task.status === 'completada') {
+                    } else if (task.status === 'completada' || task.status === 'completed') {
                       statusColor = "bg-green-100 text-green-700";
                     }
                     

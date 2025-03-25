@@ -59,8 +59,29 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     });
   };
   
-  // Get tasks by status
+  // Get tasks by status - supporting both English and Spanish status values
   const getTasksByStatus = (status: string) => {
+    if (status === "pending") {
+      // Match both "pending" and "pendiente"
+      return filteredTasks.filter(task => 
+        task.status === "pending" || task.status === "pendiente"
+      );
+    } else if (status === "in-progress") {
+      // Match both "in-progress" and "en_progreso"
+      return filteredTasks.filter(task => 
+        task.status === "in-progress" || task.status === "en_progreso"
+      );
+    } else if (status === "review") {
+      // Match both "review" and "revision"
+      return filteredTasks.filter(task => 
+        task.status === "review" || task.status === "revision"
+      );
+    } else if (status === "completed") {
+      // Match both "completed" and "completada"
+      return filteredTasks.filter(task => 
+        task.status === "completed" || task.status === "completada"
+      );
+    }
     return filteredTasks.filter(task => task.status === status);
   };
   
