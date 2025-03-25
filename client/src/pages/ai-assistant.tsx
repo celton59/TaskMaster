@@ -34,7 +34,14 @@ function loadSavedChats(): ChatSession[] {
         }
         return value;
       });
-      return parsedChats;
+      
+      // Verificar que los datos tengan la estructura correcta
+      const validChats = parsedChats.filter((chat: any) => 
+        chat && chat.id && Array.isArray(chat.messages) && chat.createdAt && chat.title
+      );
+      
+      console.log('Chats cargados:', validChats.length);
+      return validChats;
     } catch (e) {
       console.error('Error al cargar los chats guardados:', e);
       return [];
@@ -123,8 +130,16 @@ export default function AIAssistant() {
   const loadChat = (chatId: string) => {
     const chat = savedChats.find(c => c.id === chatId);
     if (chat) {
+      // Asegurarnos de que los timestamp sean objetos Date
+      const processedMessages = chat.messages.map(msg => ({
+        ...msg,
+        timestamp: msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp)
+      }));
+      
+      console.log('Cargando chat:', chat.id, 'con', processedMessages.length, 'mensajes');
+      
       setCurrentChatId(chat.id);
-      setMessages(chat.messages);
+      setMessages(processedMessages);
       setShowHistoryDialog(false);
       
       toast({
@@ -132,6 +147,8 @@ export default function AIAssistant() {
         description: "La conversación ha sido restaurada",
         variant: "default"
       });
+    } else {
+      console.error('No se encontró el chat con ID:', chatId);
     }
   };
   
