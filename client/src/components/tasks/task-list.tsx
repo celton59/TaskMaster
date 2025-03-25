@@ -121,7 +121,9 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
   };
 
   // Función para mapear estados internos a etiquetas en español
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: string | null) => {
+    if (!status) return 'Sin estado';
+    
     switch (status) {
       case 'pending': return 'Pendiente';
       case 'in_progress': return 'En progreso';
@@ -132,7 +134,9 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
   };
 
   // Función para mapear prioridades internas a etiquetas en español
-  const getPriorityLabel = (priority: string) => {
+  const getPriorityLabel = (priority: string | null) => {
+    if (!priority) return 'Sin prioridad';
+    
     switch (priority) {
       case 'high': return 'Alta';
       case 'medium': return 'Media';
@@ -142,7 +146,9 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
   };
 
   // Estilos para cada estado
-  const getStatusStyle = (status: string) => {
+  const getStatusStyle = (status: string | null) => {
+    if (!status) return 'bg-neutral-100 text-neutral-800 border-neutral-300';
+    
     switch (status) {
       case 'pending': return 'bg-rose-100 text-rose-800 border-rose-300';
       case 'in_progress': return 'bg-amber-100 text-amber-800 border-amber-300';
