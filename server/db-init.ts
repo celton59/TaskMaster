@@ -28,7 +28,7 @@ async function main() {
     } catch (error) {
       console.log("Las tablas no existen. Creando tablas...");
       
-      // Crear las tablas usando los esquemas de drizzle
+      // Crear las tablas usando los esquemas de drizzle una por una
       await db.execute(`
         CREATE TABLE IF NOT EXISTS users (
           id SERIAL PRIMARY KEY,
@@ -38,13 +38,17 @@ async function main() {
           name TEXT,
           avatar TEXT
         );
-        
+      `);
+      
+      await db.execute(`
         CREATE TABLE IF NOT EXISTS categories (
           id SERIAL PRIMARY KEY,
           name TEXT NOT NULL,
           color TEXT NOT NULL
         );
-        
+      `);
+      
+      await db.execute(`
         CREATE TABLE IF NOT EXISTS tasks (
           id SERIAL PRIMARY KEY,
           title TEXT NOT NULL,
