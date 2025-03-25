@@ -239,6 +239,14 @@ export default function AIAssistant() {
                 onChange={(e) => setInput(e.target.value)}
                 className="min-h-[60px]"
                 disabled={isLoading}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (input.trim() && !isLoading) {
+                      handleSubmit(e);
+                    }
+                  }
+                }}
               />
               <Button 
                 type="submit" 
