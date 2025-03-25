@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertTaskSchema, insertCategorySchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { createTaskFromText } from "./openai-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
@@ -187,6 +188,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(tasks);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch tasks by status" });
+    }
+  });
+  
+  // ChatGPT integration - Create task from text
+  apiRouter.post("/ai/create-task", async (req, res) => {
+    try {
+      const { text } = req.body;
+      
+      if (!text || typeof text !== 'string') {
+        return res.status(400).json({ message: "Texto requerido para crear la tarea" });
+      }
+      
+      const result = await createTaskFromText(text);
+      
+      if (!result.success) {
+        return res.status(400).json({ message: result.message });
+      }
+      
+      res.status(201).json({ 
+        message: result.message,
+        task: result.task 
+      });
+    } catch (error) {
+      console.error("Error en ChatGPT:", error);
+      res.status(500).json({ message: "Error al procesar la solicitud con ChatGPT" });
     }
   });
   
