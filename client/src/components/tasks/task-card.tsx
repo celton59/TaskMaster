@@ -1,10 +1,10 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MoreHorizontal } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Calendar, MoreHorizontal, Clock, ArrowUpRight, CheckCircle2, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { AvatarGroup } from "@/components/ui/avatar-group";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -44,15 +44,31 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
     return category;
   };
   
-  // Get category color class
-  const getCategoryColorClass = (color: string) => {
-    switch (color) {
-      case "blue": return "bg-primary-100 text-primary-800";
-      case "purple": return "bg-secondary-100 text-secondary-800";
-      case "orange": return "bg-accent-100 text-accent-800";
-      case "green": return "bg-success-100 text-success-800";
-      case "red": return "bg-error-100 text-error-800";
-      default: return "bg-gray-100 text-gray-800";
+  // Get priority badge
+  const getPriorityBadge = (priority: string | null) => {
+    switch (priority) {
+      case "high":
+        return <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-rose-200 font-normal text-xs">Alta</Badge>;
+      case "medium":
+        return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-amber-200 font-normal text-xs">Media</Badge>;
+      case "low":
+        return <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200 font-normal text-xs">Baja</Badge>;
+      default:
+        return <Badge className="bg-neutral-100 text-neutral-700 hover:bg-neutral-100 border-neutral-200 font-normal text-xs">Normal</Badge>;
+    }
+  };
+  
+  // Get status icon
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "completed":
+        return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
+      case "pending":
+        return <Clock className="h-4 w-4 text-amber-500" />;
+      case "review":
+        return <AlertCircle className="h-4 w-4 text-purple-500" />;
+      default:
+        return <ArrowUpRight className="h-4 w-4 text-blue-500" />;
     }
   };
   
@@ -96,51 +112,91 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
   return (
     <motion.div
       ref={dragRef}
-      className={`task-card bg-white p-4 rounded-lg shadow-sm border border-neutral-200 cursor-grab ${isDragging ? 'dragging' : ''}`}
+      className={`task-card bg-white p-3 rounded-lg shadow-sm border border-neutral-200 cursor-grab group ${isDragging ? 'opacity-50 scale-95' : ''}`}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ y: -2, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)" }}
+      transition={{ duration: 0.2 }}
+      whileHover={{ 
+        y: -2, 
+        boxShadow: "0 4px 12px -2px rgba(0, 0, 0, 0.08)", 
+        borderColor: "rgba(59, 130, 246, 0.3)" 
+      }}
       data-task-id={task.id}
     >
-      <div className="flex justify-between items-start">
-        <Badge className={getCategoryColorClass(category.color)}>
-          {category.name}
-        </Badge>
+      <div className="flex justify-between items-start mb-2">
+        <div className="flex space-x-1.5">
+          <div className="flex items-center mt-0.5">
+            {getStatusIcon(task.status)}
+          </div>
+          <Badge 
+            variant="outline" 
+            className="border-transparent hover:border-transparent bg-neutral-100/80 text-neutral-800 hover:bg-neutral-100 font-normal text-xs"
+          >
+            {category.name}
+          </Badge>
+        </div>
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="text-neutral-400 hover:text-neutral-700">
+            <button className="text-neutral-400 hover:text-neutral-700 opacity-0 group-hover:opacity-100 transition-opacity">
               <MoreHorizontal size={16} />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel className="text-xs font-medium">Acciones de tarea</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={editTask}>Editar</DropdownMenuItem>
-            <DropdownMenuItem onClick={deleteTask} className="text-red-600">Eliminar</DropdownMenuItem>
+            <DropdownMenuItem onClick={editTask} className="text-xs">
+              Editar tarea
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {}} className="text-xs">
+              Cambiar estado
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {}} className="text-xs">
+              Asignar usuario
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={deleteTask} className="text-xs text-red-600">
+              Eliminar tarea
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
       
-      <h4 className="font-medium text-neutral-900 mt-2">{task.title}</h4>
-      <p className="text-sm text-neutral-600 mt-1 line-clamp-2">{task.description}</p>
+      <h4 className="font-medium text-sm text-neutral-900 line-clamp-1">{task.title}</h4>
       
-      <div className="mt-3 flex items-center justify-between">
+      {task.description && (
+        <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{task.description}</p>
+      )}
+      
+      <div className="mt-3 pt-2 border-t border-neutral-100 flex items-center justify-between">
         <div className="flex items-center text-xs text-neutral-500">
-          <Calendar className="mr-1" size={12} />
-          {task.deadline ? formatDate(task.deadline) : "Sin fecha"}
+          {task.deadline ? (
+            <>
+              <Calendar className="mr-1" size={12} />
+              {formatDate(task.deadline)}
+            </>
+          ) : (
+            <>
+              <Clock className="mr-1" size={12} />
+              <span className="text-xs">Sin plazo</span>
+            </>
+          )}
         </div>
         
-        <AvatarGroup
-          avatars={[
-            { fallback: "U1", alt: "User 1" },
-            ...(task.priority === "high" ? [{ fallback: "U2", alt: "User 2" }] : []),
-            ...(task.status === "review" ? [{ fallback: "U3", alt: "User 3" }] : [])
-          ]}
-        />
+        <div className="flex items-center space-x-2">
+          {getPriorityBadge(task.priority)}
+          
+          {task.assignedTo && (
+            <Avatar className="h-6 w-6">
+              <AvatarFallback className="text-[10px] bg-primary-100 text-primary-700">
+                {task.assignedTo === 1 ? 'AD' : 'US'}
+              </AvatarFallback>
+            </Avatar>
+          )}
+        </div>
       </div>
     </motion.div>
   );

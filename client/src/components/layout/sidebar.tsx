@@ -347,40 +347,38 @@ function NavLink({ href, icon, label, isSubmenu = false }: NavLinkProps) {
   // For main menu items
   if (!isSubmenu) {
     return (
-      <Link href={href}>
-        <a 
-          className={cn(
-            "flex items-center px-3 py-2.5 text-sm font-medium rounded-md",
-            isActive 
-              ? "bg-primary-50 text-primary-700" 
-              : "text-neutral-800 hover:bg-neutral-50 hover:text-primary-700"
-          )}
-        >
-          <div className={`${isActive ? 'text-primary-600' : 'text-neutral-500'} mr-3`}>
-            {icon}
-          </div>
-          {label}
-        </a>
-      </Link>
+      <div 
+        className={cn(
+          "flex items-center px-3 py-2.5 text-sm font-medium rounded-md cursor-pointer",
+          isActive 
+            ? "bg-primary-50 text-primary-700" 
+            : "text-neutral-800 hover:bg-neutral-50 hover:text-primary-700"
+        )}
+        onClick={() => window.location.href = href}
+      >
+        <div className={`${isActive ? 'text-primary-600' : 'text-neutral-500'} mr-3`}>
+          {icon}
+        </div>
+        {label}
+      </div>
     );
   }
   
   // For submenu items
   return (
-    <Link href={href}>
-      <a 
-        className={cn(
-          "flex items-center px-2 py-2 text-xs font-medium rounded-md",
-          isActive 
-            ? "text-primary-700 bg-primary-50" 
-            : "text-neutral-700 hover:bg-neutral-50 hover:text-primary-700"
-        )}
-      >
-        <div className={`${isActive ? 'text-primary-600' : 'text-neutral-500'} mr-2`}>
-          {icon}
-        </div>
-        {label}
-      </a>
-    </Link>
+    <div 
+      className={cn(
+        "flex items-center px-2 py-2 text-xs font-medium rounded-md cursor-pointer",
+        isActive 
+          ? "text-primary-700 bg-primary-50" 
+          : "text-neutral-700 hover:bg-neutral-50 hover:text-primary-700"
+      )}
+      onClick={() => window.location.href = href}
+    >
+      <div className={`${isActive ? 'text-primary-600' : 'text-neutral-500'} mr-2`}>
+        {icon}
+      </div>
+      {label}
+    </div>
   );
 }
