@@ -33,7 +33,7 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
   // Task update mutation
   const updateTaskMutation = useMutation({
     mutationFn: async (data: { taskId: number, updates: Partial<Task> }) => {
-      await apiRequest("PATCH", `/api/tasks/${data.taskId}`, data.updates);
+      await apiRequest(`/api/tasks/${data.taskId}`, "PATCH", data.updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
