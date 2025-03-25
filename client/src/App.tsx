@@ -20,6 +20,7 @@ function Router() {
         <main className="flex-1 overflow-auto bg-neutral-50 scrollbar-hide">
           <Switch>
             <Route path="/" component={Dashboard} />
+            <Route path="/dashboard" component={Dashboard} />
             <Route path="/tasks" component={Tasks} />
             <Route path="/tasks/:id" component={TaskDetails} />
             <Route component={NotFound} />

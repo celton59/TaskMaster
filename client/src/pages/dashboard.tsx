@@ -19,7 +19,8 @@ import {
   CalendarDays,
   Users,
   Mail,
-  ArrowUpRight
+  ArrowUpRight,
+  LayoutDashboard
 } from "lucide-react";
 import type { Task, Category } from "@shared/schema";
 
@@ -85,32 +86,40 @@ export default function Dashboard() {
   
   return (
     <div className="py-8 px-6 space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900">Panel de Control</h1>
-          <p className="mt-1 text-sm text-neutral-500">Bienvenido de nuevo, <span className="text-neutral-800 font-medium">Admin Demo</span></p>
-        </div>
-        <div className="mt-4 md:mt-0 flex items-center gap-3">
-          <Button 
-            variant="outline"
-            size="sm" 
-            className="h-9 border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900"
-          >
-            <Mail className="mr-2 h-4 w-4 text-neutral-500" />
-            Reportes
-          </Button>
-          <Button 
-            onClick={() => setIsTaskFormOpen(true)}
-            size="sm" 
-            className="h-9 shadow-sm bg-primary-600 hover:bg-primary-700"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Nueva tarea
-          </Button>
+      <div className="bg-white rounded-lg p-5 mb-6 shadow-sm border border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center">
+              <span className="bg-primary-50 text-primary-600 p-1.5 rounded-md mr-3">
+                <LayoutDashboard className="h-5 w-5" />
+              </span>
+              Panel de Control
+            </h1>
+            <p className="mt-2 text-sm text-neutral-500 pl-[46px]">
+              Bienvenido de nuevo, <span className="text-primary-700 font-medium">Admin Demo</span> - 
+              <span className="text-neutral-400"> {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long'})}</span>
+            </p>
+          </div>
+          <div className="mt-4 md:mt-0 flex items-center gap-3">
+            <Button 
+              variant="outline"
+              size="sm" 
+              className="h-9 border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-all"
+            >
+              <Mail className="mr-2 h-4 w-4 text-neutral-500" />
+              Reportes
+            </Button>
+            <Button 
+              onClick={() => setIsTaskFormOpen(true)}
+              size="sm" 
+              className="h-9 shadow-md bg-primary-600 hover:bg-primary-700 rounded-md transition-all"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nueva tarea
+            </Button>
+          </div>
         </div>
       </div>
-      
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent mb-2"></div>
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -161,33 +170,51 @@ export default function Dashboard() {
 
       {/* Overview Tabs */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-6">
-        <Card className="md:col-span-4">
-          <CardHeader className="pb-3">
+        <Card className="md:col-span-4 border-neutral-100 shadow-md overflow-hidden">
+          <CardHeader className="pb-3 border-b border-neutral-100 bg-neutral-50/50">
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg font-medium">Resumen de actividad</CardTitle>
+              <div className="space-y-0.5">
+                <CardTitle className="text-base font-medium text-neutral-800">Resumen de actividad</CardTitle>
                 <CardDescription>Actividad de tareas en la última semana</CardDescription>
               </div>
-              <Tabs defaultValue="semana" className="w-[200px]">
-                <TabsList className="grid w-full grid-cols-3 h-8">
+              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+                <BarChart4 className="h-5 w-5" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-5">
+            <Tabs defaultValue="semana" className="w-full mb-2">
+              <div className="flex justify-end mb-3">
+                <TabsList className="grid w-[200px] grid-cols-3 h-8">
                   <TabsTrigger value="dia">Día</TabsTrigger>
                   <TabsTrigger value="semana">Semana</TabsTrigger>
                   <TabsTrigger value="mes">Mes</TabsTrigger>
                 </TabsList>
-              </Tabs>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <TaskChart data={chartData} />
+              </div>
+              <TabsContent value="dia" className="m-0">
+                <TaskChart data={chartData.slice(0, 1)} />
+              </TabsContent>
+              <TabsContent value="semana" className="m-0">
+                <TaskChart data={chartData} />
+              </TabsContent>
+              <TabsContent value="mes" className="m-0">
+                <TaskChart data={chartData} />
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
         
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-lg font-medium">Tareas recientes</CardTitle>
-            <CardDescription>Últimas tareas agregadas al sistema</CardDescription>
+        <Card className="md:col-span-2 border-neutral-100 shadow-md overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neutral-100 bg-neutral-50/50">
+            <div className="space-y-0.5">
+              <CardTitle className="text-base font-medium text-neutral-800">Tareas recientes</CardTitle>
+              <CardDescription>Últimas adiciones</CardDescription>
+            </div>
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+              <Clock className="h-5 w-5" />
+            </div>
           </CardHeader>
-          <CardContent className="px-0">
+          <CardContent className="px-0 py-0">
             <RecentTasksList 
               tasks={recentTasks} 
               onViewAll={() => navigate("/tasks")} 
@@ -324,23 +351,28 @@ export default function Dashboard() {
       </div>
 
       {/* Task Board */}
-      <Card className="border-neutral-100 shadow-md">
-        <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-neutral-100">
+      <Card className="border-neutral-100 shadow-md overflow-hidden">
+        <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neutral-100 bg-neutral-50/50">
           <div className="space-y-0.5">
-            <CardTitle className="text-lg font-semibold text-neutral-900">Tablero de tareas</CardTitle>
-            <CardDescription>Gestión visual de tareas por estado</CardDescription>
+            <CardTitle className="text-base font-medium text-neutral-800">Tablero de tareas</CardTitle>
+            <CardDescription>Gestión visual por estado</CardDescription>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => navigate("/tasks")}
-            className="h-9 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900"
-          >
-            Ver completo
-            <ArrowUpRight className="ml-2 h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+              <LayoutDashboard className="h-5 w-5" />
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => navigate("/tasks")}
+              className="h-8 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 text-neutral-700 rounded-md"
+            >
+              Ver completo
+              <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-5">
           <TaskBoard 
             tasks={tasks} 
             categories={categories}
