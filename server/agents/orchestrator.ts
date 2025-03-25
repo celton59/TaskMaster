@@ -86,41 +86,54 @@ export class AgentOrchestrator {
     agentType: string;
     confidence: number;
   }> {
-    // Usar LLM para determinar qué agente debe manejar la solicitud
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // Usando el modelo más reciente
-      messages: [
-        {
-          role: "system",
-          content: `Determina qué tipo de agente especializado debe manejar la siguiente solicitud.
-          Opciones disponibles:
-          - task: Para crear, actualizar, eliminar o consultar tareas específicas
-          - category: Para gestionar categorías, asignar tareas a categorías
-          - analytics: Para analizar datos, generar informes, estadísticas
-          - planner: Para planificación, programación, fechas límite, recordatorios
-          
-          Responde con un JSON que contenga:
-          1. "agentType": El tipo de agente que debe manejar la solicitud
-          2. "confidence": Valor entre 0 y 1 que indica la confianza en esta decisión
-          3. "reasoning": Breve explicación del porqué`
-        },
-        {
-          role: "user",
-          content: userInput
-        }
-      ],
-      response_format: { type: "json_object" }
-    });
-    
-    const content = response.choices[0]?.message?.content || "";
     try {
-      const result = JSON.parse(content);
-      return {
-        agentType: result.agentType,
-        confidence: result.confidence
-      };
-    } catch (e) {
-      // Si hay un error al parsear, usar el agente de tareas por defecto
+      // Usar LLM para determinar qué agente debe manejar la solicitud
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o", // Usando el modelo más reciente
+        messages: [
+          {
+            role: "system",
+            content: `Determina qué tipo de agente especializado debe manejar la siguiente solicitud.
+
+Opciones disponibles:
+- task: Para crear, actualizar, eliminar o consultar tareas específicas. Si la solicitud menciona crear una tarea, actualizar una tarea existente, buscar tareas, o cualquier operación específica relacionada con tareas.
+- category: Para gestionar categorías, crear nuevas categorías, asignar tareas a categorías, listar categorías existentes, etc.
+- analytics: Para analizar datos, generar informes, estadísticas, ver métricas de tareas completadas, pendientes, etc.
+- planner: Para planificación, programación, fechas límite, recordatorios, organización temporal.
+
+IMPORTANTE: Si la solicitud no es clara o no se ajusta a ninguna categoría específica, asigna a "task".
+
+Responde con un JSON que contenga:
+1. "agentType": El tipo de agente que debe manejar la solicitud (task, category, analytics, planner)
+2. "confidence": Valor entre 0 y 1 que indica la confianza en esta decisión
+3. "reasoning": Breve explicación del porqué`
+          },
+          {
+            role: "user",
+            content: userInput
+          }
+        ],
+        response_format: { type: "json_object" }
+      });
+      
+      const content = response.choices[0]?.message?.content || "";
+      try {
+        const result = JSON.parse(content);
+        console.log("Determinación de agente:", result);
+        return {
+          agentType: result.agentType,
+          confidence: result.confidence
+        };
+      } catch (e) {
+        console.error("Error al parsear respuesta de determinación de agente:", e);
+        // Si hay un error al parsear, usar el agente de tareas por defecto
+        return {
+          agentType: "task",
+          confidence: 0.5
+        };
+      }
+    } catch (error) {
+      console.error("Error en determineAgentType:", error);
       return {
         agentType: "task",
         confidence: 0.5
@@ -229,7 +242,8 @@ abstract class SpecializedAgent {
           role: "user",
           content: `${contextString}\n\nSolicitud del usuario: ${userInput}`
         }
-      ]
+      ],
+      response_format: { type: "json_object" } // Asegurar respuesta en formato JSON
     });
     
     return response.choices[0]?.message?.content || "";
@@ -239,32 +253,38 @@ abstract class SpecializedAgent {
 // Implementación del Agente de Tareas
 class TaskAgent extends SpecializedAgent {
   private systemPrompt = `Eres un agente especializado en la gestión de tareas. 
-  Puedes crear nuevas tareas, actualizar tareas existentes, eliminar tareas o proporcionar información sobre tareas.
-  
-  Debes responder en formato JSON con la siguiente estructura:
-  {
-    "action": "createTask | updateTask | deleteTask | listTasks",
-    "parameters": { (parámetros específicos para la acción) },
-    "response": "Mensaje para el usuario",
-    "confidence": (valor entre 0 y 1),
-    "reasoning": "Tu razonamiento interno"
-  }
-  
-  Para createTask, los parámetros deben incluir:
-    - title: título de la tarea
-    - description: descripción detallada
-    - priority: 'high', 'medium', o 'low'
-    - categoryId: ID de la categoría (opcional)
-    - deadline: fecha límite (opcional)
-  
-  Para updateTask:
-    - taskId: ID de la tarea a actualizar
-    - updates: objeto con los campos a actualizar
-  
-  Para deleteTask:
-    - taskId: ID de la tarea a eliminar
-  
-  Para listTasks, puedes incluir filtros opcionales.`;
+Tu objetivo es crear nuevas tareas, actualizar tareas existentes, eliminar tareas o proporcionar información sobre tareas.
+
+IMPORTANTE: Si el usuario describe algo que suena como una tarea (por ejemplo, "tengo que hacer contabilidad", "necesito preparar una presentación", etc.), SIEMPRE debes interpretar esto como una solicitud para CREAR una nueva tarea, incluso si no lo pide explícitamente.
+
+Debes responder en formato JSON con la siguiente estructura:
+{
+  "action": "createTask | updateTask | deleteTask | listTasks | respond",
+  "parameters": { (parámetros específicos para la acción) },
+  "response": "Mensaje para el usuario",
+  "confidence": (valor entre 0 y 1),
+  "reasoning": "Tu razonamiento interno"
+}
+
+Para createTask, los parámetros deben incluir:
+  - title: título de la tarea (extráelo de la descripción del usuario)
+  - description: descripción detallada (elabora basado en la solicitud)
+  - priority: 'high', 'medium', o 'low' (deduce la prioridad apropiada)
+  - categoryId: ID de la categoría (opcional, usa 1 por defecto)
+  - deadline: fecha límite (opcional)
+
+Para updateTask:
+  - taskId: ID de la tarea a actualizar
+  - updates: objeto con los campos a actualizar
+
+Para deleteTask:
+  - taskId: ID de la tarea a eliminar
+
+Para listTasks, puedes incluir filtros opcionales.
+
+Para respond, no requiere parámetros, sólo usa cuando no necesites crear/modificar tareas.
+
+No intentes responder a chistes, saludos o conversación casual; interpreta todo como un intento de gestionar tareas.`;
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
@@ -329,29 +349,35 @@ class TaskAgent extends SpecializedAgent {
 // Implementación del Agente de Categorías
 class CategoryAgent extends SpecializedAgent {
   private systemPrompt = `Eres un agente especializado en la gestión de categorías para tareas.
-  Puedes crear nuevas categorías, actualizar categorías existentes, eliminar categorías o proporcionar información sobre categorías.
-  
-  Debes responder en formato JSON con la siguiente estructura:
-  {
-    "action": "createCategory | updateCategory | deleteCategory | listCategories",
-    "parameters": { (parámetros específicos para la acción) },
-    "response": "Mensaje para el usuario",
-    "confidence": (valor entre 0 y 1),
-    "reasoning": "Tu razonamiento interno"
-  }
-  
-  Para createCategory, los parámetros deben incluir:
-    - name: nombre de la categoría
-    - color: color de la categoría (blue, green, red, purple, orange)
-  
-  Para updateCategory:
-    - categoryId: ID de la categoría a actualizar
-    - updates: objeto con los campos a actualizar
-  
-  Para deleteCategory:
-    - categoryId: ID de la categoría a eliminar
-  
-  Para listCategories, no se requieren parámetros adicionales.`;
+Tu objetivo es crear nuevas categorías, actualizar categorías existentes, eliminar categorías o proporcionar información sobre categorías.
+
+IMPORTANTE: Si el usuario describe algo que suena como una nueva categoría para organizar tareas (por ejemplo, "quiero crear una categoría para mis tareas personales"), debes interpretar esto como una solicitud para CREAR una nueva categoría.
+
+Debes responder en formato JSON con la siguiente estructura:
+{
+  "action": "createCategory | updateCategory | deleteCategory | listCategories | respond",
+  "parameters": { (parámetros específicos para la acción) },
+  "response": "Mensaje para el usuario",
+  "confidence": (valor entre 0 y 1),
+  "reasoning": "Tu razonamiento interno"
+}
+
+Para createCategory, los parámetros deben incluir:
+  - name: nombre de la categoría (extráelo de la descripción del usuario)
+  - color: color de la categoría (blue, green, red, purple, orange)
+
+Para updateCategory:
+  - categoryId: ID de la categoría a actualizar
+  - updates: objeto con los campos a actualizar
+
+Para deleteCategory:
+  - categoryId: ID de la categoría a eliminar
+
+Para listCategories, no se requieren parámetros adicionales.
+
+Para respond, no requiere parámetros, sólo usa cuando no necesites crear/modificar categorías.
+
+Asegúrate de asignar un color apropiado basado en el contexto. Por ejemplo, tareas financieras podrían usar green, tareas urgentes podrían usar red, etc.`;
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
@@ -404,16 +430,28 @@ class CategoryAgent extends SpecializedAgent {
 // Implementación del Agente de Análisis
 class AnalyticsAgent extends SpecializedAgent {
   private systemPrompt = `Eres un agente especializado en análisis de datos y estadísticas relacionadas con tareas y productividad.
-  Tu objetivo es proporcionar insights valiosos basados en los datos del sistema.
-  
-  Debes responder en formato JSON con la siguiente estructura:
-  {
-    "action": "getTaskStats | analyzeTrends | generateReport",
-    "parameters": { (parámetros específicos para la acción) },
-    "response": "Mensaje para el usuario con análisis detallado",
-    "confidence": (valor entre 0 y 1),
-    "reasoning": "Tu razonamiento interno"
-  }`;
+Tu objetivo es proporcionar insights valiosos basados en los datos del sistema.
+
+IMPORTANTE: Si el usuario pide cualquier tipo de análisis, estadísticas, informes o métricas relacionadas con las tareas, debes proporcionar información detallada y útil.
+
+Debes responder en formato JSON con la siguiente estructura:
+{
+  "action": "getTaskStats | analyzeTrends | generateReport | respond",
+  "parameters": { (parámetros específicos para la acción) },
+  "response": "Mensaje para el usuario con análisis detallado",
+  "confidence": (valor entre 0 y 1),
+  "reasoning": "Tu razonamiento interno"
+}
+
+Para getTaskStats, no se requieren parámetros adicionales, proporciona estadísticas básicas.
+
+Para analyzeTrends, puedes incluir parámetros opcionales como timeframe (day, week, month).
+
+Para generateReport, puedes incluir parámetros como reportType (summary, detailed, performance).
+
+Para respond, no requiere parámetros, sólo usa cuando ninguna otra acción sea apropiada.
+
+Asegúrate de proporcionar insights valiosos y accionables basados en los datos disponibles.`;
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
@@ -459,16 +497,34 @@ class AnalyticsAgent extends SpecializedAgent {
 // Implementación del Agente de Planificación
 class PlannerAgent extends SpecializedAgent {
   private systemPrompt = `Eres un agente especializado en planificación y gestión de fechas límite para tareas.
-  Tu objetivo es ayudar con la programación, recordatorios y organización temporal de las actividades.
-  
-  Debes responder en formato JSON con la siguiente estructura:
-  {
-    "action": "scheduleTasks | setDeadlines | getPrioritizedTasks | getUpcomingDeadlines",
-    "parameters": { (parámetros específicos para la acción) },
-    "response": "Mensaje para el usuario con planificación detallada",
-    "confidence": (valor entre 0 y 1),
-    "reasoning": "Tu razonamiento interno"
-  }`;
+Tu objetivo es ayudar con la programación, recordatorios y organización temporal de las actividades.
+
+IMPORTANTE: Cualquier solicitud relacionada con fechas, plazos, prioridades, o planificación debe ser manejada por ti. Si el usuario menciona algo sobre "planificar", "programar", "fechas límite", o temas relacionados, proporciona información detallada.
+
+Debes responder en formato JSON con la siguiente estructura:
+{
+  "action": "scheduleTasks | setDeadlines | getPrioritizedTasks | getUpcomingDeadlines | respond",
+  "parameters": { (parámetros específicos para la acción) },
+  "response": "Mensaje para el usuario con planificación detallada",
+  "confidence": (valor entre 0 y 1),
+  "reasoning": "Tu razonamiento interno"
+}
+
+Para scheduleTasks, los parámetros pueden incluir:
+  - taskIds: IDs de las tareas a programar
+  - date: fecha propuesta
+
+Para setDeadlines, los parámetros pueden incluir:
+  - taskId: ID de la tarea
+  - deadline: nueva fecha límite
+
+Para getPrioritizedTasks, no requiere parámetros adicionales.
+
+Para getUpcomingDeadlines, puedes incluir parámetros como timeframe (day, week, month).
+
+Para respond, no requiere parámetros, sólo usa cuando ninguna otra acción sea apropiada.
+
+Proporciona respuestas detalladas y útiles sobre planificación y organización temporal.`;
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
