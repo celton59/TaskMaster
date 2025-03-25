@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
+import { Link } from "wouter";
 
 interface MetricCardProps {
   title: string;
@@ -9,6 +10,10 @@ interface MetricCardProps {
   linkHref: string;
   iconColor: string;
   iconBgColor: string;
+  trend?: {
+    value: string;
+    isPositive: boolean;
+  };
 }
 
 export function MetricCard({
@@ -19,38 +24,55 @@ export function MetricCard({
   linkHref,
   iconColor,
   iconBgColor,
+  trend,
 }: MetricCardProps) {
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg">
-      <div className="p-5">
-        <div className="flex items-center">
+    <div className="bg-white overflow-hidden shadow-sm border border-neutral-200 rounded-lg hover:shadow-md transition-all duration-200">
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-sm font-medium text-neutral-500">{title}</div>
           <div 
             className={cn(
-              "flex-shrink-0 p-3 rounded-md",
+              "flex-shrink-0 p-2 rounded-md",
               iconBgColor,
               iconColor
             )}
           >
             <Icon className="h-5 w-5" />
           </div>
-          <div className="ml-5 w-0 flex-1">
-            <dl>
-              <dt className="text-sm font-medium text-neutral-500 truncate">{title}</dt>
-              <dd>
-                <div className="text-lg font-semibold text-neutral-900">{value}</div>
-              </dd>
-            </dl>
-          </div>
         </div>
-      </div>
-      <div className="bg-neutral-50 px-5 py-3">
-        <div className="text-sm">
-          <a 
-            href={linkHref}
-            className="font-medium text-primary-600 hover:text-primary-700"
-          >
-            {linkText}
-          </a>
+        
+        <div className="flex flex-col">
+          <div className="text-2xl font-bold text-neutral-900 mb-1">
+            {value}
+          </div>
+          
+          {trend && (
+            <div className="flex items-center text-xs mb-2">
+              <span className={cn(
+                "font-medium",
+                trend.isPositive ? "text-emerald-600" : "text-rose-600"
+              )}>
+                {trend.value}{" "}
+                {trend.isPositive ? (
+                  <span className="inline-block">↑</span>
+                ) : (
+                  <span className="inline-block">↓</span>
+                )}
+              </span>
+              <span className="text-neutral-500 ml-1">
+                desde el mes pasado
+              </span>
+            </div>
+          )}
+        </div>
+        
+        <div className="mt-2 pt-3 border-t border-neutral-100">
+          <Link href={linkHref}>
+            <a className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors">
+              {linkText}
+            </a>
+          </Link>
         </div>
       </div>
     </div>
