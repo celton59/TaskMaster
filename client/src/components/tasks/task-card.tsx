@@ -112,7 +112,7 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
   return (
     <motion.div
       ref={dragRef}
-      className={`task-card bg-white p-3 rounded-lg shadow-sm border border-neutral-200 cursor-grab group ${isDragging ? 'opacity-50 scale-95' : ''}`}
+      className={`task-card bg-white p-4 rounded-lg shadow-md border border-neutral-100 cursor-grab group ${isDragging ? 'opacity-50 scale-95' : ''}`}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
@@ -121,22 +121,14 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
       transition={{ duration: 0.2 }}
       whileHover={{ 
         y: -2, 
-        boxShadow: "0 4px 12px -2px rgba(0, 0, 0, 0.08)", 
-        borderColor: "rgba(59, 130, 246, 0.3)" 
+        boxShadow: "0 8px 24px -4px rgba(0, 0, 0, 0.08)",
+        borderColor: "rgba(124, 58, 237, 0.2)" 
       }}
       data-task-id={task.id}
     >
-      <div className="flex justify-between items-start mb-2">
-        <div className="flex space-x-1.5">
-          <div className="flex items-center mt-0.5">
-            {getStatusIcon(task.status)}
-          </div>
-          <Badge 
-            variant="outline" 
-            className="border-transparent hover:border-transparent bg-neutral-100/80 text-neutral-800 hover:bg-neutral-100 font-normal text-xs"
-          >
-            {category.name}
-          </Badge>
+      <div className="flex items-center mb-2 justify-between">
+        <div>
+          {getPriorityBadge(task.priority)}
         </div>
         
         <DropdownMenu>
@@ -145,53 +137,72 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
               <MoreHorizontal size={16} />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel className="text-xs font-medium">Acciones de tarea</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={editTask} className="text-xs">
+          <DropdownMenuContent align="end" className="w-48 rounded-xl border border-neutral-100 shadow-lg p-1">
+            <DropdownMenuLabel className="text-xs font-medium text-neutral-800 px-2 py-1.5">Acciones</DropdownMenuLabel>
+            <DropdownMenuSeparator className="my-1 bg-neutral-100" />
+            <DropdownMenuItem onClick={editTask} className="text-xs rounded-md focus:bg-neutral-50 focus:text-neutral-900 px-2 py-1.5 cursor-pointer">
               Editar tarea
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}} className="text-xs">
+            <DropdownMenuItem onClick={() => {}} className="text-xs rounded-md focus:bg-neutral-50 focus:text-neutral-900 px-2 py-1.5 cursor-pointer">
               Cambiar estado
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}} className="text-xs">
+            <DropdownMenuItem onClick={() => {}} className="text-xs rounded-md focus:bg-neutral-50 focus:text-neutral-900 px-2 py-1.5 cursor-pointer">
               Asignar usuario
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={deleteTask} className="text-xs text-red-600">
+            <DropdownMenuSeparator className="my-1 bg-neutral-100" />
+            <DropdownMenuItem onClick={deleteTask} className="text-xs text-red-600 rounded-md focus:bg-red-50 focus:text-red-600 px-2 py-1.5 cursor-pointer">
               Eliminar tarea
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
       
-      <h4 className="font-medium text-sm text-neutral-900 line-clamp-1">{task.title}</h4>
+      <h4 className="font-semibold text-sm text-neutral-900 line-clamp-1 leading-relaxed">{task.title}</h4>
       
       {task.description && (
-        <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{task.description}</p>
+        <p className="text-xs text-neutral-600 mt-1 line-clamp-2 leading-relaxed">{task.description}</p>
       )}
       
-      <div className="mt-3 pt-2 border-t border-neutral-100 flex items-center justify-between">
+      <div className="flex items-center space-x-2 mt-2">
+        <Badge 
+          variant="outline" 
+          className="rounded-md border border-neutral-200 bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-200 text-neutral-800 font-normal text-xs py-0 h-5"
+        >
+          <div className={`h-2 w-2 rounded-full mr-1.5 ${
+            category.color === "blue" ? "bg-blue-500" :
+            category.color === "green" ? "bg-emerald-500" :
+            category.color === "red" ? "bg-rose-500" :
+            category.color === "purple" ? "bg-purple-500" :
+            category.color === "orange" ? "bg-amber-500" : "bg-slate-500"
+          }`}></div>
+          {category.name}
+        </Badge>
+        <div className="flex items-center text-xs text-neutral-500">
+          <div className="flex items-center">
+            {getStatusIcon(task.status)}
+          </div>
+        </div>
+      </div>
+      
+      <div className="mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between">
         <div className="flex items-center text-xs text-neutral-500">
           {task.deadline ? (
             <>
-              <Calendar className="mr-1" size={12} />
-              {formatDate(task.deadline)}
+              <Calendar className="mr-1.5" size={12} />
+              <span className="font-medium">{formatDate(task.deadline)}</span>
             </>
           ) : (
             <>
-              <Clock className="mr-1" size={12} />
+              <Clock className="mr-1.5" size={12} />
               <span className="text-xs">Sin plazo</span>
             </>
           )}
         </div>
         
-        <div className="flex items-center space-x-2">
-          {getPriorityBadge(task.priority)}
-          
+        <div>
           {task.assignedTo && (
-            <Avatar className="h-6 w-6">
-              <AvatarFallback className="text-[10px] bg-primary-100 text-primary-700">
+            <Avatar className="h-7 w-7 border-2 border-white ring-1 ring-neutral-200">
+              <AvatarFallback className="text-[10px] bg-primary-50 text-primary-700 font-medium">
                 {task.assignedTo === 1 ? 'AD' : 'US'}
               </AvatarFallback>
             </Avatar>

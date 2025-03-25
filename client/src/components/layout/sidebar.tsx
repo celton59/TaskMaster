@@ -83,7 +83,7 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-neutral-100 h-full shrink-0 shadow-sm">
+      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-neutral-100 h-full shrink-0 shadow-lg">
         <div className="py-5 px-5 flex items-center justify-between">
           <div className="flex items-center">
             <div className="h-9 w-9 rounded-lg bg-primary-600 flex items-center justify-center text-white">
@@ -407,38 +407,45 @@ function NavLink({ href, icon, label, isSubmenu = false }: NavLinkProps) {
   // For main menu items
   if (!isSubmenu) {
     return (
-      <div 
+      <Link 
+        to={href}
         className={cn(
-          "flex items-center px-3 py-2.5 text-sm font-medium rounded-md cursor-pointer",
+          "flex items-center px-3 py-2.5 text-sm font-medium rounded-md cursor-pointer transition-colors",
           isActive 
             ? "bg-primary-50 text-primary-700" 
-            : "text-neutral-800 hover:bg-neutral-50 hover:text-primary-700"
+            : "text-neutral-700 hover:bg-neutral-50 hover:text-primary-700"
         )}
-        onClick={() => window.location.href = href}
       >
-        <div className={`${isActive ? 'text-primary-600' : 'text-neutral-500'} mr-3`}>
+        <div className={cn(
+          "flex-shrink-0 mr-3 transition-colors",
+          isActive ? 'text-primary-600' : 'text-neutral-400'
+        )}>
           {icon}
         </div>
-        {label}
-      </div>
+        <span className="truncate">{label}</span>
+        {isActive && <div className="absolute inset-y-0 left-0 w-1 bg-primary-500 rounded-r-full" />}
+      </Link>
     );
   }
   
   // For submenu items
   return (
-    <div 
+    <Link 
+      to={href}
       className={cn(
-        "flex items-center px-2 py-2 text-xs font-medium rounded-md cursor-pointer",
+        "flex items-center px-2 py-1.5 text-xs font-medium rounded-md cursor-pointer transition-colors",
         isActive 
           ? "text-primary-700 bg-primary-50" 
-          : "text-neutral-700 hover:bg-neutral-50 hover:text-primary-700"
+          : "text-neutral-600 hover:bg-neutral-50 hover:text-primary-700"
       )}
-      onClick={() => window.location.href = href}
     >
-      <div className={`${isActive ? 'text-primary-600' : 'text-neutral-500'} mr-2`}>
+      <div className={cn(
+        "flex-shrink-0 mr-2 transition-colors",
+        isActive ? 'text-primary-600' : 'text-neutral-400'
+      )}>
         {icon}
       </div>
-      {label}
-    </div>
+      <span className="truncate">{label}</span>
+    </Link>
   );
 }
