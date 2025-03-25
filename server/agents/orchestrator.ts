@@ -1862,7 +1862,24 @@ Para respond, no requiere parámetros adicionales.`;
               createdTasks 
             };
             
-            userResponse = `He creado un plan de marketing "${title}" con ${createdTasks.length} tareas asociadas.`;
+            if (createdTasks.length === 0) {
+              userResponse = `He registrado el plan de marketing "${title}" pero no se pudieron crear las tareas asociadas.`;
+            } else if (createdTasks.length < tasks.length) {
+              userResponse = `He creado un plan de marketing "${title}" con ${createdTasks.length} de ${tasks.length} tareas asociadas. Algunas tareas no pudieron ser creadas.`;
+            } else {
+              userResponse = `He creado un plan de marketing "${title}" con ${createdTasks.length} tareas asociadas:`;
+              createdTasks.forEach((task, index) => {
+                userResponse += `\n${index + 1}. ${task.title}`;
+                if (task.deadline) {
+                  const fecha = new Date(task.deadline);
+                  userResponse += ` - Fecha límite: ${fecha.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}`;
+                }
+              });
+            }
           } else {
             data = { marketingPlan: { title, objective } };
             userResponse = `He registrado el plan de marketing "${title}" con objetivo: ${objective}.`;
@@ -2226,7 +2243,24 @@ Para respond, no requiere parámetros adicionales.`;
               createdTasks 
             };
             
-            userResponse = `He creado el proyecto "${title}" con ${createdTasks.length} tareas asociadas.`;
+            if (createdTasks.length === 0) {
+              userResponse = `He registrado el proyecto "${title}" pero no se pudieron crear las tareas asociadas.`;
+            } else if (createdTasks.length < tasks.length) {
+              userResponse = `He creado el proyecto "${title}" con ${createdTasks.length} de ${tasks.length} tareas asociadas. Algunas tareas no pudieron ser creadas.`;
+            } else {
+              userResponse = `He creado el proyecto "${title}" con ${createdTasks.length} tareas asociadas:`;
+              createdTasks.forEach((task, index) => {
+                userResponse += `\n${index + 1}. ${task.title}`;
+                if (task.deadline) {
+                  const fecha = new Date(task.deadline);
+                  userResponse += ` - Fecha límite: ${fecha.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}`;
+                }
+              });
+            }
           } else if (Array.isArray(phases)) {
             // Si hay fases pero no tareas específicas, podemos crear tareas para cada fase
             const createdTasks = [];
@@ -2260,7 +2294,24 @@ Para respond, no requiere parámetros adicionales.`;
               createdTasks 
             };
             
-            userResponse = `He creado el proyecto "${title}" con ${createdTasks.length} fases como tareas.`;
+            if (createdTasks.length === 0) {
+              userResponse = `He registrado el proyecto "${title}" pero no se pudieron crear las tareas de fases.`;
+            } else if (createdTasks.length < phases.length) {
+              userResponse = `He creado el proyecto "${title}" con ${createdTasks.length} de ${phases.length} fases como tareas. Algunas fases no pudieron ser creadas.`;
+            } else {
+              userResponse = `He creado el proyecto "${title}" con ${createdTasks.length} fases como tareas:`;
+              createdTasks.forEach((task, index) => {
+                userResponse += `\n${index + 1}. ${task.title}`;
+                if (task.deadline) {
+                  const fecha = new Date(task.deadline);
+                  userResponse += ` - Fecha límite: ${fecha.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}`;
+                }
+              });
+            }
           } else {
             data = { project: { title, objective } };
             userResponse = `He registrado el proyecto "${title}" con objetivo: ${objective}.`;
