@@ -205,11 +205,11 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
         break;
       case 'priority':
         const priorityOrder: Record<string, number> = { high: 3, medium: 2, low: 1 };
-        comparison = (priorityOrder[a.priority] || 0) - (priorityOrder[b.priority] || 0);
+        comparison = (priorityOrder[a.priority as string] || 0) - (priorityOrder[b.priority as string] || 0);
         break;
       case 'status':
         const statusOrder: Record<string, number> = { pending: 1, in_progress: 2, review: 3, completed: 4 };
-        comparison = (statusOrder[a.status] || 0) - (statusOrder[b.status] || 0);
+        comparison = (statusOrder[a.status as string] || 0) - (statusOrder[b.status as string] || 0);
         break;
       case 'deadline':
         const dateA = a.deadline ? new Date(a.deadline).getTime() : Infinity;
@@ -304,9 +304,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
     
     try {
       const promises = selectedTasks.map(taskId => 
-        apiRequest(`/api/tasks/${taskId}`, {
-          method: 'DELETE'
-        })
+        apiRequest(
+          `/api/tasks/${taskId}`,
+          'DELETE'
+        )
       );
       
       await Promise.all(promises);
@@ -372,7 +373,7 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                   <SelectValue placeholder="Estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los estados</SelectItem>
+                  <SelectItem value="all">Todos los estados</SelectItem>
                   <SelectItem value="pending">Pendiente</SelectItem>
                   <SelectItem value="in_progress">En progreso</SelectItem>
                   <SelectItem value="review">Revisión</SelectItem>
@@ -389,7 +390,7 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                   <SelectValue placeholder="Prioridad" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas las prioridades</SelectItem>
+                  <SelectItem value="all">Todas las prioridades</SelectItem>
                   <SelectItem value="high">Alta</SelectItem>
                   <SelectItem value="medium">Media</SelectItem>
                   <SelectItem value="low">Baja</SelectItem>
@@ -546,13 +547,13 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                     </TableCell>
                     
                     <TableCell>
-                      <Badge className={`text-xs font-medium ${getStatusStyle(task.status)}`}>
+                      <Badge className={`text-xs font-medium ${getStatusStyle(task.status as string)}`}>
                         {getStatusLabel(task.status)}
                       </Badge>
                     </TableCell>
                     
                     <TableCell>
-                      <Badge className={`text-xs font-medium ${getPriorityStyle(task.priority)}`}>
+                      <Badge className={`text-xs font-medium ${getPriorityStyle(task.priority as string)}`}>
                         {getPriorityLabel(task.priority)}
                       </Badge>
                     </TableCell>
@@ -609,9 +610,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                             onClick={async () => {
                               if (confirm(`¿Estás seguro de que deseas eliminar la tarea "${task.title}"?`)) {
                                 try {
-                                  await apiRequest(`/api/tasks/${task.id}`, {
-                                    method: 'DELETE'
-                                  });
+                                  await apiRequest(
+                                    `/api/tasks/${task.id}`,
+                                    'DELETE'
+                                  );
                                   
                                   // Actualizar caché
                                   await queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
@@ -650,31 +652,42 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
+                  <Button 
+                    variant="outline" 
+                    size="icon"
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                  />
+                    className="gap-1 h-9 w-9"
+                  >
+                    <ChevronDown className="h-4 w-4 rotate-90" />
+                    <span className="sr-only">Página anterior</span>
+                  </Button>
                 </PaginationItem>
                 
                 {Array.from({ length: totalPages }).map((_, i) => (
                   <PaginationItem key={i}>
-                    <PaginationLink
+                    <Button
+                      variant={currentPage === i + 1 ? "default" : "outline"}
+                      size="icon"
                       onClick={() => setCurrentPage(i + 1)}
-                      isActive={currentPage === i + 1}
-                      className="cursor-pointer"
+                      className="h-9 w-9"
                     >
                       {i + 1}
-                    </PaginationLink>
+                    </Button>
                   </PaginationItem>
                 ))}
                 
                 <PaginationItem>
-                  <PaginationNext 
+                  <Button 
+                    variant="outline" 
+                    size="icon"
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                  />
+                    className="gap-1 h-9 w-9"
+                  >
+                    <ChevronDown className="h-4 w-4 -rotate-90" />
+                    <span className="sr-only">Página siguiente</span>
+                  </Button>
                 </PaginationItem>
               </PaginationContent>
             </Pagination>

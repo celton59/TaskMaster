@@ -4,7 +4,7 @@ import { TaskBoard } from "@/components/tasks/task-board";
 import { TaskList } from "@/components/tasks/task-list";
 import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Plus, KanbanSquare, List, SlidersHorizontal } from "lucide-react";
 import type { Task, Category } from "@shared/schema";
 
@@ -51,26 +51,26 @@ export default function Tasks() {
           </p>
         </div>
         <div className="mt-4 md:mt-0 flex gap-3 items-center">
-          <TabsList className="h-9">
-            <TabsTrigger 
-              value="board" 
+          <div className="flex border rounded-md">
+            <Button 
+              variant={viewMode === "board" ? "default" : "ghost"} 
               onClick={() => setViewMode("board")}
-              className={viewMode === "board" ? "bg-primary-500 text-white" : ""}
+              className="rounded-r-none h-9"
               disabled={isLoadingTasks || isLoadingCategories}
             >
               <KanbanSquare className="h-4 w-4 mr-1.5" />
               Tablero
-            </TabsTrigger>
-            <TabsTrigger 
-              value="list" 
+            </Button>
+            <Button 
+              variant={viewMode === "list" ? "default" : "ghost"} 
               onClick={() => setViewMode("list")}
-              className={viewMode === "list" ? "bg-primary-500 text-white" : ""}
+              className="rounded-l-none h-9"
               disabled={isLoadingTasks || isLoadingCategories}
             >
               <List className="h-4 w-4 mr-1.5" />
               Lista
-            </TabsTrigger>
-          </TabsList>
+            </Button>
+          </div>
           
           <Button 
             onClick={() => setIsTaskFormOpen(true)}
