@@ -530,7 +530,7 @@ Responde con un JSON que contenga:
 // Interfaz para los agentes especializados
 abstract class SpecializedAgent {
   abstract process(request: AgentRequest): Promise<AgentResponse>;
-  abstract getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function>;
+  abstract getFunctions(): Array<OpenAIFunction>;
   
   protected async callModel(systemPrompt: string, userInput: string, context?: any): Promise<string> {
     const contextString = context ? `\nContexto del sistema:\n${JSON.stringify(context, null, 2)}` : '';
@@ -612,7 +612,7 @@ IMPORTANTE: Si el usuario menciona o sugiere una fecha (por ejemplo: "para maña
 
 No intentes responder a chistes, saludos o conversación casual; interpreta todo como un intento de gestionar tareas.`;
   
-  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+  getFunctions(): Array<OpenAIFunction> {
     return [
       {
         name: "createTask",
@@ -875,7 +875,7 @@ Para respond, no requiere parámetros, sólo usa cuando no necesites crear/modif
 
 Asegúrate de asignar un color apropiado basado en el contexto. Por ejemplo, tareas financieras podrían usar green, tareas urgentes podrían usar red, etc.`;
   
-  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+  getFunctions(): Array<OpenAIFunction> {
     return [
       {
         name: "createCategory",
@@ -1034,7 +1034,7 @@ Para respond, no requiere parámetros, sólo usa cuando ninguna otra acción sea
 
 Asegúrate de proporcionar insights valiosos y accionables basados en los datos disponibles.`;
   
-  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+  getFunctions(): Array<OpenAIFunction> {
     return [
       {
         name: "getTaskStats",
@@ -1162,7 +1162,7 @@ Para respond, no requiere parámetros, sólo usa cuando ninguna otra acción sea
 
 Proporciona respuestas detalladas y útiles sobre planificación y organización temporal.`;
 
-  getFunctions(): Array<OpenAI.Chat.ChatCompletionCreateParams.Function> {
+  getFunctions(): Array<OpenAIFunction> {
     return [
       {
         name: "scheduleTasks",
