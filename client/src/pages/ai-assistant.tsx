@@ -3,9 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { MessagesSquare, SendIcon, Loader2, Bot } from 'lucide-react';
+import { MessagesSquare, SendIcon, Loader2, Bot, Plus, Archive, History } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Message {
   text: string;
@@ -13,18 +15,144 @@ interface Message {
   timestamp: Date;
 }
 
+interface ChatSession {
+  id: string;
+  messages: Message[];
+  createdAt: Date;
+  title: string;
+}
+
+// Función para cargar chats guardados del localStorage
+function loadSavedChats(): ChatSession[] {
+  const savedChats = localStorage.getItem('aiAssistantChats');
+  if (savedChats) {
+    try {
+      // Asegurarse de que las fechas se carguen correctamente
+      const parsedChats = JSON.parse(savedChats, (key, value) => {
+        if (key === 'timestamp' || key === 'createdAt') {
+          return new Date(value);
+        }
+        return value;
+      });
+      return parsedChats;
+    } catch (e) {
+      console.error('Error al cargar los chats guardados:', e);
+      return [];
+    }
+  }
+  return [];
+}
+
+const DEFAULT_WELCOME_MESSAGE: Message = {
+  text: "¡Hola! Soy tu asistente AI con sistema orquestado multi-agente para gestión de tareas. Tengo varios agentes especializados trabajando juntos:\n\n• Agente de Tareas: experto en crear y gestionar tareas\n• Agente de Categorías: especializado en organización por categorías\n• Agente de Análisis: para estadísticas e informes detallados\n• Agente de Planificación: para programación y fechas límite\n\nSimplemente dime lo que necesitas, y el agente más adecuado se encargará. ¿En qué puedo ayudarte hoy?",
+  isUser: false,
+  timestamp: new Date()
+};
+
 export default function AIAssistant() {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      text: "¡Hola! Soy tu asistente AI con sistema orquestado multi-agente para gestión de tareas. Tengo varios agentes especializados trabajando juntos:\n\n• Agente de Tareas: experto en crear y gestionar tareas\n• Agente de Categorías: especializado en organización por categorías\n• Agente de Análisis: para estadísticas e informes detallados\n• Agente de Planificación: para programación y fechas límite\n\nSimplemente dime lo que necesitas, y el agente más adecuado se encargará. ¿En qué puedo ayudarte hoy?",
-      isUser: false,
-      timestamp: new Date()
-    }
-  ]);
+  const [currentChatId, setCurrentChatId] = useState<string>(() => {
+    // Generar un nuevo ID único para esta sesión
+    return new Date().getTime().toString();
+  });
+  const [messages, setMessages] = useState<Message[]>([DEFAULT_WELCOME_MESSAGE]);
+  const [savedChats, setSavedChats] = useState<ChatSession[]>(loadSavedChats);
+  const [showHistoryDialog, setShowHistoryDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  
+  // Función para guardar el chat actual
+  const saveCurrentChat = () => {
+    if (messages.length <= 1) {
+      // No guardar chats vacíos o solo con mensaje de bienvenida
+      return;
+    }
+    
+    // Generar un título basado en los primeros mensajes
+    let title = "Conversación";
+    const userMessages = messages.filter(m => m.isUser);
+    if (userMessages.length > 0) {
+      // Usar el primer mensaje del usuario como título (truncado)
+      title = userMessages[0].text.substring(0, 30);
+      if (userMessages[0].text.length > 30) title += "...";
+    }
+    
+    // Crear objeto de sesión de chat
+    const chatSession: ChatSession = {
+      id: currentChatId,
+      messages: messages,
+      createdAt: new Date(),
+      title
+    };
+    
+    // Añadir a la lista de chats guardados
+    const updatedChats = [chatSession, ...savedChats.filter(chat => chat.id !== currentChatId)];
+    setSavedChats(updatedChats);
+    
+    // Guardar en localStorage
+    localStorage.setItem('aiAssistantChats', JSON.stringify(updatedChats));
+    
+    toast({
+      title: "Chat guardado",
+      description: "La conversación ha sido guardada correctamente",
+      variant: "default"
+    });
+  };
+  
+  // Función para crear un nuevo chat
+  const startNewChat = () => {
+    // Guardar el chat actual primero si tiene mensajes
+    if (messages.length > 1) {
+      saveCurrentChat();
+    }
+    
+    // Generar nuevo ID y resetear mensajes
+    const newChatId = new Date().getTime().toString();
+    setCurrentChatId(newChatId);
+    setMessages([DEFAULT_WELCOME_MESSAGE]);
+    
+    toast({
+      title: "Nuevo chat",
+      description: "Se ha iniciado una nueva conversación",
+      variant: "default"
+    });
+  };
+  
+  // Función para cargar un chat guardado
+  const loadChat = (chatId: string) => {
+    const chat = savedChats.find(c => c.id === chatId);
+    if (chat) {
+      setCurrentChatId(chat.id);
+      setMessages(chat.messages);
+      setShowHistoryDialog(false);
+      
+      toast({
+        title: "Chat cargado",
+        description: "La conversación ha sido restaurada",
+        variant: "default"
+      });
+    }
+  };
+  
+  // Función para eliminar un chat guardado
+  const deleteChat = (chatId: string, event?: React.MouseEvent) => {
+    if (event) {
+      event.stopPropagation();
+    }
+    
+    const updatedChats = savedChats.filter(chat => chat.id !== chatId);
+    setSavedChats(updatedChats);
+    
+    // Actualizar localStorage
+    localStorage.setItem('aiAssistantChats', JSON.stringify(updatedChats));
+    
+    toast({
+      title: "Chat eliminado",
+      description: "La conversación ha sido eliminada",
+      variant: "default"
+    });
+  };
   
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -33,6 +161,18 @@ export default function AIAssistant() {
   // Efecto para hacer scroll al fondo cuando cambian los mensajes
   useEffect(() => {
     scrollToBottom();
+  }, [messages]);
+  
+  // Efecto para guardar el chat automáticamente cuando cambian los mensajes
+  useEffect(() => {
+    if (messages.length > 1) {
+      // Solo guardar después de que haya al menos una interacción
+      const autoSaveTimeout = setTimeout(() => {
+        saveCurrentChat();
+      }, 2000); // Guardar 2 segundos después de la última actualización
+      
+      return () => clearTimeout(autoSaveTimeout);
+    }
   }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -167,6 +307,42 @@ export default function AIAssistant() {
   return (
     <div className="container mx-auto py-6">
       <div className="max-w-4xl mx-auto">
+        {/* Botones de acción */}
+        <div className="flex justify-between mb-4">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={startNewChat}
+              className="flex items-center gap-1"
+            >
+              <Plus className="h-4 w-4" />
+              Nuevo Chat
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowHistoryDialog(true)}
+              className="flex items-center gap-1"
+            >
+              <History className="h-4 w-4" />
+              Historial
+            </Button>
+          </div>
+          <div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={saveCurrentChat}
+              className="flex items-center gap-1"
+              disabled={messages.length <= 1}
+            >
+              <Archive className="h-4 w-4" />
+              Guardar Chat
+            </Button>
+          </div>
+        </div>
+      
         <Card className="bg-white shadow-lg border-0">
           <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
             <CardTitle className="flex items-center text-2xl">
@@ -263,6 +439,94 @@ export default function AIAssistant() {
           </CardFooter>
         </Card>
       </div>
+      
+      {/* Modal de historial de chat */}
+      <Dialog open={showHistoryDialog} onOpenChange={setShowHistoryDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Historial de Conversaciones</DialogTitle>
+            <DialogDescription>
+              Selecciona una conversación anterior para cargarla
+            </DialogDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="h-[400px] pr-4">
+            {savedChats.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                No hay conversaciones guardadas
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {savedChats.map((chat) => (
+                  <div
+                    key={chat.id}
+                    onClick={() => loadChat(chat.id)}
+                    className={`p-3 rounded-md border cursor-pointer transition-colors hover:bg-gray-100 
+                      ${chat.id === currentChatId ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'}`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm text-gray-900 truncate">{chat.title}</h4>
+                        <p className="text-xs text-gray-500">
+                          {new Date(chat.createdAt).toLocaleDateString()} - 
+                          {chat.messages.length - 1} mensaje(s)
+                        </p>
+                      </div>
+                      
+                      <Button
+                        variant="ghost" 
+                        size="icon"
+                        className="h-7 w-7 rounded-full hover:bg-red-50 hover:text-red-500"
+                        onClick={(e) => deleteChat(chat.id, e)}
+                      >
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          width="14" 
+                          height="14" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <path d="M3 6h18"></path>
+                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                        </svg>
+                      </Button>
+                    </div>
+                    
+                    {/* Previsualización del primer mensaje */}
+                    {chat.messages.length > 1 && (
+                      <div className="mt-2 text-xs text-gray-600 line-clamp-2">
+                        <span className="text-blue-600 font-medium">Tú:</span> {chat.messages.find(m => m.isUser)?.text.substring(0, 100)}...
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </ScrollArea>
+          
+          <div className="flex justify-between mt-2">
+            <Button variant="outline" onClick={() => setShowHistoryDialog(false)}>
+              Cerrar
+            </Button>
+            <Button variant="destructive" onClick={() => {
+              localStorage.removeItem('aiAssistantChats');
+              setSavedChats([]);
+              toast({
+                title: "Historial borrado",
+                description: "Se han eliminado todas las conversaciones",
+                variant: "default"
+              });
+            }} disabled={savedChats.length === 0}>
+              Borrar todo
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
