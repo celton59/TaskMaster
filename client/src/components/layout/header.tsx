@@ -30,8 +30,8 @@ export function Header() {
   };
   
   return (
-    <header className="bg-white border-b border-neutral-200 shadow-sm z-20 sticky top-0">
-      <div className="px-4 sm:px-6 h-16 flex items-center justify-between">
+    <header className="bg-white border-b border-neutral-100 shadow-sm z-20 sticky top-0">
+      <div className="px-5 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center">
           <button 
             onClick={toggleMobileMenu}
@@ -39,17 +39,17 @@ export function Header() {
           >
             <Menu className="h-6 w-6" />
           </button>
-          <div className="md:hidden ml-2 font-heading font-bold text-xl text-primary-800">TaskMaster</div>
+          <div className="md:hidden ml-2 font-bold text-lg text-neutral-900">TaskMaster</div>
         </div>
         
-        <div className="ml-4 flex items-center md:ml-6 space-x-4">
-          <div className="relative flex-1 max-w-md">
+        <div className="ml-4 flex items-center md:ml-6 space-x-3">
+          <div className="relative flex-1 max-w-md hidden md:block">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="text-neutral-400 h-4 w-4" />
             </div>
             <Input
-              placeholder="Buscar tareas..."
-              className="pl-10 pr-3 py-2 bg-neutral-50 border-neutral-200 focus:ring-primary-500 focus:border-primary-500"
+              placeholder="Buscar tareas, proyectos..."
+              className="pl-10 pr-3 py-2 h-9 bg-neutral-50 border-neutral-200 rounded-lg text-sm focus-visible:ring-primary-500 focus-visible:border-primary-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -57,76 +57,83 @@ export function Header() {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="relative p-1.5 rounded-full bg-neutral-100 text-neutral-500 hover:text-primary-600 hover:bg-primary-50 focus:outline-none transition-colors">
-                <Bell className="h-5 w-5" />
-                <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-primary-500">3</Badge>
+              <button className="relative h-8 w-8 rounded-full bg-neutral-50 border border-neutral-200 text-neutral-500 hover:text-primary-600 hover:bg-neutral-100 focus:outline-none transition-colors flex items-center justify-center">
+                <Bell className="h-4 w-4" />
+                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-primary-500 border-2 border-white rounded-full"></span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-72" align="end">
-              <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <div className="max-h-80 overflow-y-auto">
+            <DropdownMenuContent className="w-80 p-0 overflow-hidden rounded-xl border border-neutral-100 shadow-lg" align="end">
+              <div className="px-4 py-3 bg-neutral-50 border-b border-neutral-100 flex justify-between items-center">
+                <h3 className="text-sm font-semibold text-neutral-900">Notificaciones</h3>
+                <Badge className="bg-primary-100 text-primary-700 hover:bg-primary-100">3 nuevas</Badge>
+              </div>
+              <div className="max-h-[320px] overflow-y-auto divide-y divide-neutral-100">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="px-2 py-2 hover:bg-neutral-50 cursor-pointer">
+                  <div key={i} className="px-4 py-3 hover:bg-neutral-50 cursor-pointer">
                     <div className="flex items-start">
                       <div className="flex-shrink-0 mt-0.5">
-                        <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
+                        <div className="h-9 w-9 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 border border-primary-100">
                           <Bell className="h-4 w-4" />
                         </div>
                       </div>
                       <div className="ml-3 flex-1">
-                        <p className="text-sm font-medium text-neutral-900">Tarea actualizada</p>
-                        <p className="text-xs text-neutral-500">Se ha actualizado el estado de la tarea "Diseño de UI"</p>
-                        <p className="text-xs text-neutral-400 mt-1">Hace 2 horas</p>
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-sm font-medium text-neutral-900">Tarea actualizada</p>
+                          <p className="text-xs text-neutral-500">2h</p>
+                        </div>
+                        <p className="text-xs text-neutral-600 leading-relaxed">
+                          Se ha actualizado el estado de la tarea "Diseño de UI" a completado.
+                        </p>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-              <DropdownMenuSeparator />
-              <div className="p-2">
-                <button className="w-full text-center text-sm text-primary-600 hover:text-primary-700">
+              <div className="p-3 border-t border-neutral-100 bg-neutral-50">
+                <button className="w-full text-center text-xs font-medium text-primary-600 hover:text-primary-700 py-1">
                   Ver todas las notificaciones
                 </button>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <button className="p-1.5 rounded-full bg-neutral-100 text-neutral-500 hover:text-primary-600 hover:bg-primary-50 focus:outline-none transition-colors">
-            <HelpCircle className="h-5 w-5" />
+          <button className="h-8 w-8 rounded-full bg-neutral-50 border border-neutral-200 text-neutral-500 hover:text-primary-600 hover:bg-neutral-100 focus:outline-none transition-colors flex items-center justify-center">
+            <HelpCircle className="h-4 w-4" />
           </button>
           
-          <Separator orientation="vertical" className="h-8 mx-1" />
+          <Separator orientation="vertical" className="h-6 mx-1 bg-neutral-200" />
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center space-x-2 focus:outline-none">
-                <Avatar className="h-8 w-8 ring-2 ring-neutral-200">
+                <Avatar className="h-8 w-8 border-2 border-white ring-1 ring-neutral-200">
                   <AvatarImage src="/avatar.png" />
-                  <AvatarFallback className="bg-primary-100 text-primary-700">AD</AvatarFallback>
+                  <AvatarFallback className="bg-primary-100 text-primary-700 text-xs">AD</AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block text-left">
                   <p className="text-sm font-medium text-neutral-800">Admin Demo</p>
-                  <p className="text-xs text-neutral-500">Administrador</p>
+                  <p className="text-xs text-neutral-500">admin@example.com</p>
                 </div>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end">
-              <DropdownMenuLabel>Mi cuenta</DropdownMenuLabel>
-              <DropdownMenuSeparator />
+            <DropdownMenuContent className="w-56 rounded-xl border border-neutral-100 shadow-lg" align="end">
+              <div className="p-3 border-b border-neutral-100">
+                <p className="text-sm font-medium text-neutral-900">Admin Demo</p>
+                <p className="text-xs text-neutral-500">admin@example.com</p>
+              </div>
               <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Perfil</span>
+                <DropdownMenuItem className="focus:bg-neutral-50 focus:text-neutral-900">
+                  <User className="mr-2 h-4 w-4 text-neutral-500" />
+                  <span>Mi perfil</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
+                <DropdownMenuItem className="focus:bg-neutral-50 focus:text-neutral-900">
+                  <Settings className="mr-2 h-4 w-4 text-neutral-500" />
                   <span>Configuración</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4" />
+              <DropdownMenuItem className="focus:bg-neutral-50 focus:text-neutral-900">
+                <LogOut className="mr-2 h-4 w-4 text-neutral-500" />
                 <span>Cerrar sesión</span>
               </DropdownMenuItem>
             </DropdownMenuContent>

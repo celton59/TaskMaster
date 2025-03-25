@@ -2,8 +2,9 @@ import { useState, useRef } from "react";
 import { TaskCard } from "@/components/tasks/task-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Plus, GripVertical } from "lucide-react";
+import { Plus, MoreHorizontal, GripVertical } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Task, Category } from "@shared/schema";
 
@@ -58,15 +59,31 @@ export function TaskColumn({
   const getColumnStyle = () => {
     switch (status) {
       case "pending":
-        return "border-amber-200 bg-amber-50/50";
+        return "border-amber-100 bg-white";
       case "in-progress":
-        return "border-blue-200 bg-blue-50/50";
+        return "border-blue-100 bg-white";
       case "review":
-        return "border-purple-200 bg-purple-50/50";
+        return "border-purple-100 bg-white";
       case "completed":
-        return "border-emerald-200 bg-emerald-50/50";
+        return "border-emerald-100 bg-white";
       default:
-        return "border-neutral-200 bg-neutral-50/60";
+        return "border-neutral-100 bg-white";
+    }
+  };
+  
+  // Get title badge styles by status
+  const getTitleBadge = () => {
+    switch (status) {
+      case "pending":
+        return "bg-amber-100 text-amber-700";
+      case "in-progress":
+        return "bg-blue-100 text-blue-700";
+      case "review":
+        return "bg-purple-100 text-purple-700";
+      case "completed":
+        return "bg-emerald-100 text-emerald-700";
+      default:
+        return "bg-neutral-100 text-neutral-700";
     }
   };
   
@@ -74,41 +91,41 @@ export function TaskColumn({
     <div 
       ref={columnRef}
       className={cn(
-        "p-2 rounded-xl w-80 border",
+        "p-3 rounded-xl border bg-white shadow-sm w-[280px]",
         getColumnStyle(),
-        isDropTarget ? "ring-2 ring-primary-300 ring-inset" : ""
+        isDropTarget ? "ring-2 ring-primary-400 ring-opacity-50" : ""
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       data-status={status}
     >
-      <div className="flex items-center justify-between p-2 mb-2">
-        <div className="flex items-center">
-          <div className={`h-2.5 w-2.5 rounded-full ${badgeColor} mr-2.5`}></div>
-          <h3 className="font-medium text-neutral-700">
-            {title}
-            <span className="ml-2 text-xs px-1.5 py-0.5 bg-white border border-neutral-200 rounded-full text-neutral-600">
-              {tasks.length}
-            </span>
-          </h3>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center space-x-2">
+          <Badge variant="secondary" className={cn("rounded-md py-1 px-2", getTitleBadge())}>
+            <div className={`h-2 w-2 rounded-full ${badgeColor} mr-1.5`}></div>
+            <span className="font-medium">{title}</span>
+          </Badge>
+          <Badge variant="outline" className="bg-white text-neutral-600 py-0.5 font-normal">
+            {tasks.length}
+          </Badge>
         </div>
         <div className="flex items-center space-x-1">
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-6 w-6 rounded-full"
+            className="h-7 w-7 rounded-full hover:bg-neutral-100"
             title="Añadir tarea"
           >
-            <Plus size={14} />
+            <Plus size={15} className="text-neutral-500" />
           </Button>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-6 w-6 rounded-full text-neutral-400"
-            title="Mover columna"
+            className="h-7 w-7 rounded-full hover:bg-neutral-100"
+            title="Más opciones"
           >
-            <GripVertical size={14} />
+            <MoreHorizontal size={15} className="text-neutral-500" />
           </Button>
         </div>
       </div>

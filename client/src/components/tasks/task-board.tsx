@@ -4,6 +4,9 @@ import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { TaskColumn } from "@/components/tasks/task-column";
 import { TaskFilter } from "@/components/tasks/task-filter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Plus, Filter, LayoutGrid, ArrowDownUp } from "lucide-react";
 import { Task, Category } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 
@@ -62,54 +65,80 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
   };
   
   return (
-    <div className="mt-8">
-      <h3 className="text-lg font-medium text-neutral-900 mb-4">Tareas por estado</h3>
+    <Card className="border-neutral-100 shadow-sm mt-8">
+      <CardHeader className="border-b border-neutral-100 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <CardTitle className="text-lg font-semibold">Tablero de tareas</CardTitle>
+            <CardDescription>Arrastra y suelta para cambiar el estado de las tareas</CardDescription>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="h-8">
+              <Filter className="h-3.5 w-3.5 mr-2" />
+              Filtros
+            </Button>
+            <Button variant="outline" size="sm" className="h-8">
+              <ArrowDownUp className="h-3.5 w-3.5 mr-2" />
+              Ordenar
+            </Button>
+            <Button size="sm" className="h-8">
+              <Plus className="h-3.5 w-3.5 mr-2" />
+              Nueva tarea
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
       
-      <TaskFilter 
-        categories={categories} 
-        activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
-      />
-      
-      <div className="flex overflow-x-auto pb-4 scrollbar-hide">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full min-w-max">
-          <TaskColumn 
-            title="Pendiente" 
-            status="pending"
-            badgeColor="bg-warning-500"
-            tasks={getTasksByStatus("pending")}
-            onTaskDrop={handleTaskDrop}
-            isLoading={isLoading}
-          />
-          
-          <TaskColumn 
-            title="En progreso" 
-            status="in-progress"
-            badgeColor="bg-secondary-500"
-            tasks={getTasksByStatus("in-progress")}
-            onTaskDrop={handleTaskDrop}
-            isLoading={isLoading}
-          />
-          
-          <TaskColumn 
-            title="Completado" 
-            status="completed"
-            badgeColor="bg-success-500"
-            tasks={getTasksByStatus("completed")}
-            onTaskDrop={handleTaskDrop}
-            isLoading={isLoading}
-          />
-          
-          <TaskColumn 
-            title="Revisión" 
-            status="review"
-            badgeColor="bg-accent-500"
-            tasks={getTasksByStatus("review")}
-            onTaskDrop={handleTaskDrop}
-            isLoading={isLoading}
+      <CardContent className="p-4">
+        <div className="mb-4">
+          <TaskFilter 
+            categories={categories} 
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
           />
         </div>
-      </div>
-    </div>
+        
+        <div className="flex overflow-x-auto pb-2 -mx-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-max px-2">
+            <TaskColumn 
+              title="Pendiente" 
+              status="pending"
+              badgeColor="bg-amber-500"
+              tasks={getTasksByStatus("pending")}
+              onTaskDrop={handleTaskDrop}
+              isLoading={isLoading}
+            />
+            
+            <TaskColumn 
+              title="En progreso" 
+              status="in-progress"
+              badgeColor="bg-blue-500"
+              tasks={getTasksByStatus("in-progress")}
+              onTaskDrop={handleTaskDrop}
+              isLoading={isLoading}
+            />
+            
+            <TaskColumn 
+              title="Revisión" 
+              status="review"
+              badgeColor="bg-purple-500"
+              tasks={getTasksByStatus("review")}
+              onTaskDrop={handleTaskDrop}
+              isLoading={isLoading}
+            />
+            
+            <TaskColumn 
+              title="Completado" 
+              status="completed"
+              badgeColor="bg-emerald-500"
+              tasks={getTasksByStatus("completed")}
+              onTaskDrop={handleTaskDrop}
+              isLoading={isLoading}
+            />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

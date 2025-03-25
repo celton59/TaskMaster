@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Category } from "@shared/schema";
 
 interface TaskFilterProps {
@@ -7,28 +8,54 @@ interface TaskFilterProps {
   onFilterChange: (categoryId: number | null) => void;
 }
 
+// Get color class based on category color
+const getCategoryColor = (color: string) => {
+  switch (color) {
+    case "blue":
+      return "bg-blue-500";
+    case "purple":
+      return "bg-purple-500";
+    case "green":
+      return "bg-emerald-500";
+    case "red":
+      return "bg-rose-500";
+    case "orange":
+      return "bg-amber-500";
+    default:
+      return "bg-slate-500";
+  }
+};
+
+// Get badge and text styles based on active status
+const getBadgeStyles = (isActive: boolean, color: string) => {
+  const baseClasses = "inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors";
+  
+  if (isActive) {
+    return `${baseClasses} bg-primary-50 text-primary-700 border border-primary-200`;
+  }
+  
+  return `${baseClasses} bg-neutral-50 text-neutral-700 border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-100`;
+};
+
 export function TaskFilter({ categories, activeFilter, onFilterChange }: TaskFilterProps) {
   return (
-    <div className="flex items-center space-x-2 mb-4 overflow-x-auto pb-2">
-      <Button
-        variant={activeFilter === null ? "default" : "outline"}
-        size="sm"
+    <div className="flex flex-wrap items-center gap-2 mb-4">
+      <button
         onClick={() => onFilterChange(null)}
-        className="whitespace-nowrap"
+        className={getBadgeStyles(activeFilter === null, "neutral")}
       >
-        Todas
-      </Button>
+        Todas las tareas
+      </button>
       
       {categories.map((category) => (
-        <Button
+        <button
           key={category.id}
-          variant={activeFilter === category.id ? "default" : "outline"}
-          size="sm"
           onClick={() => onFilterChange(category.id)}
-          className="whitespace-nowrap"
+          className={getBadgeStyles(activeFilter === category.id, category.color)}
         >
+          <span className={`h-2 w-2 rounded-full ${getCategoryColor(category.color)} mr-1.5`}></span>
           {category.name}
-        </Button>
+        </button>
       ))}
     </div>
   );
