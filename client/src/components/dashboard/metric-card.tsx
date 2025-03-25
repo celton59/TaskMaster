@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
-import { LucideIcon, ArrowUpRight } from "lucide-react";
+import { LucideIcon, ArrowUpRight, TrendingUp, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 interface MetricCardProps {
   title: string;
@@ -27,68 +28,62 @@ export function MetricCard({
   trend,
 }: MetricCardProps) {
   return (
-    <div className="bg-white overflow-hidden shadow-sm border border-neutral-100 rounded-xl hover:shadow-md transition-all duration-200 group">
-      <div className="p-5">
-        <div className="flex items-center justify-between mb-2.5">
+    <div className="bg-white overflow-hidden shadow-md border border-neutral-100 rounded-xl hover:shadow-lg transition-all duration-200 group">
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-4">
           <div 
             className={cn(
-              "flex-shrink-0 p-2.5 rounded-lg",
+              "flex items-center justify-center w-12 h-12 rounded-xl",
               iconBgColor,
               iconColor
             )}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className="h-6 w-6" />
           </div>
           
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-6 w-6 rounded-full text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={() => window.location.href = linkHref}
-          >
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </Button>
+          <Link to={linkHref}>
+            <div className="h-8 w-8 rounded-full border border-neutral-200 bg-white text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-neutral-50 hover:text-neutral-700">
+              <ArrowUpRight className="h-4 w-4" />
+            </div>
+          </Link>
         </div>
         
         <div className="flex flex-col">
-          <div className="text-sm font-medium text-neutral-500 mb-1">{title}</div>
+          <div className="text-sm font-medium text-neutral-600 mb-1">{title}</div>
           
-          <div className="flex items-center justify-between">
-            <div className="text-2xl font-bold text-neutral-900">
+          <div className="flex items-center justify-between mb-1">
+            <div className="text-3xl font-bold text-neutral-900">
               {value}
             </div>
+          </div>
             
-            {trend && (
-              <div className={cn(
-                "flex items-center text-xs font-medium px-2 py-1 rounded-full",
+          {trend && (
+            <div className="flex items-center mt-1 mb-2">
+              <span className={cn(
+                "inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-md border",
                 trend.isPositive
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "bg-rose-50 text-rose-700"
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-rose-50 text-rose-700 border-rose-200"
               )}>
                 {trend.isPositive ? (
-                  <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 19V5M12 5L5 12M12 5L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  <TrendingUp className="w-3 h-3 mr-1" />
                 ) : (
-                  <svg className="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  <TrendingDown className="w-3 h-3 mr-1" />
                 )}
                 {trend.value}
-              </div>
-            )}
-          </div>
+              </span>
+              <span className="ml-2 text-xs text-neutral-500">
+                vs. período anterior
+              </span>
+            </div>
+          )}
         </div>
         
-        <div className="mt-3 pt-3 border-t border-neutral-100">
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start px-0 h-8 text-sm font-medium text-primary-600 hover:text-primary-700 hover:bg-transparent" 
-            onClick={() => window.location.href = linkHref}
-          >
+        <div className="mt-4 pt-4 border-t border-neutral-100">
+          <Link to={linkHref} className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline transition-colors">
             {linkText}
             <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
-          </Button>
+          </Link>
         </div>
       </div>
     </div>
