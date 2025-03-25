@@ -95,7 +95,7 @@ export async function createTaskFromExtraction(extraction: TaskExtraction): Prom
       status: 'pendiente',
       priority: extraction.priority || 'media',
       categoryId: extraction.categoryId || 1, // Por defecto, categoría 1 (Trabajo)
-      dueDate: extraction.dueDate ? extraction.dueDate : null,
+      deadline: extraction.deadline ? extraction.deadline : null,
     };
 
     const createdTask = await storage.createTask(newTask);

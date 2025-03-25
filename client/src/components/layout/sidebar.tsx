@@ -26,7 +26,8 @@ import {
   LogOut,
   PlusCircle,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  Bot
 } from "lucide-react";
 import type { Category } from "@shared/schema";
 
