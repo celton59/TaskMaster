@@ -114,12 +114,6 @@ export function Sidebar() {
           <div className="space-y-0.5 px-1 flex-shrink-0">            
             <NavLink 
               href="/" 
-              icon={<Home className="h-5 w-5" />} 
-              label="Inicio" 
-            />
-            
-            <NavLink 
-              href="/dashboard" 
               icon={<LayoutDashboard className="h-5 w-5" />} 
               label="Dashboard" 
             />
