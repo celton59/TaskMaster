@@ -112,7 +112,7 @@ export default function Dashboard() {
             <Button 
               onClick={() => setIsTaskFormOpen(true)}
               size="sm" 
-              className="h-9 shadow-md bg-primary-600 hover:bg-primary-700 rounded-md transition-all"
+              className="h-9 shadow-md bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-all font-medium"
             >
               <Plus className="mr-2 h-4 w-4" />
               Nueva tarea
