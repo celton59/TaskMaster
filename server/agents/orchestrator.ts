@@ -1419,208 +1419,258 @@ Proporciona respuestas detalladas y útiles sobre planificación y organización
   
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
-      const responseContent = await this.callModel(this.systemPrompt, request.userInput, request.context);
+      // Usar el método callModelWithFunctions en lugar de callModel
+      const response = await this.callModelWithFunctions(this.systemPrompt, request.userInput, request.context);
       
-      try {
-        const parsedResponse = JSON.parse(responseContent);
-        let data = null;
-        
-        if (parsedResponse.action === "getUpcomingDeadlines") {
-          const tasks = await storage.getTasks();
-          data = tasks
-            .filter(task => task.deadline && new Date(task.deadline) > new Date())
-            .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime());
-        } else if (parsedResponse.action === "getPrioritizedTasks") {
-          const tasks = await storage.getTasks();
-          // Ordenar por prioridad: high > medium > low
-          const priorityOrder = { high: 0, medium: 1, low: 2 };
-          data = tasks.sort((a, b) => {
-            const aPriority = a.priority ? (priorityOrder[a.priority as keyof typeof priorityOrder] || 3) : 3;
-            const bPriority = b.priority ? (priorityOrder[b.priority as keyof typeof priorityOrder] || 3) : 3;
-            return aPriority - bPriority;
-          });
-        } else if (parsedResponse.action === "setDeadlines" && parsedResponse.parameters) {
-          // Implementar la funcionalidad para establecer fechas límite
-          const taskId = parsedResponse.parameters.taskId;
-          const deadline = parsedResponse.parameters.deadline;
-          
-          if (taskId && deadline) {
-            // Encontrar la tarea por título si se proporciona un título en lugar de ID
-            let targetTaskId = taskId;
-            
-            if (typeof taskId === 'string' && isNaN(parseInt(taskId))) {
-              // Si es un string y no un número, buscar por título
-              const tasks = await storage.getTasks();
-              const taskByTitle = tasks.find(t => 
-                t.title.toLowerCase().includes(taskId.toLowerCase()) || 
-                (taskId.toLowerCase().includes('contabilidad') && t.title.toLowerCase().includes('contabilidad'))
-              );
-              
-              if (taskByTitle) {
-                targetTaskId = taskByTitle.id;
-              } else {
-                return {
-                  action: "error",
-                  response: `No pude encontrar una tarea con el título que contiene "${taskId}"`,
-                  confidence: 0.3
-                };
-              }
-            }
-            
-            // Actualizar la tarea con la nueva fecha límite
-            const updatedTask = await storage.updateTask(Number(targetTaskId), {
-              deadline: new Date(deadline)
-            });
-            
-            if (updatedTask) {
-              data = updatedTask;
-            } else {
-              return {
-                action: "error",
-                response: `No se pudo actualizar la tarea con ID ${targetTaskId}`,
-                confidence: 0.3
-              };
-            }
-          } else {
-            // Buscar tareas relacionadas con "contabilidad"
-            const tasks = await storage.getTasks();
-            const taskKeyword = 'contabilidad';
-            const contabilidadTask = tasks.find(t => {
-              // Siempre verificar en el título
-              const titleMatch = t.title.toLowerCase().includes(taskKeyword);
-              
-              // Verificar en la descripción solo si existe
-              let descriptionMatch = false;
-              if (typeof t.description === 'string') {
-                descriptionMatch = t.description.toLowerCase().includes(taskKeyword);
-              }
-              
-              return titleMatch || descriptionMatch;
-            });
-            
-            if (contabilidadTask) {
-              // Establecer la fecha objetivo a partir del texto de la respuesta
-              let targetDate: Date;
-              
-              if (parsedResponse.response.includes("27 de marzo")) {
-                targetDate = new Date(2025, 2, 27); // Marzo es 2 (0-indexed)
-              } else if (parsedResponse.response.includes("5 de abril")) {
-                targetDate = new Date(2025, 3, 5); // Abril es 3 (0-indexed)
-              } else {
-                // Establecer fecha predeterminada a 3 días a partir de hoy
-                targetDate = new Date();
-                targetDate.setDate(targetDate.getDate() + 3);
-              }
-              
-              const updatedTask = await storage.updateTask(contabilidadTask.id, {
-                deadline: targetDate
-              });
-              
-              if (updatedTask) {
-                data = updatedTask;
-                
-                // Formatear la fecha para mostrarla amigablemente en español
-                const friendlyDate = targetDate.toLocaleDateString('es-ES', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                });
-                
-                // Actualizar la respuesta para mayor claridad
-                parsedResponse.response = `✅ He actualizado la tarea "${contabilidadTask.title}" y la he programado para el ${friendlyDate}. Puedes verla en tu tablero de tareas.`;
-              }
-            }
-          }
-        } else if (parsedResponse.action === "scheduleTasks") {
-          // Similar a setDeadlines pero puede manejar múltiples tareas
-          
-          // Buscar la tarea de contabilidad y establecer la fecha
-          const tasks = await storage.getTasks();
-          const taskKeyword = 'contabilidad';
-          const contabilidadTask = tasks.find(t => {
-            // Siempre verificar en el título
-            const titleMatch = t.title.toLowerCase().includes(taskKeyword);
-            
-            // Verificar en la descripción solo si existe
-            let descriptionMatch = false;
-            if (typeof t.description === 'string') {
-              descriptionMatch = t.description.toLowerCase().includes(taskKeyword);
-            }
-            
-            return titleMatch || descriptionMatch;
-          });
-          
-          // Detectar la fecha a partir del texto de respuesta
-          let targetDate: Date;
-          
-          if (parsedResponse.response.includes("27 de marzo")) {
-            targetDate = new Date(2025, 2, 27);
-          } else {
-            // Fecha predeterminada: 3 días a partir de hoy
-            targetDate = new Date();
-            targetDate.setDate(targetDate.getDate() + 3);
-          }
-          
-          if (contabilidadTask) {
-            // Si la tarea ya existe, actualizar la fecha límite
-            const updatedTask = await storage.updateTask(contabilidadTask.id, {
-              deadline: targetDate
-            });
-            
-            if (updatedTask) {
-              data = updatedTask;
-              
-              // Formatear la fecha para mostrarla amigablemente en español
-              const friendlyDate = targetDate.toLocaleDateString('es-ES', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              });
-              
-              // Actualizar la respuesta para confirmar CLARAMENTE que se actualizó la fecha
-              parsedResponse.response = `✅ He actualizado la tarea existente: "${contabilidadTask.title}" y la he programado para el ${friendlyDate}. La tarea ya aparecerá con esta fecha en tu tablero.`;
-            }
-          } else {
-            // Si la tarea no existe, crear una nueva tarea de contabilidad
-            const categoryId = 1; // Asumimos categoría "Trabajo" con ID 1
-            
-            // Formatear la fecha para mostrarla amigablemente en español
-            const friendlyDate = targetDate.toLocaleDateString('es-ES', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            });
-            
-            const newTask: InsertTask = {
-              title: "Hacer la contabilidad de la empresa",
-              description: "Tarea creada automáticamente por el asistente con fecha: " + friendlyDate,
-              status: "pendiente",
-              priority: "alta",
-              categoryId: categoryId,
-              deadline: targetDate
-            };
-            
-            const createdTask = await storage.createTask(newTask);
-            data = createdTask;
-            
-            // Actualizar la respuesta para confirmar CLARAMENTE la creación de la tarea CON su fecha
-            parsedResponse.response = `✅ He creado una nueva tarea: "Hacer la contabilidad de la empresa" y la he programado para el ${friendlyDate}. Puedes verla en tu tablero de tareas.`;
-          }
-        }
-        
+      // Si no hay una llamada a función, usar el contenido de texto como respuesta
+      if (!response.functionCall) {
         return {
-          action: parsedResponse.action,
-          response: parsedResponse.response,
-          data,
-          confidence: parsedResponse.confidence || 0.8
-        };
-      } catch (e) {
-        console.error("Error procesando respuesta del agente de planificación:", e);
-        return {
-          response: "No pude procesar correctamente la solicitud de planificación. Por favor, sé más específico.",
-          confidence: 0.3
+          response: response.content || "No pude entender tu solicitud relacionada con planificación.",
+          confidence: 0.5
         };
       }
+      
+      // Procesar la llamada a función
+      let data = null;
+      let action = response.functionCall.name;
+      let userResponse = "";
+      
+      switch (action) {
+        case "getUpcomingDeadlines": {
+          const args = response.functionCall.arguments;
+          const timeframe = args.timeframe || 'week';
+          
+          // Obtener y filtrar tareas con fechas límite
+          const tasks = await storage.getTasks();
+          const now = new Date();
+          const filteredTasks = tasks
+            .filter(task => task.deadline && new Date(task.deadline) > now)
+            .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime());
+          
+          // Limitar el período de tiempo según el parámetro
+          let endDate = new Date();
+          if (timeframe === 'day') {
+            endDate.setDate(now.getDate() + 1);
+          } else if (timeframe === 'week') {
+            endDate.setDate(now.getDate() + 7);
+          } else if (timeframe === 'month') {
+            endDate.setMonth(now.getMonth() + 1);
+          }
+          
+          const tasksInTimeframe = filteredTasks.filter(task => 
+            task.deadline && new Date(task.deadline) <= endDate
+          );
+          
+          data = tasksInTimeframe;
+          
+          if (tasksInTimeframe.length === 0) {
+            userResponse = `No encontré tareas con fechas límite próximas en el período de ${timeframe}.`;
+          } else {
+            userResponse = `Próximas fechas límite (${timeframe}):`;
+            tasksInTimeframe.forEach((task, index) => {
+              const deadlineDate = new Date(task.deadline!);
+              const formattedDate = deadlineDate.toLocaleDateString('es-ES', {
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric'
+              });
+              
+              userResponse += `\n${index + 1}. "${task.title}" - ${formattedDate}`;
+            });
+          }
+          break;
+        }
+        
+        case "getPrioritizedTasks": {
+          // Obtener y ordenar tareas por prioridad
+          const tasks = await storage.getTasks();
+          
+          // Ordenar por prioridad: alta > media > baja
+          const priorityMap: Record<string, number> = { 
+            'alta': 0, 'high': 0,
+            'media': 1, 'medium': 1, 
+            'baja': 2, 'low': 2 
+          };
+          
+          const sortedTasks = [...tasks].sort((a, b) => {
+            const aPriority = priorityMap[a.priority || 'media'] ?? 3;
+            const bPriority = priorityMap[b.priority || 'media'] ?? 3;
+            
+            // Si tienen la misma prioridad, ordenar por deadline
+            if (aPriority === bPriority) {
+              if (!a.deadline) return 1;
+              if (!b.deadline) return -1;
+              return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+            }
+            
+            return aPriority - bPriority;
+          });
+          
+          data = sortedTasks;
+          
+          if (sortedTasks.length === 0) {
+            userResponse = "No encontré tareas en el sistema.";
+          } else {
+            userResponse = "Tareas ordenadas por prioridad:";
+            sortedTasks.slice(0, 10).forEach((task, index) => {
+              const priority = task.priority === 'high' ? 'Alta' : 
+                              (task.priority === 'medium' ? 'Media' : 'Baja');
+              
+              let deadlineInfo = "Sin fecha límite";
+              if (task.deadline) {
+                const deadlineDate = new Date(task.deadline);
+                deadlineInfo = deadlineDate.toLocaleDateString('es-ES', {
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric'
+                });
+              }
+              
+              userResponse += `\n${index + 1}. "${task.title}" - Prioridad: ${priority}, Fecha límite: ${deadlineInfo}`;
+            });
+            
+            if (sortedTasks.length > 10) {
+              userResponse += `\n...y ${sortedTasks.length - 10} tareas más.`;
+            }
+          }
+          break;
+        }
+        
+        case "setDeadlines": {
+          const args = response.functionCall.arguments;
+          const taskId = args.taskId;
+          const deadline = args.deadline;
+          
+          if (!taskId || !deadline) {
+            userResponse = "No se proporcionaron los datos necesarios (ID de tarea y fecha límite).";
+            break;
+          }
+          
+          // Buscar la tarea y actualizar su fecha límite
+          try {
+            const deadlineDate = new Date(deadline);
+            const task = await storage.getTask(Number(taskId));
+            
+            if (!task) {
+              userResponse = `No encontré una tarea con ID ${taskId}.`;
+              break;
+            }
+            
+            const updatedTask = await storage.updateTask(Number(taskId), {
+              deadline: deadlineDate
+            });
+            
+            data = updatedTask;
+            
+            // Formatear la fecha para la respuesta
+            const formattedDate = deadlineDate.toLocaleDateString('es-ES', {
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric'
+            });
+            
+            userResponse = `He actualizado la tarea "${task.title}" con una nueva fecha límite: ${formattedDate}.`;
+          } catch (error) {
+            console.error("Error al actualizar la fecha límite:", error);
+            userResponse = "Ocurrió un error al actualizar la fecha límite. Verifica el formato de la fecha (YYYY-MM-DD).";
+          }
+          break;
+        }
+        
+        case "scheduleTasks": {
+          const args = response.functionCall.arguments;
+          const date = args.date;
+          const taskIds = args.taskIds;
+          
+          if (!date) {
+            userResponse = "No se proporcionó una fecha para la programación.";
+            break;
+          }
+          
+          try {
+            const scheduledDate = new Date(date);
+            const updatedTasks = [];
+            
+            // Si se proporcionaron IDs de tareas, actualizar cada una
+            if (Array.isArray(taskIds) && taskIds.length > 0) {
+              for (const id of taskIds) {
+                const task = await storage.getTask(Number(id));
+                if (task) {
+                  const updated = await storage.updateTask(Number(id), {
+                    deadline: scheduledDate
+                  });
+                  if (updated) {
+                    updatedTasks.push(updated);
+                  }
+                }
+              }
+              
+              data = updatedTasks;
+              
+              // Formatear la fecha para la respuesta
+              const formattedDate = scheduledDate.toLocaleDateString('es-ES', {
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric'
+              });
+              
+              if (updatedTasks.length === 0) {
+                userResponse = "No se pudo actualizar ninguna de las tareas especificadas.";
+              } else if (updatedTasks.length === 1) {
+                userResponse = `He programado la tarea "${updatedTasks[0].title}" para el ${formattedDate}.`;
+              } else {
+                userResponse = `He programado ${updatedTasks.length} tareas para el ${formattedDate}:`;
+                updatedTasks.forEach((task, index) => {
+                  userResponse += `\n${index + 1}. ${task.title}`;
+                });
+              }
+            } else {
+              // Si no se proporcionaron IDs, crear una nueva tarea
+              const newTask: InsertTask = {
+                title: "Nueva tarea programada",
+                description: "Tarea creada a través del planificador",
+                status: 'pendiente',
+                priority: 'media',
+                categoryId: 1,
+                deadline: scheduledDate,
+                assignedTo: 1
+              };
+              
+              const createdTask = await storage.createTask(newTask);
+              data = createdTask;
+              
+              // Formatear la fecha para la respuesta
+              const formattedDate = scheduledDate.toLocaleDateString('es-ES', {
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric'
+              });
+              
+              userResponse = `He creado una nueva tarea programada para el ${formattedDate}.`;
+            }
+          } catch (error) {
+            console.error("Error al programar tareas:", error);
+            userResponse = "Ocurrió un error al programar las tareas. Verifica el formato de la fecha (YYYY-MM-DD).";
+          }
+          break;
+        }
+        
+        case "respond": {
+          const args = response.functionCall.arguments;
+          userResponse = args.message;
+          break;
+        }
+        
+        default:
+          userResponse = "No pude procesar correctamente tu solicitud de planificación.";
+      }
+      
+      return {
+        action,
+        response: userResponse,
+        data,
+        confidence: 0.9
+      };
     } catch (error) {
       console.error("Error en PlannerAgent:", error);
       return {
@@ -1783,19 +1833,26 @@ Para respond, no requiere parámetros adicionales.`;
 
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
-      const { userInput, context } = request;
-      const result = await this.callModel(this.systemPrompt, userInput, context);
+      // Usar el método callModelWithFunctions en lugar de callModel
+      const response = await this.callModelWithFunctions(this.systemPrompt, request.userInput, request.context);
       
-      try {
-        const parsedResult = JSON.parse(result);
-        console.log("Respuesta del Agente de Marketing:", parsedResult);
-        
-        // Procesar acciones específicas del agente
-        let data;
-        
-        if (parsedResult.action === "createMarketingPlan" && parsedResult.parameters) {
-          // Si se solicita un plan de marketing, podemos crear tareas relacionadas
-          const { title, tasks } = parsedResult.parameters;
+      // Si no hay una llamada a función, usar el contenido de texto como respuesta
+      if (!response.functionCall) {
+        return {
+          response: response.content || "No pude entender tu solicitud relacionada con marketing.",
+          confidence: 0.5
+        };
+      }
+      
+      // Procesar la llamada a función
+      let data = null;
+      let action = response.functionCall.name;
+      let userResponse = "";
+      
+      switch (action) {
+        case "createMarketingPlan": {
+          const args = response.functionCall.arguments;
+          const { title, objective, tasks } = args;
           
           if (Array.isArray(tasks) && tasks.length > 0) {
             const createdTasks = [];
@@ -1829,34 +1886,80 @@ Para respond, no requiere parámetros adicionales.`;
             }
             
             data = { 
-              marketingPlan: parsedResult.parameters,
+              marketingPlan: { title, objective, tasks },
               createdTasks 
             };
+            
+            userResponse = `He creado un plan de marketing "${title}" con ${createdTasks.length} tareas asociadas.`;
           } else {
-            data = { marketingPlan: parsedResult.parameters };
+            data = { marketingPlan: { title, objective } };
+            userResponse = `He registrado el plan de marketing "${title}" con objetivo: ${objective}.`;
           }
-        } else if (parsedResult.action === "suggestContent" || parsedResult.action === "analyzeMetrics") {
-          // Para estos casos, simplemente devolvemos los parámetros como datos
-          data = parsedResult.parameters;
+          break;
         }
         
-        // Retornar la respuesta del agente
-        return {
-          action: parsedResult.action,
-          response: parsedResult.response,
-          data,
-          confidence: parsedResult.confidence || 0.7,
-          metadata: {
-            reasoning: parsedResult.reasoning
+        case "suggestContent": {
+          const args = response.functionCall.arguments;
+          const { contentType, topics, frequency, platforms } = args;
+          
+          data = {
+            contentSuggestion: args
+          };
+          
+          userResponse = `Aquí tienes mis sugerencias de contenido (${contentType}):`;
+          
+          if (Array.isArray(topics) && topics.length > 0) {
+            userResponse += `\n\nTemas recomendados:`;
+            topics.forEach((topic, i) => {
+              userResponse += `\n${i+1}. ${topic}`;
+            });
           }
-        };
-      } catch (parseError) {
-        console.error("Error al analizar la respuesta del agente:", parseError);
-        return {
-          response: "Lo siento, ha ocurrido un error al procesar tu solicitud de marketing digital.",
-          confidence: 0.1
-        };
+          
+          if (frequency) {
+            userResponse += `\n\nFrecuencia recomendada: ${frequency}`;
+          }
+          
+          if (Array.isArray(platforms) && platforms.length > 0) {
+            userResponse += `\n\nPlataformas sugeridas: ${platforms.join(', ')}`;
+          }
+          break;
+        }
+        
+        case "analyzeMetrics": {
+          const args = response.functionCall.arguments;
+          const { insightType, recommendations } = args;
+          
+          data = {
+            metrics: args
+          };
+          
+          userResponse = `Análisis de métricas (${insightType}):`;
+          
+          if (Array.isArray(recommendations) && recommendations.length > 0) {
+            userResponse += `\n\nRecomendaciones:`;
+            recommendations.forEach((rec, i) => {
+              userResponse += `\n${i+1}. ${rec}`;
+            });
+          }
+          break;
+        }
+        
+        case "respond": {
+          const args = response.functionCall.arguments;
+          userResponse = args.message;
+          break;
+        }
+        
+        default:
+          userResponse = "No pude procesar correctamente tu solicitud de marketing.";
       }
+      
+      return {
+        action,
+        response: userResponse,
+        data,
+        confidence: 0.9
+      };
     } catch (error) {
       console.error("Error en MarketingAgent:", error);
       return {
@@ -2094,19 +2197,26 @@ Para respond, no requiere parámetros adicionales.`;
 
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
-      const { userInput, context } = request;
-      const result = await this.callModel(this.systemPrompt, userInput, context);
+      // Usar el método callModelWithFunctions en lugar de callModel
+      const response = await this.callModelWithFunctions(this.systemPrompt, request.userInput, request.context);
       
-      try {
-        const parsedResult = JSON.parse(result);
-        console.log("Respuesta del Agente de Gestión de Proyectos:", parsedResult);
-        
-        // Procesar acciones específicas del agente
-        let data;
-        
-        if (parsedResult.action === "createProject" && parsedResult.parameters) {
-          // Si se solicita crear un proyecto, generamos tareas relacionadas
-          const { title, tasks, phases } = parsedResult.parameters;
+      // Si no hay una llamada a función, usar el contenido de texto como respuesta
+      if (!response.functionCall) {
+        return {
+          response: response.content || "No pude entender tu solicitud relacionada con gestión de proyectos.",
+          confidence: 0.5
+        };
+      }
+      
+      // Procesar la llamada a función
+      let data = null;
+      let action = response.functionCall.name;
+      let userResponse = "";
+      
+      switch (action) {
+        case "createProject": {
+          const args = response.functionCall.arguments;
+          const { title, objective, tasks, phases } = args;
           
           if (Array.isArray(tasks) && tasks.length > 0) {
             const createdTasks = [];
@@ -2140,9 +2250,11 @@ Para respond, no requiere parámetros adicionales.`;
             }
             
             data = { 
-              project: parsedResult.parameters,
+              project: { title, objective, tasks },
               createdTasks 
             };
+            
+            userResponse = `He creado el proyecto "${title}" con ${createdTasks.length} tareas asociadas.`;
           } else if (Array.isArray(phases)) {
             // Si hay fases pero no tareas específicas, podemos crear tareas para cada fase
             const createdTasks = [];
@@ -2172,34 +2284,108 @@ Para respond, no requiere parámetros adicionales.`;
             }
             
             data = { 
-              project: parsedResult.parameters,
+              project: { title, objective, phases },
               createdTasks 
             };
+            
+            userResponse = `He creado el proyecto "${title}" con ${createdTasks.length} fases como tareas.`;
           } else {
-            data = { project: parsedResult.parameters };
+            data = { project: { title, objective } };
+            userResponse = `He registrado el proyecto "${title}" con objetivo: ${objective}.`;
           }
-        } else if (["assignResources", "trackProgress", "manageRisks"].includes(parsedResult.action)) {
-          // Para estos casos, simplemente devolvemos los parámetros como datos
-          data = parsedResult.parameters;
+          break;
         }
         
-        // Retornar la respuesta del agente
-        return {
-          action: parsedResult.action,
-          response: parsedResult.response,
-          data,
-          confidence: parsedResult.confidence || 0.7,
-          metadata: {
-            reasoning: parsedResult.reasoning
+        case "assignResources": {
+          const args = response.functionCall.arguments;
+          const { resources, assignments } = args;
+          
+          data = { resourceAssignment: args };
+          
+          userResponse = `He registrado la asignación de recursos:`;
+          
+          if (Array.isArray(assignments) && assignments.length > 0) {
+            assignments.forEach((assignment, i) => {
+              userResponse += `\n${i+1}. ${assignment.resource} asignado a la tarea ${assignment.taskId}`;
+              if (assignment.timeAllocation) {
+                userResponse += ` (${assignment.timeAllocation})`;
+              }
+            });
           }
-        };
-      } catch (parseError) {
-        console.error("Error al analizar la respuesta del agente:", parseError);
-        return {
-          response: "Lo siento, ha ocurrido un error al procesar tu solicitud de gestión de proyectos.",
-          confidence: 0.1
-        };
+          break;
+        }
+        
+        case "trackProgress": {
+          const args = response.functionCall.arguments;
+          const { status, completionRate, issues } = args;
+          
+          data = { progressTracking: args };
+          
+          let statusText = "";
+          if (status === "on-track") statusText = "en curso normal";
+          else if (status === "delayed") statusText = "con retraso";
+          else if (status === "at-risk") statusText = "en riesgo";
+          
+          userResponse = `Seguimiento de proyecto actualizado: ${statusText}, ${completionRate}% completado.`;
+          
+          if (Array.isArray(issues) && issues.length > 0) {
+            userResponse += `\n\nProblemas identificados:`;
+            issues.forEach((issue, i) => {
+              userResponse += `\n${i+1}. ${issue}`;
+            });
+          }
+          break;
+        }
+        
+        case "manageRisks": {
+          const args = response.functionCall.arguments;
+          const { risks, mitigationStrategies, contingencyPlans } = args;
+          
+          data = { riskManagement: args };
+          
+          userResponse = `Gestión de riesgos registrada con ${risks.length} riesgos identificados:`;
+          
+          if (Array.isArray(risks) && risks.length > 0) {
+            risks.forEach((risk, i) => {
+              const impact = risk.impact ? `, impacto ${risk.impact}` : '';
+              const probability = risk.probability ? `, probabilidad ${risk.probability}` : '';
+              userResponse += `\n${i+1}. ${risk.description}${impact}${probability}`;
+              
+              // Buscar estrategia de mitigación para este riesgo
+              if (Array.isArray(mitigationStrategies)) {
+                const strategy = mitigationStrategies.find(s => s.riskIndex === i);
+                if (strategy) {
+                  userResponse += `\n   Estrategia: ${strategy.strategy}`;
+                }
+              }
+            });
+          }
+          
+          if (Array.isArray(contingencyPlans) && contingencyPlans.length > 0) {
+            userResponse += `\n\nPlanes de contingencia:`;
+            contingencyPlans.forEach((plan, i) => {
+              userResponse += `\n${i+1}. ${plan}`;
+            });
+          }
+          break;
+        }
+        
+        case "respond": {
+          const args = response.functionCall.arguments;
+          userResponse = args.message;
+          break;
+        }
+        
+        default:
+          userResponse = "No pude procesar correctamente tu solicitud de gestión de proyectos.";
       }
+      
+      return {
+        action,
+        response: userResponse,
+        data,
+        confidence: 0.9
+      };
     } catch (error) {
       console.error("Error en ProjectManagerAgent:", error);
       return {
