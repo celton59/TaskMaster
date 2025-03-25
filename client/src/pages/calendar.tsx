@@ -32,14 +32,8 @@ interface Category {
   userId?: number | null;
 }
 
-// Interfaz para las props del componente DayContent del calendario
-interface DayContentProps {
-  date: Date;
-  day: number;
-  displayMonth: number;
-  displayYear: number;
-  children?: React.ReactNode;
-}
+// Las interfaces para los componentes del calendario se importan automáticamente 
+// desde la biblioteca react-day-picker
 
 // Componente principal de Calendario
 export default function CalendarPage() {
@@ -202,12 +196,15 @@ export default function CalendarPage() {
                     }
                   }}
                   components={{
-                    DayContent: (props: DayContentProps) => {
-                      const date = props.date;
-                      const isWithTasks = daysWithTasks.has(format(date, 'yyyy-MM-dd'));
+                    Day: (props) => {
+                      const isWithTasks = daysWithTasks.has(format(props.date, 'yyyy-MM-dd'));
                       return (
-                        <div className="relative w-full h-full flex items-center justify-center">
-                          <div>{props.day}</div>
+                        <div
+                          className={`relative flex h-9 w-9 items-center justify-center rounded-md p-0 text-sm ${
+                            isWithTasks ? 'font-semibold' : ''
+                          }`}
+                        >
+                          {props.day}
                           {isWithTasks && (
                             <div className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-blue-500"></div>
                           )}
@@ -230,33 +227,81 @@ export default function CalendarPage() {
               <CardContent>
                 {tasksForSelectedDate.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    No hay tareas para este día
+                    <CalendarIcon className="h-10 w-10 mx-auto mb-3 text-gray-300" />
+                    <p className="font-medium mb-1">No hay tareas para este día</p>
+                    <p className="text-xs text-gray-400 mb-3">Añade una nueva tarea para esta fecha</p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => openTaskForm()}
+                      className="flex mx-auto items-center gap-1"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      Añadir tarea
+                    </Button>
                   </div>
                 ) : (
                   <ScrollArea className="h-[400px] pr-4">
                     <div className="space-y-3">
-                      {tasksForSelectedDate.map((task: Task) => (
-                        <div 
-                          key={task.id} 
-                          className="p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-                          onClick={() => openTaskForm(task.id)}
-                        >
-                          <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-medium text-gray-900">{task.title}</h3>
-                            <Badge className={`bg-${getCategoryColor(task.categoryId)}-100 text-${getCategoryColor(task.categoryId)}-800 border-${getCategoryColor(task.categoryId)}-200`}>
-                              {task.categoryId ? categories.find((c: Category) => c.id === task.categoryId)?.name : 'Sin categoría'}
-                            </Badge>
+                      {tasksForSelectedDate.map((task: Task) => {
+                        // Determinar colores según prioridad
+                        let priorityColor = "";
+                        if (task.priority === 'alta') {
+                          priorityColor = "bg-rose-500";
+                        } else if (task.priority === 'media') {
+                          priorityColor = "bg-amber-500";
+                        } else {
+                          priorityColor = "bg-emerald-500";
+                        }
+                        
+                        // Determinar colores según estado
+                        let statusColor = "";
+                        if (task.status === 'pendiente') {
+                          statusColor = "bg-neutral-100 text-neutral-600";
+                        } else if (task.status === 'en_progreso') {
+                          statusColor = "bg-blue-100 text-blue-800";
+                        } else if (task.status === 'revision') {
+                          statusColor = "bg-purple-100 text-purple-800";
+                        } else if (task.status === 'completada') {
+                          statusColor = "bg-green-100 text-green-800";
+                        }
+                        
+                        return (
+                          <div 
+                            key={task.id} 
+                            className="p-3 border border-l-4 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                            style={{ borderLeftColor: task.categoryId ? 
+                                categories.find((c: Category) => c.id === task.categoryId)?.color || '#e5e7eb' 
+                                : '#e5e7eb' }}
+                            onClick={() => openTaskForm(task.id)}
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex items-start gap-2">
+                                <div className={`h-2 w-2 rounded-full mt-1.5 ${priorityColor}`}></div>
+                                <h3 className="font-medium text-gray-900">{task.title}</h3>
+                              </div>
+                              {task.categoryId && (
+                                <Badge className="bg-white border" style={{ 
+                                  color: categories.find((c: Category) => c.id === task.categoryId)?.color,
+                                  borderColor: categories.find((c: Category) => c.id === task.categoryId)?.color 
+                                }}>
+                                  {categories.find((c: Category) => c.id === task.categoryId)?.name || 'Sin categoría'}
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-2 pl-4">{task.description}</p>
+                            <div className="flex items-center justify-between pl-4">
+                              <div className="flex items-center text-xs text-gray-500">
+                                <Clock className="h-3 w-3 mr-1" />
+                                {task.deadline && format(task.deadline instanceof Date ? task.deadline : parseISO(task.deadline as unknown as string), 'HH:mm', { locale: es })}
+                              </div>
+                              <Badge className={statusColor}>
+                                {task.status.replace('_', ' ')}
+                              </Badge>
+                            </div>
                           </div>
-                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">{task.description}</p>
-                          <div className="flex items-center text-xs text-gray-500">
-                            <Clock className="h-3 w-3 mr-1" />
-                            {task.deadline && format(task.deadline instanceof Date ? task.deadline : parseISO(task.deadline as unknown as string), 'HH:mm', { locale: es })}
-                            <Badge variant="outline" className="ml-2 capitalize">
-                              {task.status.replace('_', ' ')}
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </ScrollArea>
                 )}
@@ -309,30 +354,64 @@ export default function CalendarPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {tasksForSelectedDate.map((task: Task) => (
-                    <div
-                      key={task.id}
-                      className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-                      onClick={() => openTaskForm(task.id)}
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <h3 className="font-medium text-lg text-gray-900">{task.title}</h3>
-                        <Badge className={`bg-${getCategoryColor(task.categoryId)}-100 text-${getCategoryColor(task.categoryId)}-800 border-${getCategoryColor(task.categoryId)}-200`}>
-                          {task.categoryId ? categories.find((c: Category) => c.id === task.categoryId)?.name : 'Sin categoría'}
-                        </Badge>
-                      </div>
-                      <p className="text-gray-600 mb-3">{task.description}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Clock className="h-4 w-4 mr-2" />
-                          {task.deadline && format(task.deadline instanceof Date ? task.deadline : parseISO(task.deadline as unknown as string), 'HH:mm', { locale: es })}
+                  {tasksForSelectedDate.map((task: Task) => {
+                    // Calcular colores para categoría, prioridad y estado
+                    let priorityColor = "";
+                    if (task.priority === 'alta') {
+                      priorityColor = "bg-rose-500";
+                    } else if (task.priority === 'media') {
+                      priorityColor = "bg-amber-500";
+                    } else {
+                      priorityColor = "bg-emerald-500";
+                    }
+                    
+                    let statusColor = "";
+                    if (task.status === 'pendiente') {
+                      statusColor = "bg-neutral-100 text-neutral-600";
+                    } else if (task.status === 'en_progreso') {
+                      statusColor = "bg-blue-100 text-blue-800";
+                    } else if (task.status === 'revision') {
+                      statusColor = "bg-purple-100 text-purple-800";
+                    } else if (task.status === 'completada') {
+                      statusColor = "bg-green-100 text-green-800";
+                    }
+                    
+                    return (
+                      <div
+                        key={task.id}
+                        className="p-4 border-l-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                        style={{ borderLeftColor: task.categoryId ? 
+                            categories.find((c: Category) => c.id === task.categoryId)?.color || '#e5e7eb' 
+                            : '#e5e7eb' }}
+                        onClick={() => openTaskForm(task.id)}
+                      >
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-start gap-2">
+                            <div className={`h-3 w-3 rounded-full mt-1.5 flex-shrink-0 ${priorityColor}`}></div>
+                            <h3 className="font-medium text-lg text-gray-900">{task.title}</h3>
+                          </div>
+                          {task.categoryId && (
+                            <Badge className="bg-white border" style={{ 
+                              color: categories.find((c: Category) => c.id === task.categoryId)?.color,
+                              borderColor: categories.find((c: Category) => c.id === task.categoryId)?.color 
+                            }}>
+                              {categories.find((c: Category) => c.id === task.categoryId)?.name}
+                            </Badge>
+                          )}
                         </div>
-                        <Badge variant="outline" className="capitalize">
-                          {task.status.replace('_', ' ')}
-                        </Badge>
+                        <p className="text-gray-600 mb-3 ml-5">{task.description}</p>
+                        <div className="flex items-center justify-between ml-5">
+                          <div className="flex items-center text-sm text-gray-500">
+                            <Clock className="h-4 w-4 mr-2" />
+                            {task.deadline && format(task.deadline instanceof Date ? task.deadline : parseISO(task.deadline as unknown as string), 'HH:mm', { locale: es })}
+                          </div>
+                          <Badge className={statusColor}>
+                            {task.status.replace('_', ' ')}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
