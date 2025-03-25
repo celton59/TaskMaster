@@ -39,7 +39,9 @@ export function Header() {
           >
             <Menu className="h-6 w-6" />
           </button>
-          <div className="md:hidden ml-2 font-bold text-lg text-neutral-900">TaskMaster</div>
+          <div className="md:hidden ml-2 flex items-center">
+            <img src="/images/logo.png" alt="Aitorin Logo" className="h-8 w-auto" />
+          </div>
         </div>
         
         <div className="ml-4 flex items-center md:ml-6 space-x-3">

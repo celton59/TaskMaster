@@ -87,10 +87,7 @@ export function Sidebar() {
       <aside className="hidden md:flex flex-col w-64 bg-white border-r border-neutral-100 h-full shrink-0 shadow-lg overflow-hidden">
         <div className="py-2 px-4 flex items-center justify-between">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center text-white">
-              <Home className="h-4 w-4" />
-            </div>
-            <h1 className="font-bold text-base ml-2 text-neutral-900">TaskMaster</h1>
+            <img src="/images/logo.png" alt="Aitorin Logo" className="h-8 w-auto" />
           </div>
           <Button 
             size="icon" 
@@ -227,10 +224,7 @@ export function Sidebar() {
           <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
             {/* Mobile menu content - mirror of desktop sidebar */}
             <div className="py-5 px-6 border-b border-neutral-200 flex items-center">
-              <div className="h-10 w-10 rounded-md bg-primary-700 flex items-center justify-center text-white">
-                <LayoutDashboard className="h-6 w-6" />
-              </div>
-              <h1 className="font-bold text-xl ml-3 text-neutral-900">TaskMaster</h1>
+              <img src="/images/logo.png" alt="Aitorin Logo" className="h-10 w-auto" />
             </div>
             
             <nav className="flex-1 py-5 px-5 overflow-y-auto">
