@@ -624,164 +624,182 @@ IMPORTANTE: Si el usuario solicita crear varias tareas al mismo tiempo (por ejem
 
 No intentes responder a chistes, saludos o conversación casual; interpreta todo como un intento de gestionar tareas.`;
   
-  getFunctions(): Array<OpenAIFunction> {
+  getFunctions(): Array<OpenAITool> {
     return [
       {
-        name: "createTask",
-        description: "Crea una nueva tarea en el sistema",
-        parameters: {
-          type: "object",
-          properties: {
-            title: { 
-              type: "string",
-              description: "Título de la tarea (extráelo de la descripción del usuario)"
+        type: "function",
+        function: {
+          name: "createTask",
+          description: "Crea una nueva tarea en el sistema",
+          parameters: {
+            type: "object",
+            properties: {
+              title: { 
+                type: "string",
+                description: "Título de la tarea (extráelo de la descripción del usuario)"
+              },
+              description: { 
+                type: "string",
+                description: "Descripción detallada (elabora basado en la solicitud)"
+              },
+              priority: { 
+                type: "string", 
+                enum: ["alta", "media", "baja"],
+                description: "Prioridad de la tarea (deduce la prioridad apropiada)"
+              },
+              categoryId: { 
+                type: "integer",
+                description: "ID de la categoría (opcional, usa 1 por defecto)" 
+              },
+              deadline: { 
+                type: "string", 
+                format: "date",
+                description: "Fecha límite en formato YYYY-MM-DD. INCLUIR SIEMPRE que el usuario mencione una fecha. Convierte expresiones relativas ('mañana', 'el viernes', etc.) a fechas absolutas."
+              }
             },
-            description: { 
-              type: "string",
-              description: "Descripción detallada (elabora basado en la solicitud)"
-            },
-            priority: { 
-              type: "string", 
-              enum: ["alta", "media", "baja"],
-              description: "Prioridad de la tarea (deduce la prioridad apropiada)"
-            },
-            categoryId: { 
-              type: "integer",
-              description: "ID de la categoría (opcional, usa 1 por defecto)" 
-            },
-            deadline: { 
-              type: "string", 
-              format: "date",
-              description: "Fecha límite en formato YYYY-MM-DD. INCLUIR SIEMPRE que el usuario mencione una fecha. Convierte expresiones relativas ('mañana', 'el viernes', etc.) a fechas absolutas."
-            }
-          },
-          required: ["title", "description", "priority"]
+            required: ["title", "description", "priority"]
+          }
         }
       },
       {
-        name: "createTasks",
-        description: "Crea múltiples tareas en el sistema de una sola vez",
-        parameters: {
-          type: "object",
-          properties: {
-            tasks: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  title: { 
-                    type: "string",
-                    description: "Título de la tarea (extráelo de la descripción del usuario)"
+        type: "function",
+        function: {
+          name: "createTasks",
+          description: "Crea múltiples tareas en el sistema de una sola vez",
+          parameters: {
+            type: "object",
+            properties: {
+              tasks: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { 
+                      type: "string",
+                      description: "Título de la tarea (extráelo de la descripción del usuario)"
+                    },
+                    description: { 
+                      type: "string",
+                      description: "Descripción detallada (elabora basado en la solicitud)"
+                    },
+                    priority: { 
+                      type: "string", 
+                      enum: ["alta", "media", "baja"],
+                      description: "Prioridad de la tarea (deduce la prioridad apropiada)"
+                    },
+                    categoryId: { 
+                      type: "integer",
+                      description: "ID de la categoría (opcional, usa 1 por defecto)" 
+                    },
+                    deadline: { 
+                      type: "string", 
+                      format: "date",
+                      description: "Fecha límite en formato YYYY-MM-DD. INCLUIR SIEMPRE que el usuario mencione una fecha. Convierte expresiones relativas ('mañana', 'el viernes', etc.) a fechas absolutas."
+                    }
                   },
-                  description: { 
-                    type: "string",
-                    description: "Descripción detallada (elabora basado en la solicitud)"
+                  required: ["title", "description", "priority"]
+                },
+                description: "Lista de tareas a crear"
+              }
+            },
+            required: ["tasks"]
+          }
+        }
+      },
+      {
+        type: "function",
+        function: {
+          name: "updateTask",
+          description: "Actualiza una tarea existente",
+          parameters: {
+            type: "object",
+            properties: {
+              taskId: { 
+                type: "integer",
+                description: "ID de la tarea a actualizar" 
+              },
+              updates: { 
+                type: "object",
+                description: "Objeto con los campos a actualizar",
+                properties: {
+                  title: { type: "string" },
+                  description: { type: "string" },
+                  status: { 
+                    type: "string", 
+                    enum: ["pending", "in_progress", "review", "completed"] 
                   },
                   priority: { 
                     type: "string", 
-                    enum: ["alta", "media", "baja"],
-                    description: "Prioridad de la tarea (deduce la prioridad apropiada)"
+                    enum: ["high", "medium", "low"] 
                   },
-                  categoryId: { 
-                    type: "integer",
-                    description: "ID de la categoría (opcional, usa 1 por defecto)" 
-                  },
+                  categoryId: { type: "integer" },
                   deadline: { 
                     type: "string", 
-                    format: "date",
-                    description: "Fecha límite en formato YYYY-MM-DD. INCLUIR SIEMPRE que el usuario mencione una fecha. Convierte expresiones relativas ('mañana', 'el viernes', etc.) a fechas absolutas."
+                    format: "date" 
                   }
-                },
-                required: ["title", "description", "priority"]
-              },
-              description: "Lista de tareas a crear"
-            }
-          },
-          required: ["tasks"]
-        }
-      },
-      {
-        name: "updateTask",
-        description: "Actualiza una tarea existente",
-        parameters: {
-          type: "object",
-          properties: {
-            taskId: { 
-              type: "integer",
-              description: "ID de la tarea a actualizar" 
-            },
-            updates: { 
-              type: "object",
-              description: "Objeto con los campos a actualizar",
-              properties: {
-                title: { type: "string" },
-                description: { type: "string" },
-                status: { 
-                  type: "string", 
-                  enum: ["pending", "in_progress", "review", "completed"] 
-                },
-                priority: { 
-                  type: "string", 
-                  enum: ["high", "medium", "low"] 
-                },
-                categoryId: { type: "integer" },
-                deadline: { 
-                  type: "string", 
-                  format: "date" 
                 }
               }
-            }
-          },
-          required: ["taskId", "updates"]
-        }
-      },
-      {
-        name: "deleteTasks",
-        description: "Elimina una o varias tareas existentes",
-        parameters: {
-          type: "object",
-          properties: {
-            taskIds: { 
-              type: "array",
-              items: {
-                type: "integer"
-              },
-              description: "Lista de IDs de las tareas a eliminar" 
-            }
-          },
-          required: ["taskIds"]
-        }
-      },
-      {
-        name: "listTasks",
-        description: "Lista las tareas existentes, opcionalmente filtradas",
-        parameters: {
-          type: "object",
-          properties: {
-            status: { 
-              type: "string", 
-              enum: ["pending", "in_progress", "review", "completed"],
-              description: "Filtrar por estatus (opcional)" 
             },
-            categoryId: { 
-              type: "integer",
-              description: "Filtrar por categoría (opcional)" 
+            required: ["taskId", "updates"]
+          }
+        }
+      },
+      {
+        type: "function",
+        function: {
+          name: "deleteTasks",
+          description: "Elimina una o varias tareas existentes",
+          parameters: {
+            type: "object",
+            properties: {
+              taskIds: { 
+                type: "array",
+                items: {
+                  type: "integer"
+                },
+                description: "Lista de IDs de las tareas a eliminar" 
+              }
+            },
+            required: ["taskIds"]
+          }
+        }
+      },
+      {
+        type: "function",
+        function: {
+          name: "listTasks",
+          description: "Lista las tareas existentes, opcionalmente filtradas",
+          parameters: {
+            type: "object",
+            properties: {
+              status: { 
+                type: "string", 
+                enum: ["pending", "in_progress", "review", "completed"],
+                description: "Filtrar por estatus (opcional)" 
+              },
+              categoryId: { 
+                type: "integer",
+                description: "Filtrar por categoría (opcional)" 
+              }
             }
           }
         }
       },
       {
-        name: "respond",
-        description: "Responder al usuario sin realizar ninguna acción en el sistema",
-        parameters: {
-          type: "object",
-          properties: {
-            message: { 
-              type: "string",
-              description: "Mensaje para el usuario" 
-            }
-          },
-          required: ["message"]
+        type: "function",
+        function: {
+          name: "respond",
+          description: "Responder al usuario sin realizar ninguna acción en el sistema",
+          parameters: {
+            type: "object",
+            properties: {
+              message: { 
+                type: "string",
+                description: "Mensaje para el usuario" 
+              }
+            },
+            required: ["message"]
+          }
         }
       }
     ];
@@ -1011,86 +1029,101 @@ Para respond, no requiere parámetros, sólo usa cuando no necesites crear/modif
 
 Asegúrate de asignar un color apropiado basado en el contexto. Por ejemplo, tareas financieras podrían usar green, tareas urgentes podrían usar red, etc.`;
   
-  getFunctions(): Array<OpenAIFunction> {
+  getFunctions(): Array<OpenAITool> {
     return [
       {
-        name: "createCategory",
-        description: "Crea una nueva categoría en el sistema",
-        parameters: {
-          type: "object",
-          properties: {
-            name: { 
-              type: "string",
-              description: "Nombre de la categoría (extráelo de la descripción del usuario)"
+        type: "function",
+        function: {
+          name: "createCategory",
+          description: "Crea una nueva categoría en el sistema",
+          parameters: {
+            type: "object",
+            properties: {
+              name: { 
+                type: "string",
+                description: "Nombre de la categoría (extráelo de la descripción del usuario)"
+              },
+              color: { 
+                type: "string", 
+                enum: ["blue", "green", "red", "purple", "orange"],
+                description: "Color de la categoría (blue, green, red, purple, orange)"
+              }
             },
-            color: { 
-              type: "string", 
-              enum: ["blue", "green", "red", "purple", "orange"],
-              description: "Color de la categoría (blue, green, red, purple, orange)"
-            }
-          },
-          required: ["name"]
+            required: ["name"]
+          }
         }
       },
       {
-        name: "updateCategory",
-        description: "Actualiza una categoría existente",
-        parameters: {
-          type: "object",
-          properties: {
-            categoryId: { 
-              type: "integer",
-              description: "ID de la categoría a actualizar" 
-            },
-            updates: { 
-              type: "object",
-              description: "Objeto con los campos a actualizar",
-              properties: {
-                name: { type: "string" },
-                color: { 
-                  type: "string", 
-                  enum: ["blue", "green", "red", "purple", "orange"] 
+        type: "function",
+        function: {
+          name: "updateCategory",
+          description: "Actualiza una categoría existente",
+          parameters: {
+            type: "object",
+            properties: {
+              categoryId: { 
+                type: "integer",
+                description: "ID de la categoría a actualizar" 
+              },
+              updates: { 
+                type: "object",
+                description: "Objeto con los campos a actualizar",
+                properties: {
+                  name: { type: "string" },
+                  color: { 
+                    type: "string", 
+                    enum: ["blue", "green", "red", "purple", "orange"] 
+                  }
                 }
               }
-            }
-          },
-          required: ["categoryId", "updates"]
+            },
+            required: ["categoryId", "updates"]
+          }
         }
       },
       {
-        name: "deleteCategory",
-        description: "Elimina una categoría existente",
-        parameters: {
-          type: "object",
-          properties: {
-            categoryId: { 
-              type: "integer",
-              description: "ID de la categoría a eliminar" 
-            }
-          },
-          required: ["categoryId"]
+        type: "function",
+        function: {
+          name: "deleteCategory",
+          description: "Elimina una categoría existente",
+          parameters: {
+            type: "object",
+            properties: {
+              categoryId: { 
+                type: "integer",
+                description: "ID de la categoría a eliminar" 
+              }
+            },
+            required: ["categoryId"]
+          }
         }
       },
       {
-        name: "listCategories",
-        description: "Lista las categorías existentes",
-        parameters: {
-          type: "object",
-          properties: {}
+        type: "function",
+        function: {
+          name: "listCategories",
+          description: "Lista las categorías existentes",
+          parameters: {
+            type: "object",
+            properties: {}
+          }
         }
       },
       {
-        name: "respond",
-        description: "Responder al usuario sin realizar ninguna acción en el sistema",
-        parameters: {
-          type: "object",
-          properties: {
-            message: { 
-              type: "string",
-              description: "Mensaje para el usuario" 
-            }
-          },
-          required: ["message"]
+        type: "function",
+        function: {
+          name: "respond",
+          description: "Responder al usuario sin realizar ninguna acción en el sistema",
+          parameters: {
+            type: "object",
+            properties: {
+              message: { 
+                type: "string",
+                description: "Mensaje para el usuario" 
+              }
+            },
+            required: ["message"]
+          }
         }
       }
     ];
@@ -1201,56 +1234,68 @@ Para respond, no requiere parámetros, sólo usa cuando ninguna otra acción sea
 
 Asegúrate de proporcionar insights valiosos y accionables basados en los datos disponibles.`;
   
-  getFunctions(): Array<OpenAIFunction> {
+  getFunctions(): Array<OpenAITool> {
     return [
       {
-        name: "getTaskStats",
-        description: "Obtener estadísticas básicas de tareas",
-        parameters: {
-          type: "object",
-          properties: {}
+        type: "function",
+        function: {
+          name: "getTaskStats",
+          description: "Obtener estadísticas básicas de tareas",
+          parameters: {
+            type: "object",
+            properties: {}
+          }
         }
       },
       {
-        name: "analyzeTrends",
-        description: "Analizar tendencias en las tareas",
-        parameters: {
-          type: "object",
-          properties: {
-            timeframe: { 
-              type: "string", 
-              enum: ["day", "week", "month"],
-              description: "Período de tiempo para analizar" 
+        type: "function",
+        function: {
+          name: "analyzeTrends",
+          description: "Analizar tendencias en las tareas",
+          parameters: {
+            type: "object",
+            properties: {
+              timeframe: { 
+                type: "string", 
+                enum: ["day", "week", "month"],
+                description: "Período de tiempo para analizar" 
+              }
             }
           }
         }
       },
       {
-        name: "generateReport",
-        description: "Generar un informe detallado",
-        parameters: {
-          type: "object",
-          properties: {
-            reportType: { 
-              type: "string", 
-              enum: ["summary", "detailed", "performance"],
-              description: "Tipo de informe a generar" 
+        type: "function",
+        function: {
+          name: "generateReport",
+          description: "Generar un informe detallado",
+          parameters: {
+            type: "object",
+            properties: {
+              reportType: { 
+                type: "string", 
+                enum: ["summary", "detailed", "performance"],
+                description: "Tipo de informe a generar" 
+              }
             }
           }
         }
       },
       {
-        name: "respond",
-        description: "Responder al usuario sin realizar ninguna acción en el sistema",
-        parameters: {
-          type: "object",
-          properties: {
-            message: { 
-              type: "string",
-              description: "Mensaje para el usuario" 
-            }
-          },
-          required: ["message"]
+        type: "function",
+        function: {
+          name: "respond",
+          description: "Responder al usuario sin realizar ninguna acción en el sistema",
+          parameters: {
+            type: "object",
+            properties: {
+              message: { 
+                type: "string",
+                description: "Mensaje para el usuario" 
+              }
+            },
+            required: ["message"]
+          }
         }
       }
     ];
@@ -1453,81 +1498,96 @@ Eres capaz de ejecutar las siguientes funciones según las necesidades del usuar
 
 Proporciona respuestas detalladas y útiles sobre planificación y organización temporal.`;
 
-  getFunctions(): Array<OpenAIFunction> {
+  getFunctions(): Array<OpenAITool> {
     return [
       {
-        name: "scheduleTasks",
-        description: "Programa tareas para una fecha específica",
-        parameters: {
-          type: "object",
-          properties: {
-            taskIds: { 
-              type: "array",
-              items: { type: "integer" },
-              description: "IDs de las tareas a programar" 
+        type: "function",
+        function: {
+          name: "scheduleTasks",
+          description: "Programa tareas para una fecha específica",
+          parameters: {
+            type: "object",
+            properties: {
+              taskIds: { 
+                type: "array",
+                items: { type: "integer" },
+                description: "IDs de las tareas a programar" 
+              },
+              date: { 
+                type: "string", 
+                format: "date",
+                description: "Fecha propuesta en formato YYYY-MM-DD" 
+              }
             },
-            date: { 
-              type: "string", 
-              format: "date",
-              description: "Fecha propuesta en formato YYYY-MM-DD" 
-            }
-          },
-          required: ["date"]
+            required: ["date"]
+          }
         }
       },
       {
-        name: "setDeadlines",
-        description: "Establece la fecha límite para una tarea específica",
-        parameters: {
-          type: "object",
-          properties: {
-            taskId: { 
-              type: "integer",
-              description: "ID de la tarea a la que establecer fecha límite" 
+        type: "function",
+        function: {
+          name: "setDeadlines",
+          description: "Establece la fecha límite para una tarea específica",
+          parameters: {
+            type: "object",
+            properties: {
+              taskId: { 
+                type: "integer",
+                description: "ID de la tarea a la que establecer fecha límite" 
+              },
+              deadline: { 
+                type: "string", 
+                format: "date",
+                description: "Nueva fecha límite en formato YYYY-MM-DD" 
+              }
             },
-            deadline: { 
-              type: "string", 
-              format: "date",
-              description: "Nueva fecha límite en formato YYYY-MM-DD" 
-            }
-          },
-          required: ["taskId", "deadline"]
+            required: ["taskId", "deadline"]
+          }
         }
       },
       {
-        name: "getPrioritizedTasks",
-        description: "Obtiene una lista de tareas ordenadas por prioridad",
-        parameters: {
-          type: "object",
-          properties: {}
+        type: "function",
+        function: {
+          name: "getPrioritizedTasks",
+          description: "Obtiene una lista de tareas ordenadas por prioridad",
+          parameters: {
+            type: "object",
+            properties: {}
+          }
         }
       },
       {
-        name: "getUpcomingDeadlines",
-        description: "Obtiene una lista de próximas fechas límite",
-        parameters: {
-          type: "object",
-          properties: {
-            timeframe: { 
-              type: "string", 
-              enum: ["day", "week", "month"],
-              description: "Período de tiempo para filtrar las fechas límite" 
+        type: "function",
+        function: {
+          name: "getUpcomingDeadlines",
+          description: "Obtiene una lista de próximas fechas límite",
+          parameters: {
+            type: "object",
+            properties: {
+              timeframe: { 
+                type: "string", 
+                enum: ["day", "week", "month"],
+                description: "Período de tiempo para filtrar las fechas límite" 
+              }
             }
           }
         }
       },
       {
-        name: "respond",
-        description: "Responder al usuario sin realizar ninguna acción en el sistema",
-        parameters: {
-          type: "object",
-          properties: {
-            message: { 
-              type: "string",
-              description: "Mensaje para el usuario" 
-            }
-          },
-          required: ["message"]
+        type: "function",
+        function: {
+          name: "respond",
+          description: "Responder al usuario sin realizar ninguna acción en el sistema",
+          parameters: {
+            type: "object",
+            properties: {
+              message: { 
+                type: "string",
+                description: "Mensaje para el usuario" 
+              }
+            },
+            required: ["message"]
+          }
         }
       }
     ];
