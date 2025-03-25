@@ -230,26 +230,7 @@ export function Sidebar() {
             />
           </div>
           
-          <div className="px-4 py-2">
-            <div className="bg-primary-50 rounded-xl p-3 border border-primary-100 shadow-sm">
-              <div className="flex items-center mb-2">
-                <span className="h-6 w-6 rounded-full bg-primary-200 flex items-center justify-center">
-                  <HelpCircle className="h-3.5 w-3.5 text-primary-700" />
-                </span>
-                <span className="ml-2 text-sm font-medium text-primary-800">¿Necesitas ayuda?</span>
-              </div>
-              <p className="text-xs text-primary-700 leading-relaxed">
-                Obtén soporte y asistencia con nuestra documentación.
-              </p>
-              <Button 
-                variant="link" 
-                className="w-full justify-start p-0 mt-1 text-xs text-primary-800 font-medium" 
-                size="sm"
-              >
-                Ver documentación
-              </Button>
-            </div>
-          </div>
+
           
           <Separator className="my-3 bg-neutral-100" />
           
