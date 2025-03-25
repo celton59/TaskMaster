@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Tasks from "@/pages/tasks";
 import TaskDetails from "@/pages/task-details";
+import Reports from "@/pages/reports";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 
@@ -22,6 +23,7 @@ function Router() {
             <Route path="/" component={Dashboard} />
             <Route path="/tasks" component={Tasks} />
             <Route path="/tasks/:id" component={TaskDetails} />
+            <Route path="/reports" component={Reports} />
             <Route component={NotFound} />
           </Switch>
         </main>
