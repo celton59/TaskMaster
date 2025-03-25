@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { MessagesSquare, SendIcon, Loader2 } from 'lucide-react';
+import { MessagesSquare, SendIcon, Loader2, Bot } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 
@@ -17,18 +17,26 @@ export default function AIAssistant() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "¡Hola! Soy tu asistente para crear tareas. Puedes decirme qué tarea necesitas crear y yo la crearé por ti. Por ejemplo: 'Necesito entregar el informe de ventas para el viernes'.",
+      text: "¡Hola! Soy tu asistente AI para gestión de tareas. Puedo hacer lo siguiente:\n\n• Crear nuevas tareas\n• Listar tareas existentes\n• Crear y listar categorías\n• Responder preguntas sobre gestión de tareas\n\nCuéntame, ¿en qué puedo ayudarte hoy?",
       isUser: false,
       timestamp: new Date()
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [actionViewOpen, setActionViewOpen] = useState<boolean>(false);
+  const [currentAction, setCurrentAction] = useState<string | null>(null);
+  const [actionData, setActionData] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  
+  // Efecto para hacer scroll al fondo cuando cambian los mensajes
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,34 +55,45 @@ export default function AIAssistant() {
     setIsLoading(true);
     
     try {
-      // Enviar el mensaje a la API
-      const response = await apiRequest('/api/ai/create-task', 'POST', { 
-        text: userMessage.text 
+      // Enviar el mensaje a la API del agente
+      const response = await apiRequest('/api/ai/agent', 'POST', { 
+        message: userMessage.text 
       });
       
-      const result = await response.json();
-      
-      // Crear mensaje de respuesta
-      let responseText = '';
-      
-      if (result.task) {
-        const task = result.task;
-        responseText = `✅ ¡Tarea creada exitosamente!\n\n**${task.title}**\n\nPrioridad: ${task.priority}\nEstado: ${task.status}\n${task.categoryId ? `Categoría: ${task.categoryId}` : ''}`;
-        
-        // Invalidar la caché para que se actualice la lista de tareas
-        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      } else {
-        responseText = `❌ No pude crear la tarea: ${result.message || 'Error desconocido'}`;
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
       }
+      
+      const result = await response.json() as AgentActionData;
       
       // Agregar respuesta del asistente
       const assistantMessage: Message = {
-        text: responseText,
+        text: result.message,
         isUser: false,
-        timestamp: new Date()
+        timestamp: new Date(),
+        action: result.action,
+        data: result
       };
       
       setMessages(prev => [...prev, assistantMessage]);
+      
+      // Manejar datos según la acción realizada
+      if (result.action === 'createTask' && result.task) {
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+        setCurrentAction('createTask');
+        setActionData(result.task);
+      } else if (result.action === 'listTasks' && result.tasks) {
+        setCurrentAction('listTasks');
+        setActionData(result.tasks);
+      } else if (result.action === 'createCategory' && result.category) {
+        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+        setCurrentAction('createCategory');
+        setActionData(result.category);
+      } else if (result.action === 'listCategories' && result.categories) {
+        setCurrentAction('listCategories');
+        setActionData(result.categories);
+      }
+      
     } catch (error) {
       console.error('Error al comunicarse con el asistente:', error);
       
@@ -94,8 +113,6 @@ export default function AIAssistant() {
       });
     } finally {
       setIsLoading(false);
-      // Desplazar hacia abajo para mostrar el último mensaje
-      setTimeout(scrollToBottom, 100);
     }
   };
 
@@ -106,6 +123,9 @@ export default function AIAssistant() {
     
     // Convertir texto entre ** a negrita
     formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Resaltar elementos de listas
+    formattedText = formattedText.replace(/•(.*?)(?=<br>|$)/g, '<span class="text-blue-600 font-medium">•$1</span>');
     
     return formattedText;
   };
@@ -126,28 +146,53 @@ export default function AIAssistant() {
           
           <CardContent className="p-0">
             <div className="h-[500px] overflow-y-auto p-4 bg-gray-50">
+              {messages.length === 1 && messages[0].isUser === false && (
+                <div className="h-full flex flex-col items-center justify-center text-center p-4">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <MessagesSquare className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Asistente de tareas IA</h3>
+                  <p className="text-gray-500 max-w-md">
+                    Describe tu tarea de forma natural y el asistente la creará para ti.
+                    Ejemplo: "Necesito preparar una presentación para el cliente ABC el próximo jueves"
+                  </p>
+                </div>
+              )}
+              
               {messages.map((message, index) => (
                 <div 
                   key={index} 
                   className={`mb-4 ${message.isUser ? 'text-right' : 'text-left'}`}
                 >
                   <div 
-                    className={`inline-block rounded-lg px-4 py-2 max-w-[85%] ${
+                    className={`inline-block rounded-lg px-4 py-3 max-w-[85%] ${
                       message.isUser 
-                        ? 'bg-blue-600 text-white' 
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md' 
                         : 'bg-white border border-gray-200 shadow-sm'
                     }`}
                   >
                     <div 
                       dangerouslySetInnerHTML={{ __html: formatMessage(message.text) }}
-                      className="text-left whitespace-pre-wrap"
+                      className="text-left whitespace-pre-wrap text-sm"
                     />
-                    <div className={`text-xs mt-1 ${message.isUser ? 'text-blue-200' : 'text-gray-500'}`}>
+                    <div className={`text-xs mt-2 ${message.isUser ? 'text-blue-200' : 'text-gray-500'}`}>
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
                 </div>
               ))}
+              
+              {isLoading && (
+                <div className="flex items-center text-left mb-4">
+                  <div className="inline-block rounded-lg px-4 py-3 bg-white border border-gray-200 shadow-sm">
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
+                      <span className="text-sm text-gray-700">Procesando tu solicitud...</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <div ref={messagesEndRef} />
             </div>
           </CardContent>

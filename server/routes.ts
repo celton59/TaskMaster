@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { insertTaskSchema, insertCategorySchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { createTaskFromText } from "./openai-service";
+import { createTaskFromText, processAgentMessage } from "./openai-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
@@ -191,7 +191,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // ChatGPT integration - Create task from text
+  // ChatGPT integration - Create task from text (legacy method)
   apiRouter.post("/ai/create-task", async (req, res) => {
     try {
       const { text } = req.body;
@@ -213,6 +213,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error en ChatGPT:", error);
       res.status(500).json({ message: "Error al procesar la solicitud con ChatGPT" });
+    }
+  });
+  
+  // ChatGPT Agent API - Process message with agent approach
+  apiRouter.post("/ai/agent", async (req, res) => {
+    try {
+      const { message } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ message: "Se requiere un mensaje para el asistente" });
+      }
+      
+      // Process with the agent approach
+      const result = await processAgentMessage(message);
+      
+      if (!result.success) {
+        return res.status(400).json({ message: result.message });
+      }
+      
+      // Return different response formats based on the action
+      if (result.action === 'createTask') {
+        res.status(201).json({
+          action: result.action,
+          message: result.message,
+          task: result.result
+        });
+      } else if (result.action === 'createCategory') {
+        res.status(201).json({
+          action: result.action,
+          message: result.message,
+          category: result.result
+        });
+      } else if (result.action === 'listTasks') {
+        res.status(200).json({
+          action: result.action,
+          message: result.message,
+          tasks: result.result
+        });
+      } else if (result.action === 'listCategories') {
+        res.status(200).json({
+          action: result.action,
+          message: result.message,
+          categories: result.result
+        });
+      } else {
+        // For 'respond' action or any other action
+        res.status(200).json({
+          action: result.action,
+          message: result.message
+        });
+      }
+    } catch (error) {
+      console.error("Error en el agente de IA:", error);
+      res.status(500).json({ message: "Error al procesar la solicitud con el agente de IA" });
     }
   });
   
