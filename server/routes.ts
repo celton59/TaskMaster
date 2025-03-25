@@ -5,6 +5,7 @@ import { insertTaskSchema, insertCategorySchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { createTaskFromText, processAgentMessage } from "./openai-service";
+import { processUserMessage } from "./agents/agent-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
@@ -216,7 +217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // ChatGPT Agent API - Process message with agent approach
+  // ChatGPT Agent API - Process message with agent approach (legacy)
   apiRouter.post("/ai/agent", async (req, res) => {
     try {
       const { message } = req.body;
@@ -270,6 +271,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error en el agente de IA:", error);
       res.status(500).json({ message: "Error al procesar la solicitud con el agente de IA" });
+    }
+  });
+  
+  // Sistema Orquestado de Múltiples Agentes
+  apiRouter.post("/ai/orchestrator", async (req, res) => {
+    try {
+      const { message } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ message: "Se requiere un mensaje para el asistente" });
+      }
+      
+      // Procesar con el sistema orquestado
+      const result = await processUserMessage(message);
+      
+      // Si la acción es crear tarea o categoría, usar 201 Created
+      if (result.action === 'createTask' || result.action === 'createCategory') {
+        res.status(201).json(result);
+      } else {
+        // Para cualquier otra acción, usar 200 OK
+        res.status(200).json(result);
+      }
+    } catch (error) {
+      console.error("Error en el sistema orquestado de agentes:", error);
+      res.status(500).json({ 
+        action: 'error',
+        message: "Error al procesar la solicitud con el sistema orquestado" 
+      });
     }
   });
   
