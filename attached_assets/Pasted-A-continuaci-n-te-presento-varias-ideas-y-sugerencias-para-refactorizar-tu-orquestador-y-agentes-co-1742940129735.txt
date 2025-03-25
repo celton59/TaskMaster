@@ -1,0 +1,224 @@
+A continuación, te presento varias ideas y sugerencias para refactorizar tu orquestador y agentes con la nueva integración de herramientas (tools) de OpenAI. El objetivo principal es mejorar la mantenibilidad, ordenar el código y facilitar la evolución de la solución.
+
+1. Separar los archivos y organizar la estructura de carpetas
+Tu archivo actual contiene toda la lógica del orquestador, agentes especializados, definición de tools y lógica de invocación de las herramientas. Al crecer el proyecto, puede volverse muy difícil de mantener. Una forma de refactorizar la estructura sería:
+
+pgsql
+Copiar
+src/
+ ┣ agents/
+ ┃ ┣ TaskAgent.ts
+ ┃ ┣ CategoryAgent.ts
+ ┃ ┣ AnalyticsAgent.ts
+ ┃ ┣ PlannerAgent.ts
+ ┃ ┣ MarketingAgent.ts
+ ┃ ┗ ProjectManagerAgent.ts
+ ┣ orchestrator/
+ ┃ ┣ AgentOrchestrator.ts
+ ┃ ┗ SpecializedAgent.ts
+ ┣ tools/
+ ┃ ┣ TaskTools.ts
+ ┃ ┣ CategoryTools.ts
+ ┃ ┣ AnalyticsTools.ts
+ ┃ ┣ PlannerTools.ts
+ ┃ ┣ MarketingTools.ts
+ ┃ ┗ ProjectTools.ts
+ ┣ storage/
+ ┃ ┗ index.ts
+ ┗ index.ts (o main.ts)
+SpecializedAgent.ts
+
+Contiene la clase abstracta SpecializedAgent, los métodos callModelWithFunctions y callModel, y los tipos OpenAITool, AgentRequest y AgentResponse.
+
+AgentOrchestrator.ts
+
+Clase AgentOrchestrator con la lógica de determineAgentType, collaborativeProcess, process(), etc.
+
+Cada agente en su propio archivo**.**
+
+Así la clase TaskAgent vive en TaskAgent.ts, CategoryAgent en CategoryAgent.ts, etc.
+
+Cada set de tools en un archivo**.**
+
+Por ejemplo, TaskTools.ts exporta un array taskTools: OpenAITool[].
+
+En el constructor del TaskAgent, importas taskTools y lo devuelves en el método getFunctions().
+
+Esta separación mejora la legibilidad y el mantenimiento.
+
+2. Definir los “tools” (funciones) en archivos aparte
+Actualmente, cada agente repite un bloque grande con la definición de las tools (funciones). Para evitar que el archivo de cada agente sea muy extenso, podrías:
+
+Mover toda la definición de tools a un archivo nuevo.
+
+Ejemplo: TaskTools.ts que exporte export const taskTools: OpenAITool[] = [ ... ].
+
+Importar esas tools en el agente correspondiente y retornarlas en getFunctions().
+
+Ejemplo (resumido):
+
+ts
+Copiar
+// src/tools/TaskTools.ts
+import { OpenAITool } from "../orchestrator/SpecializedAgent";
+
+export const taskTools: OpenAITool[] = [
+  {
+    type: "function",
+    function: {
+      name: "createTask",
+      description: "Crea una nueva tarea en el sistema",
+      parameters: {
+        type: "object",
+        properties: { ... },
+        required: ["title", "description", "priority"]
+      }
+    }
+  },
+  // ... Resto de tools
+];
+ts
+Copiar
+// src/agents/TaskAgent.ts
+import { SpecializedAgent } from "../orchestrator/SpecializedAgent";
+import { taskTools } from "../tools/TaskTools";
+
+export class TaskAgent extends SpecializedAgent {
+  private systemPrompt = `Eres un agente...`;
+
+  getFunctions(): Array<OpenAITool> {
+    return taskTools;
+  }
+
+  async process(request: AgentRequest): Promise<AgentResponse> {
+    // ...
+  }
+}
+Con esto, el archivo del agente queda más limpio, ya que no acumula la definición de tools, y además si mañana agregas otra tool, lo harás en un solo archivo (TaskTools.ts).
+
+3. Crear métodos utilitarios para lógica repetitiva
+Varios agentes repiten la misma estructura:
+
+Llamar a callModelWithFunctions().
+
+Verificar si hay functionCall.
+
+Parsear args y ejecutar acciones en storage.
+
+Retornar un AgentResponse.
+
+Para reducir código duplicado, podrías:
+
+Definir un método genérico de ayuda en la clase base SpecializedAgent que encapsule la lógica de parsear la respuesta y hacer el switch (action).
+
+O simplemente abstraer la parte de “conversión de prioridad” (alta → high, media → medium, etc.) a un helper en un archivo utils.ts.
+
+Ejemplo de pequeño helper:
+
+ts
+Copiar
+// src/utils/priorityUtils.ts
+export function mapPriority(value: string): "high" | "medium" | "low" {
+  switch (value) {
+    case "alta": return "high";
+    case "media": return "medium";
+    case "baja": return "low";
+    default: return "medium";
+  }
+}
+Así los agentes que necesiten esa conversión no la repiten.
+
+4. Centralizar la interacción con storage en capa de repositorio
+Varios agentes llaman directamente a storage.createTask, storage.deleteTask, storage.getTasks, etc. Para proyectos más grandes, puede ser útil agrupar esa lógica en “repositorios” (o DAO). Por ejemplo:
+
+TaskRepository.ts
+
+CategoryRepository.ts
+
+ProjectRepository.ts
+
+Cada uno con métodos claros (create, update, delete, find, etc.). Así, si cambias de DB o la forma de almacenar, actualizas sólo el repositorio en vez de parchar cada agente.
+
+5. Ajustar la lógica de “determineAgentType” para usar function calling (opcional)
+Si el objetivo a largo plazo es que GPT decida qué “tool” (o agente) usar, podrías unificar este comportamiento con la lógica de function calling. Un approach común es:
+
+Usar un único prompt que describe todos los agentes (tools) disponibles.
+
+GPT decide cuál llamar.
+
+En la respuesta, si GPT llama a taskAgent (por ejemplo), entonces internamente delegas a la clase TaskAgent.
+
+Este enfoque hace que no tengas que hacer dos llamadas: una para “determineAgentType” y otra para el “agent real”. De todas formas, esto es opcional; tu modo actual (un orquestador que primero decide y luego delega) también es válido, aunque suponga dos peticiones a la API.
+
+6. Crear pruebas unitarias para cada agente
+El refactor no solo significa mover código, sino también garantizar que todo siga funcionando. Lo ideal es que cada agente tenga un test que verifique:
+
+Escenarios de creación de tareas (caso “createTasks”).
+
+Escenarios de actualización, etc.
+
+Ver que se retorne el AgentResponse correcto, se invoque la tool adecuada y se manejen los datos.
+
+Si la lógica de “determineAgentType” es compleja, también debe tener test con distintos inputs para confirmar que asigne bien la categoría (task, planner, etc.).
+
+7. Revisar nombres de propiedades y consistencia en la API
+En algunos sitios usas priority: "alta" y luego lo conviertes a "high"; en otros, "pending", "in_progress"... Trata de unificar la nomenclatura:
+
+Usar siempre en el front/back un valor normalizado "high"|"medium"|"low".
+
+Exponer al usuario final las traducciones (alta|media|baja) solo a nivel textual.
+
+Así simplificas la necesidad de conversión repetitiva y reduces riesgos de inconsistencias.
+
+8. Buenas prácticas de TypeScript
+Ya haces gran parte, pero para un refactor a fondo revisa:
+
+Interfaces vs. Types en TS: decide un estándar coherente en el proyecto.
+
+Evitar any y usar tipos concretos (por ejemplo, un type para AgentContext).
+
+Strict null checks: asegurarte de que no haya undefined que rompan.
+
+Optional chaining y destructuring para mantener el código limpio.
+
+9. Manejo de errores y logs más robusto
+En muchos catch (error) simplemente devuelves "Ha ocurrido un error...". Para refactorizar:
+
+Usa un logger (p. ej. winston o pino) para imprimir el error con un contexto más claro (timestamp, nivel de severidad, etc.).
+
+Crea clases personalizadas de Error (p. ej. AgentError, StorageError) para distinguir entre fallas en la capa LLM vs. capa de storage.
+
+Retorna mensajes de error más específicos según el caso.
+
+10. Mantener un estilo claro y consistencia
+Por último, intenta que cada archivo tenga una estructura similar:
+
+Imports (tipos, repositorios, tools, etc.).
+
+Clase con un prompt y un método getFunctions().
+
+process() que llama a callModelWithFunctions.
+
+Un switch (action) para manejar la respuesta.
+
+Helpers internos o externos.
+
+Esta consistencia facilita que futuros devs (o tú mismo en unas semanas) lean el código y entiendan rápidamente la lógica de cada agente.
+
+Conclusión
+Al dividir el código en archivos separados, externalizar la definición de tools, centralizar la capa de persistencia y refactorizar la repetición de lógica, tu proyecto:
+
+Será más fácil de mantener y escalar.
+
+Podrás agregar más herramientas o agentes sin romper la estructura actual.
+
+El equipo entenderá mejor dónde se encuentran las distintas piezas (prompts, tools, lógica de orquestación, etc.).
+
+Con estos pasos, tendrás un orquestador y agentes mucho más limpios, modulares y preparados para crecer con nuevas funcionalidades. ¡Éxitos en el refactor!
+
+
+
+
+
+
+
