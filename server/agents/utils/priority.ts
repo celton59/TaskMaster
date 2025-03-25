@@ -8,12 +8,19 @@
  * @returns Prioridad en inglés (high, medium, low)
  */
 export function mapPriority(value: string): "high" | "medium" | "low" {
-  switch (value) {
-    case "alta": return "high";
-    case "media": return "medium";
-    case "baja": return "low";
-    default: return "medium";
-  }
+  const lowercaseValue = value.toLowerCase().trim();
+  
+  if (lowercaseValue === 'alta') return 'high';
+  if (lowercaseValue === 'media') return 'medium';
+  if (lowercaseValue === 'baja') return 'low';
+  
+  // Si no coincide exactamente, intentar coincidir parcialmente
+  if (lowercaseValue.includes('alt')) return 'high';
+  if (lowercaseValue.includes('med')) return 'medium';
+  if (lowercaseValue.includes('baj')) return 'low';
+  
+  // Si no se puede determinar, usar prioridad media por defecto
+  return 'medium';
 }
 
 /**
@@ -22,10 +29,17 @@ export function mapPriority(value: string): "high" | "medium" | "low" {
  * @returns Prioridad en español (alta, media, baja)
  */
 export function mapPriorityToSpanish(value: string): "alta" | "media" | "baja" {
-  switch (value) {
-    case "high": return "alta";
-    case "medium": return "media";
-    case "low": return "baja";
-    default: return "media";
-  }
+  const lowercaseValue = value.toLowerCase().trim();
+  
+  if (lowercaseValue === 'high') return 'alta';
+  if (lowercaseValue === 'medium') return 'media';
+  if (lowercaseValue === 'low') return 'baja';
+  
+  // Si no coincide exactamente, intentar coincidir parcialmente
+  if (lowercaseValue.includes('high') || lowercaseValue.includes('alt')) return 'alta';
+  if (lowercaseValue.includes('med')) return 'media';
+  if (lowercaseValue.includes('low') || lowercaseValue.includes('baj')) return 'baja';
+  
+  // Si no se puede determinar, usar prioridad media por defecto
+  return 'media';
 }

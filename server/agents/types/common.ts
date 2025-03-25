@@ -2,7 +2,9 @@
  * Definiciones de tipos comunes para el sistema de agentes
  */
 
-// Definir tipo para las herramientas que usamos con OpenAI
+/**
+ * Estructura de una herramienta (tool) para OpenAI
+ */
 export type OpenAITool = {
   type: "function";
   function: {
@@ -16,12 +18,17 @@ export type OpenAITool = {
   };
 };
 
-// Interfaces para los agentes
+/**
+ * Solicitud a un agente
+ */
 export interface AgentRequest {
   userInput: string;
   context?: any;
 }
 
+/**
+ * Respuesta de un agente
+ */
 export interface AgentResponse {
   action?: string;
   response: string;
@@ -30,6 +37,9 @@ export interface AgentResponse {
   metadata?: any;
 }
 
+/**
+ * Elemento del historial de conversación
+ */
 export interface ConversationHistoryItem {
   userInput: string;
   agentType: string;
@@ -38,6 +48,9 @@ export interface ConversationHistoryItem {
   timestamp: Date;
 }
 
+/**
+ * Resultado de una llamada a función o tool
+ */
 export interface FunctionCallResult {
   functionCall?: {
     name: string;

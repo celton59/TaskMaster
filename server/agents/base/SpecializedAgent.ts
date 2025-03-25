@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { AgentRequest, AgentResponse, OpenAITool, FunctionCallResult } from '../types/common';
+import { AgentRequest, AgentResponse, FunctionCallResult, OpenAITool } from '../types/common';
 
 // Inicializar cliente de OpenAI con la clave API
 const openai = new OpenAI({

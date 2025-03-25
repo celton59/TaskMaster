@@ -1,30 +1,37 @@
 import { SpecializedAgent } from '../base/SpecializedAgent';
 import { AgentRequest, AgentResponse, OpenAITool } from '../types/common';
 import { taskTools } from '../tools/TaskTools';
-import { mapPriority } from '../utils/priority';
 import { storage } from '../../storage';
-import { InsertTask } from '../../../shared/schema';
+import { InsertTask } from '@shared/schema';
+import { mapPriority } from '../utils/priority';
 
 /**
  * Agente especializado en la gestión de tareas.
  * Responsable de crear, actualizar, eliminar y obtener información sobre tareas.
  */
 export class TaskAgent extends SpecializedAgent {
-  // Definición del prompt para este agente
   private systemPrompt = `Eres un agente especializado en la gestión de tareas. 
-Tu objetivo es crear nuevas tareas, actualizar tareas existentes, eliminar tareas o proporcionar información sobre tareas.
+Tu objetivo es ayudar a los usuarios a organizar sus tareas de manera eficiente.
 
-IMPORTANTE: Si el usuario describe algo que suena como una tarea (por ejemplo, "tengo que hacer contabilidad", "necesito preparar una presentación", etc.), SIEMPRE debes interpretar esto como una solicitud para CREAR una nueva tarea, incluso si no lo pide explícitamente. Si el usuario menciona una fecha, SIEMPRE debes incluir esa fecha al crear la tarea.
+Tienes acceso a herramientas para crear, actualizar, eliminar y consultar tareas.
+Usa estas herramientas para responder a las solicitudes del usuario de manera efectiva.
 
-IMPORTANTE: NUNCA respondas con texto en formato JSON. En su lugar, debes usar las funciones disponibles.
+Siempre responde en español y de forma amigable. Evita repetir el texto enviado por el usuario.
 
-IMPORTANTE: Si el usuario menciona o sugiere una fecha (por ejemplo: "para mañana", "para el viernes", "para el 27 de marzo", etc.), DEBES incluir esa fecha en el campo deadline al crear la tarea. Convierte expresiones de tiempo relativas a fechas absolutas.
+Al crear una tarea:
+- Si el usuario no especifica un estado, usa "pendiente" por defecto.
+- Si el usuario no especifica una prioridad, usa "media" por defecto.
+- Si el usuario menciona una fecha límite, asegúrate de formatearla correctamente (YYYY-MM-DD).
+- Si el usuario menciona una categoría, busca su ID en el contexto proporcionado.
 
-IMPORTANTE: Si el usuario solicita eliminar varias tareas (por ejemplo: "borra las tareas 1, 2 y 3" o "elimina las tareas 4-7"), DEBES usar la función deleteTasks con todos los IDs mencionados. Asegúrate de extraer correctamente todos los números de ID, incluso si están en una lista, separados por comas o guiones.
+Formato de respuesta: 
+Siempre proporciona una confirmación clara de la acción realizada y los detalles relevantes.
 
-IMPORTANTE: Si el usuario solicita crear varias tareas al mismo tiempo (por ejemplo: "crea 4 tareas: lavar, planchar, cocinar, limpiar"), DEBES usar la función createTasks y añadir cada tarea como un objeto separado en el array 'tasks'. Toma cada elemento de la lista como una tarea independiente.
-
-No intentes responder a chistes, saludos o conversación casual; interpreta todo como un intento de gestionar tareas.`;
+Tu respuesta debe estar en formato JSON con los siguientes campos:
+- "response": Tu mensaje para el usuario
+- "action": La acción realizada (createTask, updateTask, deleteTask, etc.)
+- "data": Datos relevantes de la acción (la tarea creada/actualizada/eliminada, lista de tareas, etc.)
+- "confidence": Un valor entre 0 y 1 que indica tu confianza en la respuesta`;
 
   /**
    * Obtiene las herramientas disponibles para este agente
@@ -40,237 +47,258 @@ No intentes responder a chistes, saludos o conversación casual; interpreta todo
    */
   async process(request: AgentRequest): Promise<AgentResponse> {
     try {
-      // Obtener la solicitud del usuario y el contexto
-      const { userInput, context } = request;
+      // Llamar al modelo con funciones
+      const modelResponse = await this.callModelWithFunctions(
+        this.systemPrompt,
+        request.userInput,
+        request.context
+      );
       
-      // Llamar al modelo con las funciones definidas
-      const result = await this.callModelWithFunctions(this.systemPrompt, userInput, context);
-      
-      // Si no hay una llamada a función, simplemente devolver el contenido como respuesta
-      if (!result.functionCall) {
-        return {
-          response: result.content || "No he podido procesar tu solicitud correctamente. ¿Podrías reformularla?",
-          confidence: 0.7
-        };
-      }
-      
-      // Procesar la llamada a función según el nombre de la función
-      const { name, arguments: args } = result.functionCall;
-      
-      switch (name) {
-        case "createTask": {
-          // Crear una nueva tarea
-          const { title, description, priority, categoryId = 1, deadline = null } = args;
-          
-          // Mapear la prioridad al formato esperado por el backend
-          const priorityMapped = mapPriority(priority);
-          
-          // Crear objeto de tarea para insertar
-          const newTask: InsertTask = {
-            title,
-            description,
-            status: "pendiente",
-            priority: priorityMapped,
-            categoryId,
-            deadline: deadline ? new Date(deadline) : null,
-            userId: 1
-          };
-          
-          // Guardar en la base de datos
-          const createdTask = await storage.createTask(newTask);
-          
-          return {
-            action: "createTask",
-            response: `¡Perfecto! He creado la tarea "${title}" con prioridad ${priority}${deadline ? ` y fecha límite ${deadline}` : ''}.`,
-            data: createdTask,
-            confidence: 0.9
-          };
-        }
+      // Si el modelo decidió llamar a una función
+      if (modelResponse.functionCall) {
+        const { name, arguments: args } = modelResponse.functionCall;
         
-        case "createTasks": {
-          // Crear múltiples tareas
-          const { tasks } = args;
-          
-          // Procesar todas las tareas
-          const createdTasks = await Promise.all(tasks.map(async (taskData: any) => {
-            const { title, description, priority, categoryId = 1, deadline = null } = taskData;
+        let result;
+        switch (name) {
+          case "createTask": {
+            // Formatear la fecha límite si existe
+            let deadline = args.deadline ? new Date(args.deadline) : null;
             
-            // Mapear la prioridad al formato esperado por el backend
-            const priorityMapped = mapPriority(priority);
-            
-            // Crear objeto de tarea para insertar
+            // Crear la nueva tarea
             const newTask: InsertTask = {
-              title,
-              description,
-              status: "pendiente",
-              priority: priorityMapped,
-              categoryId,
-              deadline: deadline ? new Date(deadline) : null,
-              userId: 1
+              title: args.title,
+              description: args.description || null,
+              status: args.status || 'pendiente',
+              priority: args.priority || 'media',
+              categoryId: args.categoryId || null,
+              deadline: deadline,
+              assignedTo: args.assignedTo || null
             };
             
-            // Guardar en la base de datos
-            return await storage.createTask(newTask);
-          }));
-          
-          // Crear mensaje de respuesta
-          const taskTitles = createdTasks.map(task => `"${task.title}"`).join(", ");
-          
-          return {
-            action: "createTasks",
-            response: `¡Perfecto! He creado ${createdTasks.length} tareas: ${taskTitles}.`,
-            data: createdTasks,
-            confidence: 0.9
-          };
-        }
-        
-        case "updateTask": {
-          // Actualizar una tarea existente
-          const { id, ...updates } = args;
-          
-          // Verificar que la tarea existe
-          const existingTask = await storage.getTask(id);
-          
-          if (!existingTask) {
-            return {
-              response: `No he podido encontrar una tarea con el ID ${id}. Por favor, verifica el número e intenta de nuevo.`,
-              confidence: 0.8
-            };
-          }
-          
-          // Si hay un cambio de prioridad, mapearla
-          let updatedProps: any = { ...updates };
-          if (updates.priority) {
-            updatedProps.priority = mapPriority(updates.priority);
-          }
-          
-          // Si hay un cambio de fecha límite, formatearla
-          if (updates.deadline) {
-            updatedProps.deadline = new Date(updates.deadline);
-          }
-          
-          // Actualizar la tarea
-          const updatedTask = await storage.updateTask(id, updatedProps);
-          
-          return {
-            action: "updateTask",
-            response: `He actualizado la tarea "${existingTask.title}" con los nuevos datos.`,
-            data: updatedTask,
-            confidence: 0.9
-          };
-        }
-        
-        case "deleteTask": {
-          // Eliminar una tarea
-          const { id } = args;
-          
-          // Verificar que la tarea existe
-          const existingTask = await storage.getTask(id);
-          
-          if (!existingTask) {
-            return {
-              response: `No he podido encontrar una tarea con el ID ${id}. Por favor, verifica el número e intenta de nuevo.`,
-              confidence: 0.8
-            };
-          }
-          
-          // Eliminar la tarea
-          await storage.deleteTask(id);
-          
-          return {
-            action: "deleteTask",
-            response: `He eliminado la tarea "${existingTask.title}" correctamente.`,
-            data: { id },
-            confidence: 0.9
-          };
-        }
-        
-        case "deleteTasks": {
-          // Eliminar múltiples tareas
-          const { ids } = args;
-          
-          // Verificar que todas las tareas existen
-          const existingTasks = await Promise.all(
-            ids.map(async (id: number) => await storage.getTask(id))
-          );
-          
-          const notFoundIds = ids.filter((id: number, index: number) => !existingTasks[index]);
-          
-          if (notFoundIds.length > 0) {
-            return {
-              response: `No he podido encontrar las tareas con IDs: ${notFoundIds.join(", ")}. Por favor, verifica los números e intenta de nuevo.`,
-              confidence: 0.8
-            };
-          }
-          
-          // Eliminar las tareas
-          await Promise.all(ids.map(async (id: number) => await storage.deleteTask(id)));
-          
-          // Crear mensaje de respuesta
-          const taskTitles = existingTasks
-            .filter(Boolean)
-            .map(task => `"${task.title}"`)
-            .join(", ");
-          
-          return {
-            action: "deleteTasks",
-            response: `He eliminado ${ids.length} tareas: ${taskTitles}.`,
-            data: { ids },
-            confidence: 0.9
-          };
-        }
-        
-        case "getTasks": {
-          // Obtener lista de tareas (con posibles filtros)
-          const { status, categoryId } = args;
-          
-          let tasks;
-          
-          if (status) {
-            tasks = await storage.getTasksByStatus(status);
-          } else if (categoryId) {
-            tasks = await storage.getTasksByCategory(categoryId);
-          } else {
-            tasks = await storage.getTasks();
-          }
-          
-          // Si no hay tareas, dar mensaje apropiado
-          if (tasks.length === 0) {
-            const noTasksMessage = status 
-              ? `No hay tareas con estado "${status}"`
-              : categoryId 
-                ? `No hay tareas en la categoría con ID ${categoryId}`
-                : "No hay tareas en el sistema";
-                
-            return {
-              response: noTasksMessage,
-              data: { tasks: [] },
+            const createdTask = await storage.createTask(newTask);
+            result = {
+              action: 'createTask',
+              response: `He creado la tarea "${createdTask.title}" correctamente.`,
+              data: createdTask,
               confidence: 0.9
             };
+            break;
           }
           
-          // Crear mensaje de respuesta
-          const taskSummary = tasks.map(task => 
-            `- [${task.id}] ${task.title} (${task.status}, prioridad: ${task.priority}${task.deadline ? `, fecha límite: ${new Date(task.deadline).toLocaleDateString()}` : ''})`
-          ).join("\n");
+          case "updateTask": {
+            // Obtener la tarea existente
+            const existingTask = await storage.getTask(args.id);
+            
+            if (!existingTask) {
+              result = {
+                action: 'error',
+                response: `No pude encontrar una tarea con el ID ${args.id}. Por favor, verifica el ID e intenta de nuevo.`,
+                confidence: 0.8
+              };
+              break;
+            }
+            
+            // Preparar los datos para actualizar
+            const updateData: Partial<InsertTask> = {};
+            if (args.title !== undefined) updateData.title = args.title;
+            if (args.description !== undefined) updateData.description = args.description;
+            if (args.status !== undefined) updateData.status = args.status;
+            if (args.priority !== undefined) updateData.priority = args.priority;
+            if (args.categoryId !== undefined) updateData.categoryId = args.categoryId;
+            if (args.deadline !== undefined) updateData.deadline = args.deadline ? new Date(args.deadline) : null;
+            if (args.assignedTo !== undefined) updateData.assignedTo = args.assignedTo;
+            
+            // Actualizar la tarea
+            const updatedTask = await storage.updateTask(args.id, updateData);
+            
+            result = {
+              action: 'updateTask',
+              response: `He actualizado la tarea "${updatedTask?.title}" correctamente.`,
+              data: updatedTask,
+              confidence: 0.9
+            };
+            break;
+          }
           
-          return {
-            response: `Aquí están las tareas que encontré:\n\n${taskSummary}`,
-            data: { tasks },
-            confidence: 0.9
-          };
+          case "deleteTask": {
+            // Verificar que la tarea existe
+            const existingTask = await storage.getTask(args.id);
+            
+            if (!existingTask) {
+              result = {
+                action: 'error',
+                response: `No pude encontrar una tarea con el ID ${args.id}. Por favor, verifica el ID e intenta de nuevo.`,
+                confidence: 0.8
+              };
+              break;
+            }
+            
+            // Eliminar la tarea
+            const deleted = await storage.deleteTask(args.id);
+            
+            result = {
+              action: 'deleteTask',
+              response: deleted 
+                ? `He eliminado la tarea "${existingTask.title}" correctamente.` 
+                : `No pude eliminar la tarea. Por favor, intenta de nuevo.`,
+              data: existingTask,
+              confidence: 0.9
+            };
+            break;
+          }
+          
+          case "getTask": {
+            // Obtener la tarea por ID
+            const task = await storage.getTask(args.id);
+            
+            if (!task) {
+              result = {
+                action: 'error',
+                response: `No pude encontrar una tarea con el ID ${args.id}. Por favor, verifica el ID e intenta de nuevo.`,
+                confidence: 0.8
+              };
+              break;
+            }
+            
+            result = {
+              action: 'getTask',
+              response: `Aquí tienes los detalles de la tarea "${task.title}".`,
+              data: task,
+              confidence: 0.9
+            };
+            break;
+          }
+          
+          case "listTasks": {
+            let tasks;
+            
+            // Filtrar por estado si se especifica
+            if (args.status) {
+              tasks = await storage.getTasksByStatus(args.status);
+            } 
+            // Filtrar por categoría si se especifica
+            else if (args.categoryId) {
+              tasks = await storage.getTasksByCategory(args.categoryId);
+            } 
+            // Si no hay filtros, obtener todas las tareas
+            else {
+              tasks = await storage.getTasks();
+            }
+            
+            result = {
+              action: 'listTasks',
+              response: `He encontrado ${tasks.length} tareas.`,
+              data: tasks,
+              confidence: 0.9
+            };
+            break;
+          }
+          
+          case "createTasks": {
+            const createdTasks = [];
+            
+            // Procesar cada tarea en la lista
+            for (const taskData of args.tasks) {
+              // Formatear la fecha límite si existe
+              let deadline = taskData.deadline ? new Date(taskData.deadline) : null;
+              
+              // Crear la nueva tarea
+              const newTask: InsertTask = {
+                title: taskData.title,
+                description: taskData.description || null,
+                status: taskData.status || 'pendiente',
+                priority: taskData.priority || 'media',
+                categoryId: taskData.categoryId || null,
+                deadline: deadline,
+                assignedTo: taskData.assignedTo || null
+              };
+              
+              const createdTask = await storage.createTask(newTask);
+              createdTasks.push(createdTask);
+            }
+            
+            result = {
+              action: 'createTasks',
+              response: `He creado ${createdTasks.length} tareas correctamente.`,
+              data: createdTasks,
+              confidence: 0.9
+            };
+            break;
+          }
+          
+          case "deleteTasks": {
+            const deletedTasks = [];
+            const failedIds = [];
+            
+            // Procesar cada ID en la lista
+            for (const id of args.ids) {
+              // Verificar que la tarea existe
+              const existingTask = await storage.getTask(id);
+              
+              if (existingTask) {
+                // Eliminar la tarea
+                const deleted = await storage.deleteTask(id);
+                
+                if (deleted) {
+                  deletedTasks.push(existingTask);
+                } else {
+                  failedIds.push(id);
+                }
+              } else {
+                failedIds.push(id);
+              }
+            }
+            
+            result = {
+              action: 'deleteTasks',
+              response: failedIds.length === 0
+                ? `He eliminado ${deletedTasks.length} tareas correctamente.`
+                : `He eliminado ${deletedTasks.length} tareas, pero no pude eliminar ${failedIds.length} tareas (IDs: ${failedIds.join(', ')}).`,
+              data: {
+                deletedTasks,
+                failedIds
+              },
+              confidence: 0.9
+            };
+            break;
+          }
+          
+          default:
+            // Si la función no está implementada
+            result = {
+              action: 'error',
+              response: `Lo siento, no puedo ejecutar la función "${name}". Esta funcionalidad aún no está implementada.`,
+              confidence: 0.5
+            };
         }
         
-        default:
-          return {
-            response: "No he reconocido esa acción. ¿Puedo ayudarte a crear, actualizar o borrar alguna tarea?",
-            confidence: 0.7
-          };
+        return result;
+      }
+      
+      // Si el modelo no llamó a una función, devolver su respuesta como texto
+      try {
+        // Intentar parsear la respuesta como JSON
+        const jsonResponse = JSON.parse(modelResponse.content || "{}");
+        
+        return {
+          action: jsonResponse.action || 'respond',
+          response: jsonResponse.response || modelResponse.content || "No he podido procesar tu solicitud.",
+          data: jsonResponse.data,
+          confidence: jsonResponse.confidence || 0.7
+        };
+      } catch (e) {
+        // Si no se puede parsear como JSON, devolver la respuesta como texto
+        return {
+          action: 'respond',
+          response: modelResponse.content || "No he podido procesar tu solicitud.",
+          confidence: 0.6
+        };
       }
     } catch (error) {
-      console.error("Error en TaskAgent:", error);
+      console.error("Error en TaskAgent.process:", error);
       return {
-        response: "Ha ocurrido un error al procesar tu solicitud relacionada con tareas. Por favor, intenta de nuevo.",
+        action: 'error',
+        response: "Lo siento, ha ocurrido un error al procesar tu solicitud. Por favor, intenta de nuevo.",
         confidence: 0.5
       };
     }
