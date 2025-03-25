@@ -222,4 +222,120 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { drizzle } from 'drizzle-orm/neon-http';
+import { neon } from '@neondatabase/serverless';
+import { eq } from 'drizzle-orm';
+
+// Implementación de almacenamiento PostgreSQL
+export class PostgresStorage implements IStorage {
+  private db: ReturnType<typeof drizzle>;
+  
+  constructor() {
+    // Configurar la conexión a PostgreSQL usando variables de entorno
+    const sql = neon(process.env.DATABASE_URL!);
+    this.db = drizzle(sql, { schema: { users, tasks, categories } });
+    console.log("Conexión a base de datos PostgreSQL establecida");
+  }
+  
+  async getUser(id: number): Promise<User | undefined> {
+    const result = await this.db.select().from(users).where(eq(users.id, id));
+    return result[0];
+  }
+  
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await this.db.select().from(users).where(eq(users.username, username));
+    return result[0];
+  }
+  
+  async createUser(user: InsertUser): Promise<User> {
+    const result = await this.db.insert(users).values(user).returning();
+    return result[0];
+  }
+  
+  async getCategories(): Promise<Category[]> {
+    return await this.db.select().from(categories);
+  }
+  
+  async getCategory(id: number): Promise<Category | undefined> {
+    const result = await this.db.select().from(categories).where(eq(categories.id, id));
+    return result[0];
+  }
+  
+  async createCategory(category: InsertCategory): Promise<Category> {
+    const result = await this.db.insert(categories).values(category).returning();
+    return result[0];
+  }
+  
+  async updateCategory(id: number, category: Partial<InsertCategory>): Promise<Category | undefined> {
+    const result = await this.db.update(categories)
+      .set(category)
+      .where(eq(categories.id, id))
+      .returning();
+    return result[0];
+  }
+  
+  async deleteCategory(id: number): Promise<boolean> {
+    const result = await this.db.delete(categories).where(eq(categories.id, id)).returning();
+    return result.length > 0;
+  }
+  
+  async getTasks(): Promise<Task[]> {
+    return await this.db.select().from(tasks);
+  }
+  
+  async getTask(id: number): Promise<Task | undefined> {
+    const result = await this.db.select().from(tasks).where(eq(tasks.id, id));
+    return result[0];
+  }
+  
+  async getTasksByStatus(status: string): Promise<Task[]> {
+    return await this.db.select().from(tasks).where(eq(tasks.status, status));
+  }
+  
+  async getTasksByCategory(categoryId: number): Promise<Task[]> {
+    return await this.db.select().from(tasks).where(eq(tasks.categoryId, categoryId));
+  }
+  
+  async createTask(task: InsertTask): Promise<Task> {
+    const result = await this.db.insert(tasks).values(task).returning();
+    return result[0];
+  }
+  
+  async updateTask(id: number, task: Partial<InsertTask>): Promise<Task | undefined> {
+    const result = await this.db.update(tasks)
+      .set(task)
+      .where(eq(tasks.id, id))
+      .returning();
+    return result[0];
+  }
+  
+  async deleteTask(id: number): Promise<boolean> {
+    const result = await this.db.delete(tasks).where(eq(tasks.id, id)).returning();
+    return result.length > 0;
+  }
+  
+  async getTaskStats(): Promise<{
+    total: number;
+    pending: number;
+    inProgress: number;
+    review: number;
+    completed: number;
+  }> {
+    const allTasks = await this.getTasks();
+    const pending = allTasks.filter(t => t.status === 'pendiente').length;
+    const inProgress = allTasks.filter(t => t.status === 'en_progreso').length;
+    const review = allTasks.filter(t => t.status === 'revision').length;
+    const completed = allTasks.filter(t => t.status === 'completada').length;
+    
+    return {
+      total: allTasks.length,
+      pending,
+      inProgress,
+      review,
+      completed
+    };
+  }
+}
+
+// Exportamos la implementación PostgreSQL como la instancia de almacenamiento predeterminada
+export const storage = new PostgresStorage();
