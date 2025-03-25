@@ -4,7 +4,6 @@ import { useLocation, Link } from "wouter";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { TaskChart } from "@/components/dashboard/task-chart";
 import { RecentTasksList } from "@/components/dashboard/recent-tasks-list";
-import { TaskBoard } from "@/components/tasks/task-board";
 import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -121,36 +120,154 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Task Board */}
-      <Card className="border-neutral-100 shadow-md overflow-hidden mb-8">
-        <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neutral-100 bg-neutral-50/50">
-          <div className="space-y-0.5">
-            <CardTitle className="text-base font-medium text-neutral-800">Tablero de tareas</CardTitle>
-            <CardDescription>Gestión visual por estado</CardDescription>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
-              <LayoutDashboard className="h-5 w-5" />
+      {/* Task Status Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <Card className="border-neutral-100 shadow-md overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neutral-100 bg-neutral-50/50">
+            <div className="space-y-0.5">
+              <CardTitle className="text-base font-medium text-neutral-800">Distribución de tareas</CardTitle>
+              <CardDescription>Resumen por estado</CardDescription>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => navigate("/tasks")}
-              className="h-8 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 text-neutral-700 rounded-md"
-            >
-              Ver completo
-              <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-5">
-          <TaskBoard 
-            tasks={tasks} 
-            categories={categories}
-            isLoading={isLoadingTasks || isLoadingCategories} 
-          />
-        </CardContent>
-      </Card>
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+                <BarChart4 className="h-5 w-5" />
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => navigate("/tasks")}
+                className="h-8 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 text-neutral-700 rounded-md"
+              >
+                Ver tareas
+                <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-5">
+            <div className="flex flex-col items-center">
+              <div className="w-full max-w-md">
+                <div className="relative pt-1">
+                  <div className="flex mb-4 items-center justify-between">
+                    <div>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-rose-600 bg-rose-100 rounded-full">Pendientes</span>
+                      <span className="text-xs font-semibold ml-2">{stats.pending}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-semibold inline-block text-rose-600">
+                        {stats.total > 0 ? Math.round((stats.pending / stats.total) * 100) : 0}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-rose-200">
+                    <div style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-rose-500"></div>
+                  </div>
+                  
+                  <div className="flex mb-4 items-center justify-between">
+                    <div>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-amber-600 bg-amber-100 rounded-full">En progreso</span>
+                      <span className="text-xs font-semibold ml-2">{stats.inProgress}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-semibold inline-block text-amber-600">
+                        {stats.total > 0 ? Math.round((stats.inProgress / stats.total) * 100) : 0}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-amber-200">
+                    <div style={{ width: `${stats.total > 0 ? (stats.inProgress / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-amber-500"></div>
+                  </div>
+                  
+                  <div className="flex mb-4 items-center justify-between">
+                    <div>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">En revisión</span>
+                      <span className="text-xs font-semibold ml-2">{stats.review}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-semibold inline-block text-blue-600">
+                        {stats.total > 0 ? Math.round((stats.review / stats.total) * 100) : 0}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-blue-200">
+                    <div style={{ width: `${stats.total > 0 ? (stats.review / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                  </div>
+                  
+                  <div className="flex mb-4 items-center justify-between">
+                    <div>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-emerald-600 bg-emerald-100 rounded-full">Completadas</span>
+                      <span className="text-xs font-semibold ml-2">{stats.completed}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-semibold inline-block text-emerald-600">
+                        {stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="overflow-hidden h-2 text-xs flex rounded-full bg-emerald-200">
+                    <div style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="border-neutral-100 shadow-md overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neutral-100 bg-neutral-50/50">
+            <div className="space-y-0.5">
+              <CardTitle className="text-base font-medium text-neutral-800">Rendimiento semanal</CardTitle>
+              <CardDescription>Tareas completadas vs. creadas</CardDescription>
+            </div>
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-emerald-50 text-emerald-600">
+              <CheckCheck className="h-5 w-5" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-5">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium text-neutral-700">Eficiencia</div>
+                  <div className="text-2xl font-bold text-neutral-900">83%</div>
+                </div>
+                <div className="flex items-center text-emerald-600 font-medium text-sm">
+                  <ArrowUpRight className="h-4 w-4 mr-1" />
+                  <span>+12% vs. semana anterior</span>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="grid grid-cols-3 text-xs text-neutral-500 font-medium">
+                  <div>Lun</div>
+                  <div>Mié</div>
+                  <div>Vie</div>
+                </div>
+                <div className="grid grid-cols-7 gap-1 h-16">
+                  {chartData.map((day, i) => (
+                    <div key={i} className="bg-primary-50 rounded-md relative overflow-hidden">
+                      <div 
+                        className="absolute bottom-0 w-full bg-primary-500"
+                        style={{ 
+                          height: `${(day.completed / Math.max(...chartData.map(d => Math.max(d.created, d.completed)))) * 100}%`,
+                        }}
+                      ></div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between text-xs text-neutral-600">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-primary-500 rounded-sm mr-2"></div>
+                    <span>Completadas ({chartData.reduce((sum, day) => sum + day.completed, 0)})</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 border border-dashed border-primary-500 rounded-sm mr-2"></div>
+                    <span>Creadas ({chartData.reduce((sum, day) => sum + day.created, 0)})</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
