@@ -7,14 +7,17 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Definir tipo para las funciones que usamos con OpenAI
-type OpenAIFunction = {
-  name: string;
-  description: string;
-  parameters: {
-    type: string;
-    properties: Record<string, any>;
-    required?: string[];
+// Definir tipo para las herramientas (antes funciones) que usamos con OpenAI
+type OpenAITool = {
+  type: "function";
+  function: {
+    name: string;
+    description: string;
+    parameters: {
+      type: string;
+      properties: Record<string, any>;
+      required?: string[];
+    };
   };
 };
 
@@ -530,7 +533,7 @@ Responde con un JSON que contenga:
 // Interfaz para los agentes especializados
 abstract class SpecializedAgent {
   abstract process(request: AgentRequest): Promise<AgentResponse>;
-  abstract getFunctions(): Array<OpenAIFunction>;
+  abstract getFunctions(): Array<OpenAITool>;
   
   protected async callModel(systemPrompt: string, userInput: string, context?: any): Promise<string> {
     const contextString = context ? `\nContexto del sistema:\n${JSON.stringify(context, null, 2)}` : '';
@@ -574,23 +577,28 @@ abstract class SpecializedAgent {
           content: `${contextString}\n\nSolicitud del usuario: ${userInput}`
         }
       ],
-      functions: this.getFunctions(),
-      function_call: "auto"
+      tools: this.getFunctions(), // Usar tools en lugar de functions
+      tool_choice: "auto" // Reemplaza function_call
     });
     
     const message = response.choices[0]?.message;
     
-    if (message?.function_call) {
+    if (message?.tool_calls && message.tool_calls.length > 0) {
       try {
-        const args = JSON.parse(message.function_call.arguments);
-        return {
-          functionCall: {
-            name: message.function_call.name,
-            arguments: args
-          }
-        };
+        // Usamos el primer tool_call (podríamos manejar múltiples en el futuro)
+        const toolCall = message.tool_calls[0];
+        // Solo procesamos llamadas a funciones por ahora
+        if (toolCall.type === "function") {
+          const args = JSON.parse(toolCall.function.arguments);
+          return {
+            functionCall: {
+              name: toolCall.function.name,
+              arguments: args
+            }
+          };
+        }
       } catch (error) {
-        console.error("Error al parsear argumentos de function call:", error);
+        console.error("Error al parsear argumentos de tool call:", error);
         return { content: message.content || "" };
       }
     }
