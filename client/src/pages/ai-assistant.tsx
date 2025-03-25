@@ -23,9 +23,6 @@ export default function AIAssistant() {
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  const [actionViewOpen, setActionViewOpen] = useState<boolean>(false);
-  const [currentAction, setCurrentAction] = useState<string | null>(null);
-  const [actionData, setActionData] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
@@ -64,34 +61,22 @@ export default function AIAssistant() {
         throw new Error(`Error HTTP: ${response.status}`);
       }
       
-      const result = await response.json() as AgentActionData;
+      const result = await response.json();
       
       // Agregar respuesta del asistente
       const assistantMessage: Message = {
-        text: result.message,
+        text: result.message || "Recibí tu mensaje pero no pude procesarlo adecuadamente.",
         isUser: false,
-        timestamp: new Date(),
-        action: result.action,
-        data: result
+        timestamp: new Date()
       };
       
       setMessages(prev => [...prev, assistantMessage]);
       
-      // Manejar datos según la acción realizada
-      if (result.action === 'createTask' && result.task) {
+      // Invalidar consultas si se creó una tarea o categoría
+      if (result.action === 'createTask') {
         queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-        setCurrentAction('createTask');
-        setActionData(result.task);
-      } else if (result.action === 'listTasks' && result.tasks) {
-        setCurrentAction('listTasks');
-        setActionData(result.tasks);
-      } else if (result.action === 'createCategory' && result.category) {
+      } else if (result.action === 'createCategory') {
         queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
-        setCurrentAction('createCategory');
-        setActionData(result.category);
-      } else if (result.action === 'listCategories' && result.categories) {
-        setCurrentAction('listCategories');
-        setActionData(result.categories);
       }
       
     } catch (error) {
