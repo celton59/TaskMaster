@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Task, Category } from '@shared/schema';
-import { formatDistance, parseISO } from 'date-fns';
+import { formatDistance, parseISO, isBefore, isAfter, addDays, differenceInDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -41,6 +42,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   Pagination,
   PaginationContent,
@@ -60,7 +62,13 @@ import {
   FilterX, 
   ChevronDown, 
   CheckCircle,
-  Calendar
+  Calendar,
+  FlameKindling,
+  Star,
+  Clock4,
+  CircleCheck,
+  CircleEllipsis,
+  Circle
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -167,6 +175,182 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
       case 'medium': return 'bg-amber-100 text-amber-800 border-amber-300';
       case 'low': return 'bg-emerald-100 text-emerald-800 border-emerald-300';
       default: return 'bg-neutral-100 text-neutral-800 border-neutral-300';
+    }
+  };
+  
+  // Check if date is today
+  const isToday = (date: Date | string | null) => {
+    if (!date) return false;
+    const today = new Date();
+    const taskDate = new Date(date);
+    return (
+      today.getDate() === taskDate.getDate() &&
+      today.getMonth() === taskDate.getMonth() &&
+      today.getFullYear() === taskDate.getFullYear()
+    );
+  };
+  
+  // Get deadline status
+  const getDeadlineStatus = (deadline: Date | string | null) => {
+    if (!deadline) return "none";
+    
+    const today = new Date();
+    const taskDeadline = new Date(deadline);
+    const threeDaysFromNow = addDays(today, 3);
+    
+    if (isBefore(taskDeadline, today)) {
+      return "overdue"; // Fecha vencida
+    } else if (isBefore(taskDeadline, threeDaysFromNow)) {
+      return "soon"; // Próximo a vencer (3 días)
+    } else {
+      return "ok"; // Fecha normal
+    }
+  };
+  
+  // Get days until deadline or days overdue
+  const getDaysUntilDeadline = (deadline: Date | string | null) => {
+    if (!deadline) return 0;
+    
+    const today = new Date();
+    const taskDeadline = new Date(deadline);
+    
+    return differenceInDays(taskDeadline, today);
+  };
+  
+  // Get deadline text and style
+  const getDeadlineInfo = (deadline: Date | string | null) => {
+    if (!deadline) return { text: "Sin fecha", className: "text-neutral-500" };
+    
+    const status = getDeadlineStatus(deadline);
+    const days = getDaysUntilDeadline(deadline);
+    
+    if (status === "overdue") {
+      return { 
+        text: `${Math.abs(days)} día${Math.abs(days) > 1 ? 's' : ''} de retraso`, 
+        className: "text-rose-600 font-medium"
+      };
+    } else if (status === "soon") {
+      if (isToday(deadline)) {
+        return { text: "¡Hoy!", className: "text-amber-600 font-medium" };
+      } else {
+        return { 
+          text: `En ${days} día${days > 1 ? 's' : ''}`, 
+          className: "text-amber-600 font-medium" 
+        };
+      }
+    } else {
+      return { 
+        text: formatDate(deadline), 
+        className: "text-neutral-500 font-medium" 
+      };
+    }
+  };
+  
+  // Get deadline icon
+  const getDeadlineIcon = (deadline: Date | string | null) => {
+    if (!deadline) return <Clock size={14} className="text-neutral-400" />;
+    
+    const status = getDeadlineStatus(deadline);
+    
+    if (status === "overdue") {
+      return <AlertTriangle size={14} className="text-rose-500" />;
+    } else if (status === "soon") {
+      return <AlertCircle size={14} className="text-amber-500" />;
+    } else {
+      return <Calendar size={14} className="text-blue-500" />;
+    }
+  };
+  
+  // Get status icon and style
+  const getStatusInfo = (status: string | null) => {
+    if (!status) return {
+      icon: <Circle className="h-4 w-4 text-neutral-500" />,
+      label: "Sin estado",
+      className: "bg-neutral-50 text-neutral-700 border-neutral-200"
+    };
+    
+    switch (status) {
+      case "completed":
+        return {
+          icon: <CircleCheck className="h-4 w-4 text-emerald-500" />,
+          label: "Completada",
+          className: "bg-emerald-50 text-emerald-700 border-emerald-200"
+        };
+      case "pending":
+        return {
+          icon: <Circle className="h-4 w-4 text-amber-500" />,
+          label: "Pendiente",
+          className: "bg-amber-50 text-amber-700 border-amber-200"
+        };
+      case "review":
+        return {
+          icon: <AlertCircle className="h-4 w-4 text-purple-500" />,
+          label: "Revisión",
+          className: "bg-purple-50 text-purple-700 border-purple-200"
+        };
+      case "in_progress":
+      case "in-progress":
+        return {
+          icon: <CircleEllipsis className="h-4 w-4 text-blue-500" />,
+          label: "En progreso",
+          className: "bg-blue-50 text-blue-700 border-blue-200"
+        };
+      default:
+        return {
+          icon: <Circle className="h-4 w-4 text-neutral-500" />,
+          label: status,
+          className: "bg-neutral-50 text-neutral-700 border-neutral-200"
+        };
+    }
+  };
+  
+  // Get priority icon and style
+  const getPriorityInfo = (priority: string | null) => {
+    if (!priority) return {
+      icon: <Circle className="h-4 w-4 text-neutral-500" />,
+      label: "Normal",
+      className: "bg-neutral-50 text-neutral-700 border-neutral-200"
+    };
+    
+    switch (priority) {
+      case "high":
+        return {
+          icon: <FlameKindling className="h-4 w-4 text-rose-500" />,
+          label: "Alta",
+          className: "bg-rose-50 text-rose-700 border-rose-200"
+        };
+      case "medium":
+        return {
+          icon: <Star className="h-4 w-4 text-amber-500" />,
+          label: "Media",
+          className: "bg-amber-50 text-amber-700 border-amber-200"
+        };
+      case "low":
+        return {
+          icon: <Clock4 className="h-4 w-4 text-emerald-500" />,
+          label: "Baja",
+          className: "bg-emerald-50 text-emerald-700 border-emerald-200"
+        };
+      default:
+        return {
+          icon: <Circle className="h-4 w-4 text-neutral-500" />,
+          label: priority,
+          className: "bg-neutral-50 text-neutral-700 border-neutral-200"
+        };
+    }
+  };
+  
+  // Calculate progress based on status
+  const getProgress = (status: string | null) => {
+    if (!status) return 0;
+    
+    switch (status) {
+      case "completed": return 100;
+      case "review": return 75;
+      case "in_progress":
+      case "in-progress": return 50;
+      case "pending": return 0;
+      default: return 0;
     }
   };
 
@@ -539,7 +723,15 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                 </TableRow>
               ) : (
                 paginatedTasks.map((task) => (
-                  <TableRow key={task.id} className="hover:bg-neutral-50">
+                  <TableRow 
+                    key={task.id} 
+                    className={cn(
+                      "hover:bg-neutral-50 transition-colors",
+                      task.status === "completed" ? "bg-emerald-50/30" : "",
+                      getDeadlineStatus(task.deadline) === "overdue" && task.status !== "completed" ? "bg-rose-50/30" : "",
+                      getDeadlineStatus(task.deadline) === "soon" && task.status !== "completed" ? "bg-amber-50/30" : ""
+                    )}
+                  >
                     <TableCell className="px-3">
                       <Checkbox 
                         checked={selectedTasks.includes(task.id)} 
@@ -549,21 +741,40 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                     
                     <TableCell>
                       <div className="flex flex-col space-y-1">
-                        <span className="font-medium">{task.title}</span>
-                        <span className="text-xs text-neutral-500 line-clamp-1">{task.description}</span>
+                        <div className="flex items-center">
+                          <div className={cn(
+                            "w-1 h-5 rounded-full mr-2", 
+                            task.status === "completed" ? "bg-emerald-500" :
+                            task.status === "review" ? "bg-purple-500" :
+                            task.status === "in_progress" ? "bg-blue-500" :
+                            task.priority === "high" ? "bg-rose-500" :
+                            task.priority === "medium" ? "bg-amber-500" :
+                            task.priority === "low" ? "bg-emerald-500" : "bg-neutral-300"
+                          )} />
+                          <span className="font-medium">{task.title}</span>
+                        </div>
+                        {task.description && (
+                          <span className="text-xs text-neutral-500 line-clamp-1 ml-3">{task.description}</span>
+                        )}
                       </div>
                     </TableCell>
                     
                     <TableCell>
-                      <Badge className={`text-xs font-medium ${task.status ? getStatusStyle(task.status) : 'bg-gray-100 text-gray-800'}`}>
-                        {getStatusLabel(task.status)}
-                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        {getStatusInfo(task.status).icon}
+                        <Badge className={cn("text-xs font-medium flex items-center gap-1", getStatusInfo(task.status).className)}>
+                          {getStatusInfo(task.status).label}
+                        </Badge>
+                      </div>
                     </TableCell>
                     
                     <TableCell>
-                      <Badge className={`text-xs font-medium ${task.priority ? getPriorityStyle(task.priority) : 'bg-gray-100 text-gray-800'}`}>
-                        {getPriorityLabel(task.priority)}
-                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        {getPriorityInfo(task.priority).icon}
+                        <Badge className={cn("text-xs font-medium flex items-center gap-1", getPriorityInfo(task.priority).className)}>
+                          {getPriorityInfo(task.priority).label}
+                        </Badge>
+                      </div>
                     </TableCell>
                     
                     <TableCell>
