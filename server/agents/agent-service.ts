@@ -59,6 +59,11 @@ export async function processUserMessage(message: string): Promise<AgentApiRespo
         apiResponse.deadlines = orchestratorResponse.data;
       } else if (orchestratorResponse.action === 'getPrioritizedTasks' && orchestratorResponse.data) {
         apiResponse.prioritizedTasks = orchestratorResponse.data;
+      } else if ((orchestratorResponse.action === 'setDeadlines' || orchestratorResponse.action === 'scheduleTasks') && orchestratorResponse.data) {
+        apiResponse.updatedTask = orchestratorResponse.data;
+        
+        // Invalidar las consultas de tareas en el cliente
+        console.log('Tarea actualizada con nueva fecha límite:', orchestratorResponse.data);
       }
       
       // Si hay datos pero no se han añadido específicamente
