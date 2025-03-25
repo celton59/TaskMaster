@@ -606,7 +606,7 @@ Tu objetivo es crear nuevas tareas, actualizar tareas existentes, eliminar tarea
 
 IMPORTANTE: Si el usuario describe algo que suena como una tarea (por ejemplo, "tengo que hacer contabilidad", "necesito preparar una presentación", etc.), SIEMPRE debes interpretar esto como una solicitud para CREAR una nueva tarea, incluso si no lo pide explícitamente. Si el usuario menciona una fecha, SIEMPRE debes incluir esa fecha al crear la tarea.
 
-Si es necesario, usa una de las funciones disponibles para gestionar tareas. Siempre proporciona una explicación clara de lo que has hecho o de lo que el usuario debería hacer a continuación.
+IMPORTANTE: NUNCA respondas con texto en formato JSON. En su lugar, debes usar las funciones disponibles.
 
 IMPORTANTE: Si el usuario menciona o sugiere una fecha (por ejemplo: "para mañana", "para el viernes", "para el 27 de marzo", etc.), DEBES incluir esa fecha en el campo deadline al crear la tarea. Convierte expresiones de tiempo relativas a fechas absolutas.
 
@@ -849,14 +849,7 @@ Tu objetivo es crear nuevas categorías, actualizar categorías existentes, elim
 
 IMPORTANTE: Si el usuario describe algo que suena como una nueva categoría para organizar tareas (por ejemplo, "quiero crear una categoría para mis tareas personales"), debes interpretar esto como una solicitud para CREAR una nueva categoría.
 
-Debes responder en formato JSON con la siguiente estructura:
-{
-  "action": "createCategory | updateCategory | deleteCategory | listCategories | respond",
-  "parameters": { (parámetros específicos para la acción) },
-  "response": "Mensaje para el usuario",
-  "confidence": (valor entre 0 y 1),
-  "reasoning": "Tu razonamiento interno"
-}
+IMPORTANTE: NUNCA respondas con texto en formato JSON. En su lugar, debes usar las funciones disponibles.
 
 Para createCategory, los parámetros deben incluir:
   - name: nombre de la categoría (extráelo de la descripción del usuario)
@@ -1053,14 +1046,7 @@ Tu objetivo es proporcionar insights valiosos basados en los datos del sistema.
 
 IMPORTANTE: Si el usuario pide cualquier tipo de análisis, estadísticas, informes o métricas relacionadas con las tareas, debes proporcionar información detallada y útil.
 
-Debes responder en formato JSON con la siguiente estructura:
-{
-  "action": "getTaskStats | analyzeTrends | generateReport | respond",
-  "parameters": { (parámetros específicos para la acción) },
-  "response": "Mensaje para el usuario con análisis detallado",
-  "confidence": (valor entre 0 y 1),
-  "reasoning": "Tu razonamiento interno"
-}
+IMPORTANTE: NUNCA respondas con texto en formato JSON. En su lugar, debes usar las funciones disponibles.
 
 Para getTaskStats, no se requieren parámetros adicionales, proporciona estadísticas básicas.
 
@@ -1310,30 +1296,17 @@ class PlannerAgent extends SpecializedAgent {
   private systemPrompt = `Eres un agente especializado en planificación y gestión de fechas límite para tareas.
 Tu objetivo es ayudar con la programación, recordatorios y organización temporal de las actividades.
 
-IMPORTANTE: Cualquier solicitud relacionada con fechas, plazos, prioridades, o planificación debe ser manejada por ti. Si el usuario menciona algo sobre "planificar", "programar", "fechas límite", o temas relacionados, proporciona información detallada.
+IMPORTANTE: Cualquier solicitud relacionada con fechas, plazos, prioridades, o planificación debe ser manejada por ti. 
+Si el usuario menciona algo sobre "planificar", "programar", "fechas límite", o temas relacionados, proporciona información detallada.
 
-Debes responder en formato JSON con la siguiente estructura:
-{
-  "action": "scheduleTasks | setDeadlines | getPrioritizedTasks | getUpcomingDeadlines | respond",
-  "parameters": { (parámetros específicos para la acción) },
-  "response": "Mensaje para el usuario con planificación detallada",
-  "confidence": (valor entre 0 y 1),
-  "reasoning": "Tu razonamiento interno"
-}
+NUNCA debes responder con JSON en formato texto. En su lugar, debes utilizar las funciones disponibles.
 
-Para scheduleTasks, los parámetros pueden incluir:
-  - taskIds: IDs de las tareas a programar
-  - date: fecha propuesta
-
-Para setDeadlines, los parámetros pueden incluir:
-  - taskId: ID de la tarea
-  - deadline: nueva fecha límite
-
-Para getPrioritizedTasks, no requiere parámetros adicionales.
-
-Para getUpcomingDeadlines, puedes incluir parámetros como timeframe (day, week, month).
-
-Para respond, no requiere parámetros, sólo usa cuando ninguna otra acción sea apropiada.
+Eres capaz de ejecutar las siguientes funciones según las necesidades del usuario:
+1. getUpcomingDeadlines - Para obtener próximas fechas límite en un período específico
+2. getPrioritizedTasks - Para obtener tareas ordenadas por prioridad
+3. scheduleTasks - Para programar fechas límite para múltiples tareas
+4. setDeadlines - Para asignar una fecha límite a una tarea específica
+5. respond - Para responder sin realizar ninguna acción específica
 
 Proporciona respuestas detalladas y útiles sobre planificación y organización temporal.`;
 
@@ -1688,14 +1661,13 @@ class MarketingAgent extends SpecializedAgent {
 Tu objetivo es ayudar con la planificación de campañas de marketing, estrategias de contenido, análisis de métricas, 
 SEO, redes sociales, email marketing y todo lo relacionado con la presencia digital.
 
-Debes responder en formato JSON con la siguiente estructura:
-{
-  "action": "respond | createMarketingPlan | suggestContent | analyzeMetrics",
-  "parameters": { (parámetros específicos para la acción) },
-  "response": "Mensaje para el usuario",
-  "confidence": (valor entre 0 y 1),
-  "reasoning": "Tu razonamiento interno"
-}
+IMPORTANTE: NUNCA respondas con texto en formato JSON. En su lugar, debes usar las funciones disponibles.
+
+Eres capaz de ejecutar las siguientes funciones según las necesidades del usuario:
+1. createMarketingPlan - Para crear un plan de marketing con tareas asociadas
+2. suggestContent - Para sugerir ideas de contenido para marketing digital
+3. analyzeMetrics - Para análisis de métricas de marketing
+4. respond - Para responder preguntas sin realizar acciones específicas
 
 Para createMarketingPlan, incluye:
   - title: título del plan de marketing
@@ -1976,14 +1948,14 @@ class ProjectManagerAgent extends SpecializedAgent {
 Tu objetivo es ayudar con la planificación de proyectos, organización de equipos, seguimiento de progreso,
 asignación de recursos, gestión de riesgos y todo lo relacionado con la dirección de proyectos y personas.
 
-Debes responder en formato JSON con la siguiente estructura:
-{
-  "action": "respond | createProject | assignResources | trackProgress | manageRisks",
-  "parameters": { (parámetros específicos para la acción) },
-  "response": "Mensaje para el usuario",
-  "confidence": (valor entre 0 y 1),
-  "reasoning": "Tu razonamiento interno"
-}
+IMPORTANTE: NUNCA respondas con texto en formato JSON. En su lugar, debes usar las funciones disponibles.
+
+Eres capaz de ejecutar las siguientes funciones según las necesidades del usuario:
+1. createProject - Para crear un nuevo proyecto con sus tareas asociadas
+2. assignResources - Para asignar recursos a tareas específicas
+3. trackProgress - Para realizar seguimiento del progreso de un proyecto
+4. manageRisks - Para gestionar los riesgos asociados a un proyecto
+5. respond - Para responder sin realizar acciones específicas
 
 Para createProject, incluye:
   - title: título del proyecto
