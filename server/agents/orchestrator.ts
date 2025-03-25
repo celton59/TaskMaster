@@ -42,6 +42,8 @@ export class AgentOrchestrator {
     this.registerAgent('category', new CategoryAgent());
     this.registerAgent('analytics', new AnalyticsAgent());
     this.registerAgent('planner', new PlannerAgent());
+    this.registerAgent('marketing', new MarketingAgent());
+    this.registerAgent('project', new ProjectManagerAgent());
   }
   
   registerAgent(name: string, agent: SpecializedAgent) {
@@ -260,11 +262,13 @@ Opciones disponibles:
 - category: Para gestionar categorías, crear nuevas categorías, asignar tareas a categorías, listar categorías existentes, etc.
 - analytics: Para analizar datos, generar informes, estadísticas, ver métricas de tareas completadas, pendientes, etc.
 - planner: Para planificación, programación, fechas límite, recordatorios, organización temporal.
+- marketing: Para estrategias de marketing digital, planes de contenido, campañas, SEO, redes sociales, email marketing y análisis de métricas digitales.
+- project: Para gestión de proyectos, equipos, asignación de recursos, seguimiento de progreso, gestión de fases y ciclos de vida de proyectos.
 
 IMPORTANTE: Si la solicitud no es clara o no se ajusta a ninguna categoría específica, asigna a "task".
 
 Responde con un JSON que contenga:
-1. "agentType": El tipo de agente que debe manejar la solicitud (task, category, analytics, planner)
+1. "agentType": El tipo de agente que debe manejar la solicitud (task, category, analytics, planner, marketing, project)
 2. "confidence": Valor entre 0 y 1 que indica la confianza en esta decisión
 3. "reasoning": Breve explicación del porqué`
           },
@@ -944,4 +948,285 @@ Proporciona respuestas detalladas y útiles sobre planificación y organización
 }
 
 // Instancia del orquestador para exportar
+// Implementación del Agente de Marketing Digital
+class MarketingAgent extends SpecializedAgent {
+  private systemPrompt = `Eres un agente especializado en marketing digital y estrategias de promoción.
+Tu objetivo es ayudar con la planificación de campañas de marketing, estrategias de contenido, análisis de métricas, 
+SEO, redes sociales, email marketing y todo lo relacionado con la presencia digital.
+
+Debes responder en formato JSON con la siguiente estructura:
+{
+  "action": "respond | createMarketingPlan | suggestContent | analyzeMetrics",
+  "parameters": { (parámetros específicos para la acción) },
+  "response": "Mensaje para el usuario",
+  "confidence": (valor entre 0 y 1),
+  "reasoning": "Tu razonamiento interno"
+}
+
+Para createMarketingPlan, incluye:
+  - title: título del plan de marketing
+  - objective: objetivo principal del plan
+  - channels: array de canales (ej. ["email", "social_media", "seo"])
+  - timeline: periodo de implementación
+  - kpis: métricas para medir el éxito
+  - tasks: array de tareas relacionadas que podrían crearse
+
+Para suggestContent, incluye:
+  - contentType: tipo de contenido (blog, social, email, etc.)
+  - topics: array de temas sugeridos
+  - frequency: frecuencia recomendada
+  - platforms: plataformas recomendadas
+
+Para analyzeMetrics:
+  - insightType: tipo de análisis (conversion, engagement, traffic, etc.)
+  - recommendations: array de recomendaciones basadas en los datos
+  
+Para respond, no requiere parámetros adicionales.`;
+
+  async process(request: AgentRequest): Promise<AgentResponse> {
+    try {
+      const { userInput, context } = request;
+      const result = await this.callModel(this.systemPrompt, userInput, context);
+      
+      try {
+        const parsedResult = JSON.parse(result);
+        console.log("Respuesta del Agente de Marketing:", parsedResult);
+        
+        // Procesar acciones específicas del agente
+        let data;
+        
+        if (parsedResult.action === "createMarketingPlan" && parsedResult.parameters) {
+          // Si se solicita un plan de marketing, podemos crear tareas relacionadas
+          const { title, tasks } = parsedResult.parameters;
+          
+          if (Array.isArray(tasks) && tasks.length > 0) {
+            const createdTasks = [];
+            
+            // Intentar primero encontrar una categoría de Marketing
+            const categories = await storage.getCategories();
+            let marketingCategoryId = categories.find(c => 
+              c.name.toLowerCase().includes('marketing') || 
+              c.name.toLowerCase().includes('digital')
+            )?.id || 1; // Si no existe, usar categoría por defecto (1)
+            
+            for (const taskInfo of tasks) {
+              try {
+                // Crear la nueva tarea relacionada con el plan de marketing
+                const newTask: InsertTask = {
+                  title: taskInfo.title || `Tarea de marketing: ${title}`,
+                  description: taskInfo.description || '',
+                  status: 'pendiente',
+                  priority: taskInfo.priority || 'media',
+                  categoryId: marketingCategoryId,
+                  deadline: taskInfo.deadline ? new Date(taskInfo.deadline) : null,
+                  userId: 1, // Por defecto, asignar al usuario 1
+                };
+                
+                const createdTask = await storage.createTask(newTask);
+                createdTasks.push(createdTask);
+              } catch (error) {
+                console.error("Error al crear tarea de marketing:", error);
+                // Continuar con la siguiente tarea
+              }
+            }
+            
+            data = { 
+              marketingPlan: parsedResult.parameters,
+              createdTasks 
+            };
+          } else {
+            data = { marketingPlan: parsedResult.parameters };
+          }
+        } else if (parsedResult.action === "suggestContent" || parsedResult.action === "analyzeMetrics") {
+          // Para estos casos, simplemente devolvemos los parámetros como datos
+          data = parsedResult.parameters;
+        }
+        
+        // Retornar la respuesta del agente
+        return {
+          action: parsedResult.action,
+          response: parsedResult.response,
+          data,
+          confidence: parsedResult.confidence || 0.7,
+          metadata: {
+            reasoning: parsedResult.reasoning
+          }
+        };
+      } catch (parseError) {
+        console.error("Error al analizar la respuesta del agente:", parseError);
+        return {
+          response: "Lo siento, ha ocurrido un error al procesar tu solicitud de marketing digital.",
+          confidence: 0.1
+        };
+      }
+    } catch (error) {
+      console.error("Error en MarketingAgent:", error);
+      return {
+        response: "Ha ocurrido un error en el sistema de marketing. Por favor, intenta más tarde.",
+        confidence: 0.1
+      };
+    }
+  }
+}
+
+// Implementación del Agente de Gestión de Proyectos y Equipos
+class ProjectManagerAgent extends SpecializedAgent {
+  private systemPrompt = `Eres un agente especializado en gestión de proyectos y equipos.
+Tu objetivo es ayudar con la planificación de proyectos, organización de equipos, seguimiento de progreso,
+asignación de recursos, gestión de riesgos y todo lo relacionado con la dirección de proyectos y personas.
+
+Debes responder en formato JSON con la siguiente estructura:
+{
+  "action": "respond | createProject | assignResources | trackProgress | manageRisks",
+  "parameters": { (parámetros específicos para la acción) },
+  "response": "Mensaje para el usuario",
+  "confidence": (valor entre 0 y 1),
+  "reasoning": "Tu razonamiento interno"
+}
+
+Para createProject, incluye:
+  - title: título del proyecto
+  - objective: objetivo principal
+  - startDate: fecha de inicio
+  - endDate: fecha de fin estimada
+  - phases: array de fases del proyecto
+  - tasks: array de tareas principales a crear
+
+Para assignResources, incluye:
+  - resources: array de recursos (personas, equipos)
+  - assignments: array de asignaciones (recurso, tarea, tiempo)
+  - constraints: limitaciones a considerar
+
+Para trackProgress:
+  - projectId: identificador del proyecto
+  - status: estado actual (on-track, delayed, at-risk)
+  - completionRate: porcentaje de avance
+  - issues: array de problemas o bloqueos
+  - recommendations: recomendaciones para mejorar
+
+Para manageRisks:
+  - risks: array de riesgos identificados
+  - mitigationStrategies: estrategias para mitigar cada riesgo
+  - contingencyPlans: planes de contingencia
+  
+Para respond, no requiere parámetros adicionales.`;
+
+  async process(request: AgentRequest): Promise<AgentResponse> {
+    try {
+      const { userInput, context } = request;
+      const result = await this.callModel(this.systemPrompt, userInput, context);
+      
+      try {
+        const parsedResult = JSON.parse(result);
+        console.log("Respuesta del Agente de Gestión de Proyectos:", parsedResult);
+        
+        // Procesar acciones específicas del agente
+        let data;
+        
+        if (parsedResult.action === "createProject" && parsedResult.parameters) {
+          // Si se solicita crear un proyecto, generamos tareas relacionadas
+          const { title, tasks, phases } = parsedResult.parameters;
+          
+          if (Array.isArray(tasks) && tasks.length > 0) {
+            const createdTasks = [];
+            
+            // Intentar primero encontrar una categoría de Proyectos
+            const categories = await storage.getCategories();
+            let projectCategoryId = categories.find(c => 
+              c.name.toLowerCase().includes('proyecto') || 
+              c.name.toLowerCase().includes('project')
+            )?.id || 1; // Si no existe, usar categoría por defecto (1)
+            
+            for (const taskInfo of tasks) {
+              try {
+                // Crear la nueva tarea relacionada con el proyecto
+                const newTask: InsertTask = {
+                  title: taskInfo.title || `Tarea de proyecto: ${title}`,
+                  description: taskInfo.description || '',
+                  status: 'pendiente',
+                  priority: taskInfo.priority || 'alta',
+                  categoryId: projectCategoryId,
+                  deadline: taskInfo.deadline ? new Date(taskInfo.deadline) : null,
+                  userId: 1, // Por defecto, asignar al usuario 1
+                };
+                
+                const createdTask = await storage.createTask(newTask);
+                createdTasks.push(createdTask);
+              } catch (error) {
+                console.error("Error al crear tarea de proyecto:", error);
+                // Continuar con la siguiente tarea
+              }
+            }
+            
+            data = { 
+              project: parsedResult.parameters,
+              createdTasks 
+            };
+          } else if (Array.isArray(phases)) {
+            // Si hay fases pero no tareas específicas, podemos crear tareas para cada fase
+            const createdTasks = [];
+            const categories = await storage.getCategories();
+            let projectCategoryId = categories.find(c => 
+              c.name.toLowerCase().includes('proyecto') || 
+              c.name.toLowerCase().includes('project')
+            )?.id || 1;
+            
+            for (const phase of phases) {
+              try {
+                const newTask: InsertTask = {
+                  title: `${phase.name || 'Fase'}: ${title}`,
+                  description: phase.description || `Fase del proyecto ${title}`,
+                  status: 'pendiente',
+                  priority: 'alta',
+                  categoryId: projectCategoryId,
+                  deadline: phase.endDate ? new Date(phase.endDate) : null,
+                  userId: 1,
+                };
+                
+                const createdTask = await storage.createTask(newTask);
+                createdTasks.push(createdTask);
+              } catch (error) {
+                console.error("Error al crear tarea de fase:", error);
+              }
+            }
+            
+            data = { 
+              project: parsedResult.parameters,
+              createdTasks 
+            };
+          } else {
+            data = { project: parsedResult.parameters };
+          }
+        } else if (["assignResources", "trackProgress", "manageRisks"].includes(parsedResult.action)) {
+          // Para estos casos, simplemente devolvemos los parámetros como datos
+          data = parsedResult.parameters;
+        }
+        
+        // Retornar la respuesta del agente
+        return {
+          action: parsedResult.action,
+          response: parsedResult.response,
+          data,
+          confidence: parsedResult.confidence || 0.7,
+          metadata: {
+            reasoning: parsedResult.reasoning
+          }
+        };
+      } catch (parseError) {
+        console.error("Error al analizar la respuesta del agente:", parseError);
+        return {
+          response: "Lo siento, ha ocurrido un error al procesar tu solicitud de gestión de proyectos.",
+          confidence: 0.1
+        };
+      }
+    } catch (error) {
+      console.error("Error en ProjectManagerAgent:", error);
+      return {
+        response: "Ha ocurrido un error en el sistema de gestión de proyectos. Por favor, intenta más tarde.",
+        confidence: 0.1
+      };
+    }
+  }
+}
+
 export const orchestrator = new AgentOrchestrator();
