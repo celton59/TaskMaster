@@ -83,7 +83,7 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-neutral-100 h-full shrink-0 shadow-lg">
+      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-neutral-100 h-full shrink-0 shadow-lg overflow-hidden">
         <div className="py-5 px-5 flex items-center justify-between">
           <div className="flex items-center">
             <div className="h-9 w-9 rounded-lg bg-primary-600 flex items-center justify-center text-white">
@@ -121,8 +121,8 @@ export function Sidebar() {
           </Button>
         </div>
         
-        <nav className="flex-1 py-3 px-3 overflow-y-auto">
-          <div className="mb-6 space-y-1 px-1">            
+        <nav className="flex-1 px-3 py-3 flex flex-col overflow-hidden">
+          <div className="space-y-1 px-1 flex-shrink-0">            
             <NavLink 
               href="/" 
               icon={<Home className="h-5 w-5" />} 
@@ -135,48 +135,19 @@ export function Sidebar() {
               label="Dashboard" 
             />
               
-            {/* Tareas section with dropdown */}
+            {/* Tareas section with dropdown - Always visible links */}
             <div>
-              <button 
+              <div 
                 className={cn(
-                  "w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg",
-                  expandedSections.tasks ? "bg-primary-50 text-primary-700" : "text-neutral-700 hover:bg-neutral-50"
+                  "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg",
+                  location.includes('/tasks') ? "bg-primary-50 text-primary-700" : "text-neutral-700 hover:bg-neutral-50"
                 )}
-                onClick={() => toggleSection('tasks')}
               >
                 <div className="flex items-center">
-                  <ListTodo className={`h-5 w-5 ${expandedSections.tasks ? 'text-primary-600' : 'text-neutral-500'}`} />
+                  <ListTodo className={`h-5 w-5 ${location.includes('/tasks') ? 'text-primary-600' : 'text-neutral-500'}`} />
                   <span className="ml-3">Gestión de tareas</span>
                 </div>
-                {expandedSections.tasks ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </button>
-              
-              {expandedSections.tasks && (
-                <div className="pl-10 mt-1 space-y-1">
-                  <NavLink 
-                    href="/tasks" 
-                    icon={<ListTodo className="h-4 w-4" />} 
-                    label="Todas las tareas" 
-                    isSubmenu 
-                  />
-                  <NavLink 
-                    href="/tasks/pending" 
-                    icon={<Clock className="h-4 w-4" />} 
-                    label="Pendientes" 
-                    isSubmenu 
-                  />
-                  <NavLink 
-                    href="/tasks/completed" 
-                    icon={<CheckCircle2 className="h-4 w-4" />} 
-                    label="Completadas" 
-                    isSubmenu 
-                  />
-                </div>
-              )}
+              </div>
             </div>
             
             <NavLink 
@@ -185,43 +156,11 @@ export function Sidebar() {
               label="Calendario" 
             />
             
-            {/* Reports section with dropdown */}
-            <div>
-              <button 
-                className={cn(
-                  "w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg",
-                  expandedSections.reports ? "bg-primary-50 text-primary-700" : "text-neutral-700 hover:bg-neutral-50"
-                )}
-                onClick={() => toggleSection('reports')}
-              >
-                <div className="flex items-center">
-                  <BarChart className={`h-5 w-5 ${expandedSections.reports ? 'text-primary-600' : 'text-neutral-500'}`} />
-                  <span className="ml-3">Informes</span>
-                </div>
-                {expandedSections.reports ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </button>
-              
-              {expandedSections.reports && (
-                <div className="pl-10 mt-1 space-y-1">
-                  <NavLink 
-                    href="/reports/productivity" 
-                    icon={<BarChart className="h-4 w-4" />} 
-                    label="Productividad" 
-                    isSubmenu 
-                  />
-                  <NavLink 
-                    href="/reports/status" 
-                    icon={<BarChart className="h-4 w-4" />} 
-                    label="Estado de tareas" 
-                    isSubmenu 
-                  />
-                </div>
-              )}
-            </div>
+            <NavLink 
+              href="/reports" 
+              icon={<BarChart className="h-5 w-5" />} 
+              label="Informes" 
+            />
             
             <NavLink 
               href="/users" 
@@ -230,16 +169,15 @@ export function Sidebar() {
             />
           </div>
           
-
+          <Separator className="my-3 bg-neutral-100 flex-shrink-0" />
           
-          <Separator className="my-3 bg-neutral-100" />
-          
-          <div className="px-2 pt-1 space-y-1">
+          <div className="px-2 pt-1 flex-shrink-0">
             <div className="text-xs font-medium text-neutral-500 px-3 py-2">
               Categorías
             </div>
             
-            {categories.map((category) => (
+            {/* Mostrar solo las primeras 3 categorías para evitar scroll */}
+            {categories.slice(0, 3).map((category) => (
               <div 
                 key={category.id} 
                 className="flex justify-between items-center px-3 py-2 text-sm font-medium rounded-lg text-neutral-700 hover:bg-neutral-50 cursor-pointer transition-colors"
@@ -255,6 +193,12 @@ export function Sidebar() {
                 </Badge>
               </div>
             ))}
+            
+            {categories.length > 3 && (
+              <div className="px-3 py-2 text-xs text-primary-600 font-medium cursor-pointer hover:underline">
+                Ver más ({categories.length - 3})
+              </div>
+            )}
           </div>
         </nav>
         
