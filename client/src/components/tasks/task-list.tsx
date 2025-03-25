@@ -153,7 +153,9 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
   };
 
   // Estilos para cada prioridad
-  const getPriorityStyle = (priority: string) => {
+  const getPriorityStyle = (priority: string | null) => {
+    if (!priority) return 'bg-neutral-100 text-neutral-800 border-neutral-300';
+    
     switch (priority) {
       case 'high': return 'bg-rose-100 text-rose-800 border-rose-300';
       case 'medium': return 'bg-amber-100 text-amber-800 border-amber-300';
@@ -366,8 +368,8 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
             <div className="flex flex-wrap gap-2">
               {/* Estado */}
               <Select
-                value={filters.status || ''}
-                onValueChange={(value) => setFilters({ ...filters, status: value || null })}
+                value={filters.status || 'all'}
+                onValueChange={(value) => setFilters({ ...filters, status: value === 'all' ? null : value })}
               >
                 <SelectTrigger className="w-[140px] h-9 text-sm">
                   <SelectValue placeholder="Estado" />
@@ -383,8 +385,8 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
               
               {/* Prioridad */}
               <Select
-                value={filters.priority || ''}
-                onValueChange={(value) => setFilters({ ...filters, priority: value || null })}
+                value={filters.priority || 'all'}
+                onValueChange={(value) => setFilters({ ...filters, priority: value === 'all' ? null : value })}
               >
                 <SelectTrigger className="w-[140px] h-9 text-sm">
                   <SelectValue placeholder="Prioridad" />
@@ -399,17 +401,17 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
               
               {/* Categoría */}
               <Select
-                value={filters.category?.toString() || ''}
+                value={filters.category?.toString() || 'all'}
                 onValueChange={(value) => setFilters({ 
                   ...filters, 
-                  category: value ? parseInt(value, 10) : null 
+                  category: value === 'all' ? null : parseInt(value, 10)
                 })}
               >
                 <SelectTrigger className="w-[140px] h-9 text-sm">
                   <SelectValue placeholder="Categoría" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas las categorías</SelectItem>
+                  <SelectItem value="all">Todas las categorías</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.name}
@@ -547,13 +549,13 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                     </TableCell>
                     
                     <TableCell>
-                      <Badge className={`text-xs font-medium ${getStatusStyle(task.status as string)}`}>
+                      <Badge className={`text-xs font-medium ${task.status ? getStatusStyle(task.status) : 'bg-gray-100 text-gray-800'}`}>
                         {getStatusLabel(task.status)}
                       </Badge>
                     </TableCell>
                     
                     <TableCell>
-                      <Badge className={`text-xs font-medium ${getPriorityStyle(task.priority as string)}`}>
+                      <Badge className={`text-xs font-medium ${task.priority ? getPriorityStyle(task.priority) : 'bg-gray-100 text-gray-800'}`}>
                         {getPriorityLabel(task.priority)}
                       </Badge>
                     </TableCell>
@@ -652,42 +654,31 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <Button 
-                    variant="outline" 
-                    size="icon"
+                  <PaginationPrevious 
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className="gap-1 h-9 w-9"
-                  >
-                    <ChevronDown className="h-4 w-4 rotate-90" />
-                    <span className="sr-only">Página anterior</span>
-                  </Button>
+                    aria-disabled={currentPage === 1}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
                 </PaginationItem>
                 
                 {Array.from({ length: totalPages }).map((_, i) => (
                   <PaginationItem key={i}>
-                    <Button
-                      variant={currentPage === i + 1 ? "default" : "outline"}
-                      size="icon"
+                    <PaginationLink
                       onClick={() => setCurrentPage(i + 1)}
-                      className="h-9 w-9"
+                      isActive={currentPage === i + 1}
+                      className="cursor-pointer"
                     >
                       {i + 1}
-                    </Button>
+                    </PaginationLink>
                   </PaginationItem>
                 ))}
                 
                 <PaginationItem>
-                  <Button 
-                    variant="outline" 
-                    size="icon"
+                  <PaginationNext 
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    className="gap-1 h-9 w-9"
-                  >
-                    <ChevronDown className="h-4 w-4 -rotate-90" />
-                    <span className="sr-only">Página siguiente</span>
-                  </Button>
+                    aria-disabled={currentPage === totalPages}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
