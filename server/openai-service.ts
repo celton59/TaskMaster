@@ -208,13 +208,27 @@ Solicitud del usuario: ${input}`
         result = await storage.createCategory(newCategory);
       }
       
-      return {
+      // Añadimos campos específicos según la acción para facilitar el manejo en el cliente
+      const response: any = {
         success: true,
         action: agentResponse.action,
         result,
         message: agentResponse.message,
         thought: agentResponse.thought
       };
+      
+      // Campos específicos según la acción
+      if (agentResponse.action === 'createTask') {
+        response.task = result;
+      } else if (agentResponse.action === 'listTasks') {
+        response.tasks = result;
+      } else if (agentResponse.action === 'createCategory') {
+        response.category = result;
+      } else if (agentResponse.action === 'listCategories') {
+        response.categories = result;
+      }
+      
+      return response;
       
     } catch (jsonError) {
       console.error("Error al procesar la respuesta JSON:", jsonError);

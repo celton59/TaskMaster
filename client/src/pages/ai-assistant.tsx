@@ -53,8 +53,12 @@ export default function AIAssistant() {
     
     try {
       // Enviar el mensaje a la API del agente
-      const response = await apiRequest('/api/ai/agent', 'POST', { 
-        message: userMessage.text 
+      const response = await fetch('/api/ai/agent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userMessage.text }),
       });
       
       if (!response.ok) {

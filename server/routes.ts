@@ -234,6 +234,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Return different response formats based on the action
       if (result.action === 'createTask') {
+        // Añadir logging detallado para debugging
+        console.log("Tarea creada por el asistente:", result.result);
+        
         res.status(201).json({
           action: result.action,
           message: result.message,
