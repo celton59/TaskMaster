@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { 
   LayoutDashboard, 
@@ -18,7 +19,14 @@ import {
   HelpCircle,
   Globe,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Bell,
+  Search,
+  Home,
+  LogOut,
+  PlusCircle,
+  Clock,
+  CheckCircle2
 } from "lucide-react";
 import type { Category } from "@shared/schema";
 
@@ -75,167 +83,219 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-72 bg-white border-r border-neutral-200 h-full shrink-0">
-        <div className="py-5 px-6 border-b border-neutral-200 flex items-center">
-          <div className="h-10 w-10 rounded-md bg-primary-700 flex items-center justify-center text-white">
-            <LayoutDashboard className="h-6 w-6" />
+      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-neutral-100 h-full shrink-0 shadow-sm">
+        <div className="py-5 px-5 flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="h-9 w-9 rounded-lg bg-primary-600 flex items-center justify-center text-white">
+              <Home className="h-5 w-5" />
+            </div>
+            <h1 className="font-bold text-lg ml-2.5 text-neutral-900">TaskMaster</h1>
           </div>
-          <h1 className="font-bold text-xl ml-3 text-neutral-900">TaskMaster</h1>
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            className="h-8 w-8 rounded-full text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100"
+          >
+            <Bell className="h-5 w-5" />
+          </Button>
         </div>
         
-        <nav className="flex-1 py-5 px-5 overflow-y-auto">
-          <div className="mb-6">
-            <p className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3">
-              Menú principal
-            </p>
+        <div className="px-4 py-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+            <input 
+              type="text" 
+              placeholder="Buscar..." 
+              className="w-full bg-neutral-50 border border-neutral-200 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
+            />
+          </div>
+        </div>
+        
+        <div className="px-4 pt-2 pb-3">
+          <Button 
+            className="w-full bg-primary-600 hover:bg-primary-700 text-white shadow-sm"
+            size="sm"
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Nueva tarea
+          </Button>
+        </div>
+        
+        <nav className="flex-1 py-3 px-3 overflow-y-auto">
+          <div className="mb-6 space-y-1 px-1">            
+            <NavLink 
+              href="/" 
+              icon={<Home className="h-5 w-5" />} 
+              label="Inicio" 
+            />
             
-            <div className="space-y-1">
-              <NavLink 
-                href="/" 
-                icon={<LayoutDashboard className="h-5 w-5" />} 
-                label="Dashboard" 
-              />
+            <NavLink 
+              href="/dashboard" 
+              icon={<LayoutDashboard className="h-5 w-5" />} 
+              label="Dashboard" 
+            />
               
-              {/* Tareas section with dropdown */}
-              <div>
-                <button 
-                  className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-md text-neutral-800 hover:bg-neutral-50"
-                  onClick={() => toggleSection('tasks')}
-                >
-                  <div className="flex items-center">
-                    <ListTodo className="h-5 w-5 text-neutral-500" />
-                    <span className="ml-3">Gestión de tareas</span>
-                  </div>
-                  {expandedSections.tasks ? (
-                    <ChevronDown className="h-4 w-4 text-neutral-400" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-neutral-400" />
-                  )}
-                </button>
-                
-                {expandedSections.tasks && (
-                  <div className="pl-10 mt-1 space-y-1">
-                    <NavLink 
-                      href="/tasks" 
-                      icon={<ListTodo className="h-4 w-4" />} 
-                      label="Todas las tareas" 
-                      isSubmenu 
-                    />
-                    <NavLink 
-                      href="/tasks/pending" 
-                      icon={<FileText className="h-4 w-4" />} 
-                      label="Pendientes" 
-                      isSubmenu 
-                    />
-                    <NavLink 
-                      href="/tasks/completed" 
-                      icon={<FileText className="h-4 w-4" />} 
-                      label="Completadas" 
-                      isSubmenu 
-                    />
-                  </div>
+            {/* Tareas section with dropdown */}
+            <div>
+              <button 
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg",
+                  expandedSections.tasks ? "bg-primary-50 text-primary-700" : "text-neutral-700 hover:bg-neutral-50"
                 )}
-              </div>
-              
-              <NavLink 
-                href="/calendar" 
-                icon={<Calendar className="h-5 w-5" />} 
-                label="Calendario" 
-              />
-              
-              {/* Reports section with dropdown */}
-              <div>
-                <button 
-                  className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-md text-neutral-800 hover:bg-neutral-50"
-                  onClick={() => toggleSection('reports')}
-                >
-                  <div className="flex items-center">
-                    <BarChart className="h-5 w-5 text-neutral-500" />
-                    <span className="ml-3">Informes</span>
-                  </div>
-                  {expandedSections.reports ? (
-                    <ChevronDown className="h-4 w-4 text-neutral-400" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-neutral-400" />
-                  )}
-                </button>
-                
-                {expandedSections.reports && (
-                  <div className="pl-10 mt-1 space-y-1">
-                    <NavLink 
-                      href="/reports/productivity" 
-                      icon={<BarChart className="h-4 w-4" />} 
-                      label="Productividad" 
-                      isSubmenu 
-                    />
-                    <NavLink 
-                      href="/reports/status" 
-                      icon={<BarChart className="h-4 w-4" />} 
-                      label="Estado de tareas" 
-                      isSubmenu 
-                    />
-                  </div>
-                )}
-              </div>
-              
-              <NavLink 
-                href="/users" 
-                icon={<Users className="h-5 w-5" />} 
-                label="Usuarios" 
-              />
-            </div>
-          </div>
-          
-          <Separator className="my-5" />
-          
-          <div className="mb-6">
-            <p className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3">
-              Categorías
-            </p>
-            <div className="space-y-1">
-              {categories.map((category) => (
-                <div key={category.id} className="flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md text-neutral-700 hover:bg-neutral-50 cursor-pointer transition-colors">
-                  <div className="flex items-center">
-                    <span className={`h-3 w-3 rounded-full ${getCategoryColor(category.color)} mr-3`}></span>
-                    {category.name}
-                  </div>
-                  <Badge variant="outline" className="bg-neutral-50 text-neutral-600 text-xs font-normal">
-                    {Math.floor(Math.random() * 10) + 2}
-                  </Badge>
+                onClick={() => toggleSection('tasks')}
+              >
+                <div className="flex items-center">
+                  <ListTodo className={`h-5 w-5 ${expandedSections.tasks ? 'text-primary-600' : 'text-neutral-500'}`} />
+                  <span className="ml-3">Gestión de tareas</span>
                 </div>
-              ))}
+                {expandedSections.tasks ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </button>
+              
+              {expandedSections.tasks && (
+                <div className="pl-10 mt-1 space-y-1">
+                  <NavLink 
+                    href="/tasks" 
+                    icon={<ListTodo className="h-4 w-4" />} 
+                    label="Todas las tareas" 
+                    isSubmenu 
+                  />
+                  <NavLink 
+                    href="/tasks/pending" 
+                    icon={<Clock className="h-4 w-4" />} 
+                    label="Pendientes" 
+                    isSubmenu 
+                  />
+                  <NavLink 
+                    href="/tasks/completed" 
+                    icon={<CheckCircle2 className="h-4 w-4" />} 
+                    label="Completadas" 
+                    isSubmenu 
+                  />
+                </div>
+              )}
+            </div>
+            
+            <NavLink 
+              href="/calendar" 
+              icon={<Calendar className="h-5 w-5" />} 
+              label="Calendario" 
+            />
+            
+            {/* Reports section with dropdown */}
+            <div>
+              <button 
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg",
+                  expandedSections.reports ? "bg-primary-50 text-primary-700" : "text-neutral-700 hover:bg-neutral-50"
+                )}
+                onClick={() => toggleSection('reports')}
+              >
+                <div className="flex items-center">
+                  <BarChart className={`h-5 w-5 ${expandedSections.reports ? 'text-primary-600' : 'text-neutral-500'}`} />
+                  <span className="ml-3">Informes</span>
+                </div>
+                {expandedSections.reports ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </button>
+              
+              {expandedSections.reports && (
+                <div className="pl-10 mt-1 space-y-1">
+                  <NavLink 
+                    href="/reports/productivity" 
+                    icon={<BarChart className="h-4 w-4" />} 
+                    label="Productividad" 
+                    isSubmenu 
+                  />
+                  <NavLink 
+                    href="/reports/status" 
+                    icon={<BarChart className="h-4 w-4" />} 
+                    label="Estado de tareas" 
+                    isSubmenu 
+                  />
+                </div>
+              )}
+            </div>
+            
+            <NavLink 
+              href="/users" 
+              icon={<Users className="h-5 w-5" />} 
+              label="Usuarios" 
+            />
+          </div>
+          
+          <div className="px-4 py-2">
+            <div className="bg-primary-50 rounded-xl p-3 border border-primary-100 shadow-sm">
+              <div className="flex items-center mb-2">
+                <span className="h-6 w-6 rounded-full bg-primary-200 flex items-center justify-center">
+                  <HelpCircle className="h-3.5 w-3.5 text-primary-700" />
+                </span>
+                <span className="ml-2 text-sm font-medium text-primary-800">¿Necesitas ayuda?</span>
+              </div>
+              <p className="text-xs text-primary-700 leading-relaxed">
+                Obtén soporte y asistencia con nuestra documentación.
+              </p>
+              <Button 
+                variant="link" 
+                className="w-full justify-start p-0 mt-1 text-xs text-primary-800 font-medium" 
+                size="sm"
+              >
+                Ver documentación
+              </Button>
             </div>
           </div>
           
-          <Separator className="my-5" />
+          <Separator className="my-3 bg-neutral-100" />
           
-          <div>
-            <p className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3">
-              Ayuda & Soporte
-            </p>
-            <div className="space-y-1">
-              <button className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-neutral-700 hover:bg-neutral-50">
-                <HelpCircle className="h-5 w-5 text-neutral-500 mr-3" />
-                Centro de ayuda
-              </button>
-              <button className="w-full flex items-center px-3 py-2 text-sm font-medium rounded-md text-neutral-700 hover:bg-neutral-50">
-                <MessageSquare className="h-5 w-5 text-neutral-500 mr-3" />
-                Contacto
-              </button>
+          <div className="px-2 pt-1 space-y-1">
+            <div className="text-xs font-medium text-neutral-500 px-3 py-2">
+              Categorías
             </div>
+            
+            {categories.map((category) => (
+              <div 
+                key={category.id} 
+                className="flex justify-between items-center px-3 py-2 text-sm font-medium rounded-lg text-neutral-700 hover:bg-neutral-50 cursor-pointer transition-colors"
+              >
+                <div className="flex items-center">
+                  <span className={`h-2.5 w-2.5 rounded-full ${getCategoryColor(category.color)} mr-2.5`}></span>
+                  {category.name}
+                </div>
+                <Badge 
+                  className="bg-neutral-100 border-0 text-xs font-normal h-5 text-neutral-600 hover:bg-neutral-100"
+                >
+                  {Math.floor(Math.random() * 10) + 2}
+                </Badge>
+              </div>
+            ))}
           </div>
         </nav>
         
-        <div className="p-4 border-t border-neutral-200 bg-neutral-50">
-          <div className="flex items-center">
-            <Avatar className="h-10 w-10 border-2 border-white">
-              <AvatarImage src="/avatar.png" />
-              <AvatarFallback className="bg-primary-100 text-primary-700">AD</AvatarFallback>
-            </Avatar>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-neutral-800">Admin Demo</p>
-              <p className="text-xs text-neutral-500">Administrador</p>
+        <div className="p-4 border-t border-neutral-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Avatar className="h-9 w-9 border-2 border-white">
+                <AvatarImage src="/avatar.png" />
+                <AvatarFallback className="bg-primary-100 text-primary-700">AD</AvatarFallback>
+              </Avatar>
+              <div className="ml-2.5">
+                <p className="text-sm font-medium text-neutral-800">Admin Demo</p>
+                <p className="text-xs text-neutral-500">admin@example.com</p>
+              </div>
             </div>
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              className="h-8 w-8 rounded-full text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </aside>
