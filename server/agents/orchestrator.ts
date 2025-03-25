@@ -612,6 +612,8 @@ IMPORTANTE: Si el usuario menciona o sugiere una fecha (por ejemplo: "para maña
 
 IMPORTANTE: Si el usuario solicita eliminar varias tareas (por ejemplo: "borra las tareas 1, 2 y 3" o "elimina las tareas 4-7"), DEBES usar la función deleteTasks con todos los IDs mencionados. Asegúrate de extraer correctamente todos los números de ID, incluso si están en una lista, separados por comas o guiones.
 
+IMPORTANTE: Si el usuario solicita crear varias tareas al mismo tiempo (por ejemplo: "crea 4 tareas: lavar, planchar, cocinar, limpiar"), DEBES usar la función createTasks y añadir cada tarea como un objeto separado en el array 'tasks'. Toma cada elemento de la lista como una tarea independiente.
+
 No intentes responder a chistes, saludos o conversación casual; interpreta todo como un intento de gestionar tareas.`;
   
   getFunctions(): Array<OpenAIFunction> {
@@ -646,6 +648,48 @@ No intentes responder a chistes, saludos o conversación casual; interpreta todo
             }
           },
           required: ["title", "description", "priority"]
+        }
+      },
+      {
+        name: "createTasks",
+        description: "Crea múltiples tareas en el sistema de una sola vez",
+        parameters: {
+          type: "object",
+          properties: {
+            tasks: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { 
+                    type: "string",
+                    description: "Título de la tarea (extráelo de la descripción del usuario)"
+                  },
+                  description: { 
+                    type: "string",
+                    description: "Descripción detallada (elabora basado en la solicitud)"
+                  },
+                  priority: { 
+                    type: "string", 
+                    enum: ["alta", "media", "baja"],
+                    description: "Prioridad de la tarea (deduce la prioridad apropiada)"
+                  },
+                  categoryId: { 
+                    type: "integer",
+                    description: "ID de la categoría (opcional, usa 1 por defecto)" 
+                  },
+                  deadline: { 
+                    type: "string", 
+                    format: "date",
+                    description: "Fecha límite en formato YYYY-MM-DD. INCLUIR SIEMPRE que el usuario mencione una fecha. Convierte expresiones relativas ('mañana', 'el viernes', etc.) a fechas absolutas."
+                  }
+                },
+                required: ["title", "description", "priority"]
+              },
+              description: "Lista de tareas a crear"
+            }
+          },
+          required: ["tasks"]
         }
       },
       {
@@ -776,6 +820,58 @@ No intentes responder a chistes, saludos o conversación casual; interpreta todo
           if (args.deadline) {
             userResponse += ` La fecha límite es ${args.deadline}.`;
           }
+          break;
+        }
+        
+        case "createTasks": {
+          const args = response.functionCall.arguments;
+          const createdTasks = [];
+          
+          // Procesar cada tarea en la lista
+          for (const taskData of args.tasks) {
+            // Convertir prioridad si es necesario
+            let priority = taskData.priority;
+            if (priority === 'alta') priority = 'high';
+            else if (priority === 'media') priority = 'medium';
+            else if (priority === 'baja') priority = 'low';
+            
+            const newTask = {
+              title: taskData.title,
+              description: taskData.description,
+              status: 'pending',
+              priority,
+              categoryId: taskData.categoryId || 1,
+              deadline: taskData.deadline ? new Date(taskData.deadline) : null,
+            };
+            
+            try {
+              const createdTask = await storage.createTask(newTask);
+              createdTasks.push(createdTask);
+            } catch (error) {
+              console.error("Error al crear tarea:", error);
+            }
+          }
+          
+          data = createdTasks;
+          
+          // Generar mensaje de respuesta
+          if (createdTasks.length === 1) {
+            userResponse = `He creado la tarea "${createdTasks[0].title}".`;
+          } else if (createdTasks.length > 1) {
+            userResponse = `He creado ${createdTasks.length} tareas: `;
+            createdTasks.forEach((task, index) => {
+              if (index === createdTasks.length - 1) {
+                userResponse += ` y "${task.title}".`;
+              } else if (index === 0) {
+                userResponse += `"${task.title}"`;
+              } else {
+                userResponse += `, "${task.title}"`;
+              }
+            });
+          } else {
+            userResponse = "No pude crear ninguna tarea. Por favor, intenta nuevamente.";
+          }
+          
           break;
         }
         

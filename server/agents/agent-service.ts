@@ -32,6 +32,8 @@ export async function processUserMessage(message: string): Promise<AgentApiRespo
       // Acciones relacionadas con tareas
       if (orchestratorResponse.action === 'createTask' && orchestratorResponse.data) {
         apiResponse.task = orchestratorResponse.data;
+      } else if (orchestratorResponse.action === 'createTasks' && orchestratorResponse.data) {
+        apiResponse.tasks = orchestratorResponse.data;
       } else if (orchestratorResponse.action === 'listTasks' && orchestratorResponse.data) {
         apiResponse.tasks = orchestratorResponse.data;
       } else if (orchestratorResponse.action === 'updateTask' && orchestratorResponse.data) {
