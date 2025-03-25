@@ -130,37 +130,29 @@ export function TaskColumn({
         </div>
       </div>
 
-      <div className="space-y-2.5 task-column min-h-[300px]">
+      <div className="space-y-2 task-column px-1 min-h-[200px]">
         {isLoading ? (
           // Loading skeletons
-          Array(2).fill(0).map((_, index) => (
-            <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-neutral-100 animate-pulse">
+          Array(3).fill(0).map((_, index) => (
+            <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-neutral-200">
               <div className="flex justify-between items-start">
-                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-5 w-20 rounded-full" />
                 <Skeleton className="h-4 w-4 rounded-full" />
               </div>
-              <Skeleton className="h-4 w-4/5 mt-3" />
-              <Skeleton className="h-3 w-full mt-1.5" />
+              <Skeleton className="h-5 w-full mt-2" />
+              <Skeleton className="h-3 w-full mt-1" />
               <Skeleton className="h-3 w-3/4 mt-0.5" />
-              <div className="mt-3 pt-2 border-t border-neutral-100 flex items-center justify-between">
-                <Skeleton className="h-3 w-14 rounded-full" />
-                <Skeleton className="h-5 w-5 rounded-full" />
+              <div className="mt-3 flex items-center justify-between">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-6 w-6 rounded-full" />
               </div>
             </div>
           ))
         ) : tasks.length === 0 ? (
           // Empty state
-          <div className="h-[300px] flex flex-col items-center justify-center">
-            <div className="w-full border border-dashed border-neutral-200 rounded-lg p-6 text-center bg-neutral-50/50">
-              <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400 mx-auto mb-3">
-                <Plus size={18} />
-              </div>
-              <p className="text-sm font-medium text-neutral-600 mb-1">No hay tareas</p>
-              <p className="text-xs text-neutral-500 mb-3">Arrastra tareas aquí o crea una nueva</p>
-              <Button variant="outline" size="sm" className="h-8 text-xs bg-white">
-                <Plus size={12} className="mr-1" />
-                Nueva tarea
-              </Button>
+          <div className="flex flex-col items-center justify-center py-8 text-center text-neutral-400">
+            <div className="w-full border-2 border-dashed border-neutral-200 rounded-lg p-4">
+              <p className="text-sm">Arrastra tareas aquí</p>
             </div>
           </div>
         ) : (
