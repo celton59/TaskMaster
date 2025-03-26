@@ -300,6 +300,16 @@ export default function AIAssistant() {
           description: "La tarea se ha actualizado correctamente",
           variant: "default"
         });
+      } else if (result.action === 'scheduleTasks') {
+        // Invalidar la caché cuando se programan múltiples tareas
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks/stats'] });
+        
+        toast({
+          title: "Tareas programadas",
+          description: `Se han programado ${result.data?.scheduledTasks?.length || 'múltiples'} tareas en el período especificado`,
+          variant: "default"
+        });
       } else if (result.action === 'deleteTask' || result.action === 'deleteTasks') {
         // Invalidar la caché cuando se elimina una tarea o varias tareas
         queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });

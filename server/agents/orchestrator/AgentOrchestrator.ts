@@ -64,6 +64,7 @@ export class AgentOrchestrator {
     
     // Registrar los agentes especializados
     this.registerAgent('task', new TaskAgent());
+    this.registerAgent('planner', new PlannerAgent());
     // TODO: A medida que se vayan creando más agentes, agregarlos aquí
     // this.registerAgent('category', new CategoryAgent());
     // this.registerAgent('analytics', new AnalyticsAgent());
@@ -219,8 +220,11 @@ export class AgentOrchestrator {
       this.lastTaskId = result.data.id;
     } else if (result.action === 'updateTask' && result.data?.id) {
       this.lastTaskId = result.data.id;
-    } else if ((result.action === 'setDeadlines' || result.action === 'scheduleTasks') && result.data?.id) {
+    } else if (result.action === 'setDeadlines' && result.data?.id) {
       this.lastTaskId = result.data.id;
+    } else if (result.action === 'scheduleTasks' && result.data?.scheduledTasks?.length > 0) {
+      // Para el caso de programación múltiple, usar el ID de la primera tarea programada
+      this.lastTaskId = result.data.scheduledTasks[0].id;
     }
     
     return {
