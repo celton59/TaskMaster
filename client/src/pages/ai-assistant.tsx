@@ -300,14 +300,16 @@ export default function AIAssistant() {
           description: "La tarea se ha actualizado correctamente",
           variant: "default"
         });
-      } else if (result.action === 'deleteTask') {
-        // Invalidar la caché cuando se elimina una tarea
+      } else if (result.action === 'deleteTask' || result.action === 'deleteTasks') {
+        // Invalidar la caché cuando se elimina una tarea o varias tareas
         queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
         queryClient.invalidateQueries({ queryKey: ['/api/tasks/stats'] });
         
         toast({
-          title: "Tarea eliminada",
-          description: "La tarea se ha eliminado correctamente",
+          title: result.action === 'deleteTask' ? "Tarea eliminada" : "Tareas eliminadas",
+          description: result.action === 'deleteTask' 
+            ? "La tarea se ha eliminado correctamente" 
+            : `Se han eliminado ${result.data?.deletedTasks?.length || 'múltiples'} tareas correctamente`,
           variant: "default"
         });
       } else if (result.action === 'createCategory') {
