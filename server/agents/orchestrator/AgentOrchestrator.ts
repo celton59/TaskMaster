@@ -3,6 +3,7 @@ import { SpecializedAgent } from '../base/SpecializedAgent';
 import { ConversationHistoryItem } from '../types/common';
 import { storage } from '../../storage';
 import { TaskAgent } from '../specialized/TaskAgent';
+import { PlannerAgent } from '../specialized/PlannerAgent';
 
 // Inicializar cliente de OpenAI con la clave API
 const openai = new OpenAI({
