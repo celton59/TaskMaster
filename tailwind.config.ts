@@ -5,6 +5,11 @@ export default {
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Poppins', 'sans-serif'],
+        serif: ['Playfair Display', 'serif'],
+        display: ['Playfair Display', 'serif']
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -44,6 +49,14 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // Paleta de lujo
+        luxury: {
+          dark: "#2A1E12",
+          medium: "#4A3322",
+          light: "#7C5E3C",
+          gold: "#D4AF37",
+          cream: "#EFE6DA"
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -79,10 +92,41 @@ export default {
             height: "0",
           },
         },
+        "gold-shimmer": {
+          "0%, 100%": {
+            backgroundPosition: "0% 50%"
+          },
+          "50%": {
+            backgroundPosition: "100% 50%"
+          }
+        },
+        "border-glow": {
+          "0%, 100%": {
+            boxShadow: "0 0 5px rgba(212, 175, 55, 0.5)",
+            borderColor: "rgba(212, 175, 55, 0.8)"
+          },
+          "50%": {
+            boxShadow: "0 0 15px rgba(212, 175, 55, 0.8)",
+            borderColor: "rgba(212, 175, 55, 1)"
+          }
+        },
+        "fade-in": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(10px)"
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)"
+          }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "gold-shimmer": "gold-shimmer 3s ease infinite",
+        "border-glow": "border-glow 2s ease-in-out infinite",
+        "fade-in": "fade-in 0.5s ease-out forwards"
       },
     },
   },

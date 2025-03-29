@@ -1,0 +1,67 @@
+Para pasarle los assets al programador basados en la imagen del dashboard que generamos, lo ideal es dividir los recursos en componentes reutilizables con estilos y funcionalidades claras. A continuación, te doy un desglose de los assets clave, acompañados de sus posibles nombres, funciones y sugerencias para implementación:
+
+⸻
+
+1. Tipografía y Colores
+
+Fuentes sugeridas:
+	•	Serif elegante como Playfair Display o Gloock (Google Fonts)
+	•	Sans-serif moderna como Inter o Manrope para los datos secundarios
+
+Colores (paleta de lujo):
+	•	Fondo: #2A1E12 (marrón oscuro)
+	•	Dorado: #D4AF37 o #FFD700
+	•	Detalles: #4A3322, #7C5E3C, #EFE6DA
+
+⸻
+
+2. Componentes UI
+
+Navbar superior
+	•	Logo: Círculo con punto dorado (puede exportarse como SVG o PNG)
+	•	Menú: Dashboard, Projects, Calendar, Settings
+	•	Perfil de usuario: Avatar circular (Rauw Alejandro), notificaciones, búsqueda
+
+Encabezado
+	•	Welcome back, Rauw Alejandro
+	•	Filtro de tareas: All, In Progress, Completed, Overdue (botones pill-style con fondo degradado o borde dorado)
+
+⸻
+
+3. Paneles de datos
+
+Task Overview Card
+	•	Título: Task Overview
+	•	Total de tareas con gráficas y métricas (+29%, -38%, -9%)
+	•	Línea de tendencia (puede usar chart.js o recharts)
+
+Lista de tareas
+	•	Título: Tasks
+	•	Checkbox personalizado (estilo antiguo o dorado)
+	•	Tareas con fechas (Apr.10, Apr.15, etc.)
+	•	Prioridad visual (rojo para tareas urgentes)
+
+Priority y Productivity Cards
+	•	Gráficas tipo barra con fondo oscuro y barra dorada
+	•	Indicadores de productividad (porcentaje, monedas apiladas como ícono)
+
+⸻
+
+4. Ilustraciones decorativas
+	•	Fondo: Pintura renacentista (si es decorativa, pídele al diseñador un asset rasterizado)
+	•	Porsche dorado: PNG/SVG como ícono decorativo o fondo hero
+	•	Monedas apiladas y billetes: SVGs individuales si se desea animar o estilizar
+
+⸻
+
+5. Formato de entrega para el programador
+	•	Carpeta /assets con:
+	•	/icons (SVGs: monedas, crown, calendario, porsche, notificación)
+	•	/images (JPEG/PNG decorativos)
+	•	/fonts (Google Fonts import o .ttf)
+	•	/colors.css o tailwind.config.js para paleta
+	•	/components (botones, tarjeta, gráfica, barra de productividad)
+
+⸻
+
+¿Quieres que te exporte los SVGs y los elementos como un paquete ZIP o prefieres que te genere directamente los componentes en React/Tailwind o HTML/CSS?

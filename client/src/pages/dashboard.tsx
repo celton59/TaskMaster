@@ -85,33 +85,33 @@ export default function Dashboard() {
   
   return (
     <div className="py-8 px-6 space-y-8">
-      <div className="bg-white rounded-lg p-5 mb-6 shadow-sm border border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
+      <div className="luxury-card rounded-lg p-5 mb-6 shadow-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center">
-              <span className="bg-primary-50 text-primary-600 p-1.5 rounded-md mr-3">
+            <h1 className="text-3xl font-bold tracking-tight flex items-center">
+              <span className="bg-luxury-gold/20 text-luxury-gold p-1.5 rounded-md mr-3 border border-luxury-gold/50">
                 <LayoutDashboard className="h-5 w-5" />
               </span>
-              Panel de Control
+              <span className="luxury-gold-gradient font-serif">Panel de Control</span>
             </h1>
-            <p className="mt-2 text-sm text-neutral-500 pl-[46px]">
-              Bienvenido de nuevo, <span className="text-primary-700 font-medium">Admin Demo</span> - 
-              <span className="text-neutral-400"> {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long'})}</span>
+            <p className="mt-2 text-sm text-luxury-cream/90 pl-[46px]">
+              Bienvenido de nuevo, <span className="text-luxury-gold font-medium">Admin Demo</span> - 
+              <span className="text-luxury-cream/70"> {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long'})}</span>
             </p>
           </div>
           <div className="mt-4 md:mt-0 flex items-center gap-3">
             <Button 
               variant="outline"
               size="sm" 
-              className="h-9 border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-all"
+              className="h-9 border-luxury-gold/50 text-luxury-cream hover:bg-luxury-gold/10 hover:text-luxury-gold rounded-md transition-all"
             >
-              <Mail className="mr-2 h-4 w-4 text-neutral-500" />
+              <Mail className="mr-2 h-4 w-4 text-luxury-gold/80" />
               Reportes
             </Button>
             <Button 
               onClick={() => setIsTaskFormOpen(true)}
               size="sm" 
-              className="h-9 shadow-md bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-all font-medium"
+              className="h-9 shadow-md bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-dark rounded-md transition-all font-medium"
             >
               <Plus className="mr-2 h-4 w-4" />
               Nueva tarea
@@ -122,21 +122,21 @@ export default function Dashboard() {
 
       {/* Task Status Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card className="border-neutral-100 shadow-md overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neutral-100 bg-neutral-50/50">
+        <Card className="luxury-card overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-luxury-gold/30 bg-gradient-to-r from-luxury-dark to-luxury-medium">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neutral-800">Distribución de tareas</CardTitle>
-              <CardDescription>Resumen por estado</CardDescription>
+              <CardTitle className="text-base font-medium text-luxury-gold font-serif">Distribución de tareas</CardTitle>
+              <CardDescription className="text-luxury-cream/70">Resumen por estado</CardDescription>
             </div>
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-luxury-gold/20 text-luxury-gold border border-luxury-gold/30">
                 <BarChart4 className="h-5 w-5" />
               </div>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigate("/tasks")}
-                className="h-8 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 text-neutral-700 rounded-md"
+                className="h-8 border-luxury-gold/50 hover:bg-luxury-gold/10 text-luxury-cream hover:text-luxury-gold rounded-md"
               >
                 Ver tareas
                 <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
@@ -149,62 +149,62 @@ export default function Dashboard() {
                 <div className="relative pt-1">
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-rose-600 bg-rose-100 rounded-full">Pendientes</span>
-                      <span className="text-xs font-semibold ml-2">{stats.pending}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-luxury-cream border border-luxury-gold/30 bg-luxury-gold/10 rounded-full">Pendientes</span>
+                      <span className="text-xs font-semibold ml-2 text-luxury-gold">{stats.pending}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-rose-600">
+                      <span className="text-xs font-semibold inline-block text-luxury-gold">
                         {stats.total > 0 ? Math.round((stats.pending / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-rose-200">
-                    <div style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-rose-500"></div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-luxury-medium/50 border border-luxury-gold/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-rose-500 bg-gradient-to-r from-rose-600 to-rose-400 animate-gold-shimmer"></div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-amber-600 bg-amber-100 rounded-full">En progreso</span>
-                      <span className="text-xs font-semibold ml-2">{stats.inProgress}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-luxury-cream border border-luxury-gold/30 bg-luxury-gold/10 rounded-full">En progreso</span>
+                      <span className="text-xs font-semibold ml-2 text-luxury-gold">{stats.inProgress}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-amber-600">
+                      <span className="text-xs font-semibold inline-block text-luxury-gold">
                         {stats.total > 0 ? Math.round((stats.inProgress / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-amber-200">
-                    <div style={{ width: `${stats.total > 0 ? (stats.inProgress / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-amber-500"></div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-luxury-medium/50 border border-luxury-gold/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.inProgress / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-amber-500 bg-gradient-to-r from-amber-600 to-amber-400 animate-gold-shimmer"></div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">En revisión</span>
-                      <span className="text-xs font-semibold ml-2">{stats.review}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-luxury-cream border border-luxury-gold/30 bg-luxury-gold/10 rounded-full">En revisión</span>
+                      <span className="text-xs font-semibold ml-2 text-luxury-gold">{stats.review}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-blue-600">
+                      <span className="text-xs font-semibold inline-block text-luxury-gold">
                         {stats.total > 0 ? Math.round((stats.review / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-blue-200">
-                    <div style={{ width: `${stats.total > 0 ? (stats.review / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-luxury-medium/50 border border-luxury-gold/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.review / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-blue-500 bg-gradient-to-r from-blue-600 to-blue-400 animate-gold-shimmer"></div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-emerald-600 bg-emerald-100 rounded-full">Completadas</span>
-                      <span className="text-xs font-semibold ml-2">{stats.completed}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-luxury-cream border border-luxury-gold/30 bg-luxury-gold/10 rounded-full">Completadas</span>
+                      <span className="text-xs font-semibold ml-2 text-luxury-gold">{stats.completed}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-emerald-600">
+                      <span className="text-xs font-semibold inline-block text-luxury-gold">
                         {stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 text-xs flex rounded-full bg-emerald-200">
-                    <div style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500"></div>
+                  <div className="overflow-hidden h-2 text-xs flex rounded-full bg-luxury-medium/50 border border-luxury-gold/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-emerald-500 bg-gradient-to-r from-emerald-600 to-emerald-400 animate-gold-shimmer"></div>
                   </div>
                 </div>
               </div>
