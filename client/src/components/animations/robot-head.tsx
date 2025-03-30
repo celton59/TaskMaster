@@ -37,28 +37,28 @@ export const RobotHead: React.FC<RobotHeadProps> = ({
         }
         
         .robot-part {
-          fill: rgba(30, 30, 45, 0.9);
+          fill: rgba(10, 10, 20, 0.95);
           stroke: ${robotColor};
-          stroke-width: 1.5;
+          stroke-width: 2;
           filter: drop-shadow(0 0 3px ${glowColor});
         }
 
         .robot-panel {
-          fill: rgba(20, 20, 35, 0.8);
+          fill: rgba(5, 5, 15, 0.9);
           stroke: ${robotColor};
-          stroke-width: 1;
+          stroke-width: 1.5;
         }
 
         .robot-detail {
           fill: none;
           stroke: ${robotColor};
-          stroke-width: 1;
-          opacity: 0.9;
+          stroke-width: 1.5;
+          opacity: 1;
         }
         
         .robot-detail-solid {
           fill: ${robotColor};
-          opacity: 0.8;
+          opacity: 1;
         }
 
         .robot-antenna {
@@ -117,14 +117,14 @@ export const RobotHead: React.FC<RobotHeadProps> = ({
         
         .chip-line {
           stroke: ${robotColor};
-          stroke-width: 0.5;
+          stroke-width: 1;
           animation: chipPulse 3s infinite alternate;
         }
         
         @keyframes chipPulse {
-          0% { stroke: ${robotColor}; opacity: 0.3; }
-          50% { stroke: ${eyeBrightColor}; opacity: 0.6; }
-          100% { stroke: ${robotColor}; opacity: 0.9; }
+          0% { stroke: ${robotColor}; opacity: 0.5; }
+          50% { stroke: ${eyeBrightColor}; opacity: 0.8; }
+          100% { stroke: ${robotColor}; opacity: 1; }
         }
         
         #head {
@@ -198,22 +198,24 @@ export const RobotHead: React.FC<RobotHeadProps> = ({
         @keyframes smokeAnimation {
           0% {
             transform: translate(0, 0) scale(0.5);
-            opacity: 0.8;
+            opacity: 0.9;
           }
           50% {
-            opacity: 0.6;
+            transform: translate(7px, -10px) scale(1);
+            opacity: 0.7;
           }
           100% {
-            transform: translate(0, -30px) scale(1.5);
+            transform: translate(15px, -20px) scale(1.5);
             opacity: 0;
           }
         }
         
         .display-line {
           stroke: ${robotColor};
-          stroke-width: 0.5;
+          stroke-width: 1;
           stroke-dasharray: 4 2;
           animation: lineScan 8s linear infinite;
+          filter: drop-shadow(0 0 1px ${robotColor});
         }
         
         @keyframes lineScan {
@@ -237,9 +239,9 @@ export const RobotHead: React.FC<RobotHeadProps> = ({
         .inner-circuit {
           fill: none;
           stroke: ${robotColor};
-          stroke-width: 0.3;
-          stroke-dasharray: 1 1;
-          opacity: 0.7;
+          stroke-width: 1;
+          stroke-dasharray: 2 1;
+          opacity: 0.9;
         }
       `}} />
 
@@ -356,9 +358,9 @@ export const RobotHead: React.FC<RobotHeadProps> = ({
           <circle className="cigarette-tip" cx="70" cy="50" r="2" />
           
           {/* Humo */}
-          <circle className="smoke smoke-1" cx="87" cy="43" r="3" />
-          <circle className="smoke smoke-2" cx="87" cy="43" r="2.5" />
-          <circle className="smoke smoke-3" cx="87" cy="43" r="2" />
+          <circle className="smoke smoke-1" cx="72" cy="49" r="2" />
+          <circle className="smoke smoke-2" cx="74" cy="48" r="2.2" />
+          <circle className="smoke smoke-3" cx="76" cy="47" r="2.5" />
         </g>
       </svg>
     </div>
