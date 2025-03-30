@@ -314,6 +314,27 @@ export default function AIAssistant() {
           description: result.action === 'updateCategory' ? "La categoría se ha actualizado correctamente" : "La categoría se ha eliminado correctamente",
           variant: "default"
         });
+      } else if (result.action === 'whatsapp_message_sent' && result.whatsapp?.sent) {
+        // Mostrar una notificación cuando se envía un mensaje de WhatsApp
+        toast({
+          title: "Mensaje de WhatsApp enviado",
+          description: `Mensaje enviado a ${result.whatsapp.to}`,
+          variant: "default"
+        });
+      } else if (result.action === 'whatsapp_messages_retrieved' && result.whatsapp?.messages) {
+        // Mostrar una notificación cuando se recuperan mensajes de WhatsApp
+        toast({
+          title: "Mensajes recuperados",
+          description: `Se recuperaron ${result.whatsapp.messages.length} mensajes`,
+          variant: "default"
+        });
+      } else if (result.action === 'whatsapp_contacts_listed' && result.whatsapp?.contacts) {
+        // Mostrar una notificación cuando se listan contactos de WhatsApp
+        toast({
+          title: "Contactos de WhatsApp",
+          description: `${result.whatsapp.contacts.length} contactos encontrados`,
+          variant: "default"
+        });
       }
       
     } catch (error) {

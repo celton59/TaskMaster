@@ -80,6 +80,13 @@ export async function processUserMessage(message: string): Promise<AgentApiRespo
       
       // Acciones relacionadas con WhatsApp
       if (orchestratorResponse.action === 'whatsapp_message_sent' && orchestratorResponse.parameters) {
+        // Incluir el mensaje enviado en la respuesta de la API para que el usuario lo vea
+        const messagePreview = orchestratorResponse.parameters.message.length > 50 
+          ? orchestratorResponse.parameters.message.substring(0, 50) + '...' 
+          : orchestratorResponse.parameters.message;
+        
+        apiResponse.message = `¡Mensaje enviado correctamente a ${orchestratorResponse.parameters.contactName}! El mensaje se está entregando ahora.\n\nContenido enviado: "${orchestratorResponse.parameters.message}"`;
+        
         apiResponse.whatsapp = {
           sent: true,
           to: orchestratorResponse.parameters.contactName,
