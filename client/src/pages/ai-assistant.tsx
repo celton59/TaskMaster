@@ -386,7 +386,7 @@ export default function AIAssistant() {
               variant="outline"
               size="sm"
               onClick={startNewChat}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20 shadow-[0_0_8px_rgba(0,225,255,0.15)]"
             >
               <Plus className="h-4 w-4" />
               Nuevo Chat
@@ -395,7 +395,7 @@ export default function AIAssistant() {
               variant="outline"
               size="sm"
               onClick={() => setShowHistoryDialog(true)}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20 shadow-[0_0_8px_rgba(0,225,255,0.15)]"
             >
               <History className="h-4 w-4" />
               Historial
@@ -406,7 +406,7 @@ export default function AIAssistant() {
               variant="outline"
               size="sm"
               onClick={saveCurrentChat}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20 shadow-[0_0_8px_rgba(0,225,255,0.15)]"
               disabled={messages.length <= 1}
             >
               <Archive className="h-4 w-4" />
@@ -415,26 +415,26 @@ export default function AIAssistant() {
           </div>
         </div>
       
-        <Card className="bg-white shadow-lg border-0">
-          <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
-            <CardTitle className="flex items-center text-2xl">
+        <Card className="bg-neon-darker border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] rounded-xl">
+          <CardHeader className="bg-gradient-to-r from-neon-darker to-neon-medium border-b border-neon-accent/30 rounded-t-xl">
+            <CardTitle className="flex items-center text-2xl neon-text">
               <Bot className="mr-2" size={24} />
               Sistema Multi-Agente Orquestado
             </CardTitle>
-            <CardDescription className="text-blue-100">
+            <CardDescription className="text-neon-text/70">
               Inteligencia artificial avanzada para gestión completa de tareas
             </CardDescription>
           </CardHeader>
           
           <CardContent className="p-0">
-            <div className="h-[500px] overflow-y-auto p-4 bg-gray-50">
+            <div className="h-[500px] overflow-y-auto p-4 bg-gradient-to-b from-neon-darker to-[#071a28]">
               {messages.length === 1 && messages[0].isUser === false && (
                 <div className="h-full flex flex-col items-center justify-center text-center p-4">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <Bot className="h-8 w-8 text-blue-600" />
+                  <div className="w-16 h-16 bg-neon-medium/30 rounded-full flex items-center justify-center mb-4 border border-neon-accent/40 shadow-[0_0_15px_rgba(0,225,255,0.3)]">
+                    <Bot className="h-8 w-8 text-neon-accent" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Sistema Multi-Agente IA</h3>
-                  <p className="text-gray-500 max-w-md">
+                  <h3 className="text-lg font-medium neon-text mb-2">Sistema Multi-Agente IA</h3>
+                  <p className="text-neon-text/80 max-w-md">
                     El sistema inteligente orquestará automáticamente múltiples agentes especializados según tu necesidad.
                     Ahora con expertos en marketing digital y gestión de proyectos.
                     Ejemplo: "Analiza mis tareas pendientes y priorízalas según fechas límite" o "Desarrolla una estrategia de marketing para mi proyecto"
@@ -450,15 +450,15 @@ export default function AIAssistant() {
                   <div 
                     className={`inline-block rounded-lg px-4 py-3 max-w-[85%] ${
                       message.isUser 
-                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md' 
-                        : 'bg-white border border-gray-200 shadow-sm'
+                        ? 'bg-gradient-to-r from-neon-medium to-neon-accent/30 text-neon-text border border-neon-accent/60 shadow-[0_0_10px_rgba(0,225,255,0.25)]' 
+                        : 'bg-neon-darker/90 border border-neon-accent/20 shadow-[0_0_15px_rgba(0,225,255,0.15)]'
                     }`}
                   >
                     <div 
                       dangerouslySetInnerHTML={{ __html: formatMessage(message.text) }}
                       className="text-left whitespace-pre-wrap text-sm"
                     />
-                    <div className={`text-xs mt-2 ${message.isUser ? 'text-blue-200' : 'text-gray-500'}`}>
+                    <div className={`text-xs mt-2 ${message.isUser ? 'text-neon-accent/70' : 'text-neon-accent/50'}`}>
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
@@ -467,10 +467,10 @@ export default function AIAssistant() {
               
               {isLoading && (
                 <div className="flex items-center text-left mb-4">
-                  <div className="inline-block rounded-lg px-4 py-3 bg-white border border-gray-200 shadow-sm">
+                  <div className="inline-block rounded-lg px-4 py-3 bg-neon-darker/90 border border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.15)]">
                     <div className="flex items-center space-x-2">
-                      <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
-                      <span className="text-sm text-gray-700">Procesando tu solicitud...</span>
+                      <Loader2 className="h-4 w-4 text-neon-accent animate-spin" />
+                      <span className="text-sm text-neon-text">Procesando tu solicitud...</span>
                     </div>
                   </div>
                 </div>
@@ -480,13 +480,13 @@ export default function AIAssistant() {
             </div>
           </CardContent>
           
-          <CardFooter className="p-4 bg-white border-t">
+          <CardFooter className="p-4 bg-neon-darker border-t border-neon-accent/20">
             <form onSubmit={handleSubmit} className="flex w-full gap-2">
               <Textarea
                 placeholder="Escribe tu solicitud para el sistema multi-agente..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="min-h-[60px]"
+                className="min-h-[60px] bg-neon-medium/20 border-neon-accent/30 text-neon-text placeholder:text-neon-text/50 focus-visible:ring-neon-accent/50"
                 disabled={isLoading}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
@@ -500,7 +500,7 @@ export default function AIAssistant() {
               <Button 
                 type="submit" 
                 disabled={isLoading || !input.trim()}
-                className="px-6"
+                className="px-6 neon-button"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -515,17 +515,17 @@ export default function AIAssistant() {
       
       {/* Modal de historial de chat */}
       <Dialog open={showHistoryDialog} onOpenChange={setShowHistoryDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-neon-darker border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)]">
           <DialogHeader>
-            <DialogTitle>Historial de Conversaciones</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-neon-text neon-text">Historial de Conversaciones</DialogTitle>
+            <DialogDescription className="text-neon-text/70">
               Selecciona una conversación anterior para cargarla
             </DialogDescription>
           </DialogHeader>
           
           <ScrollArea className="h-[400px] pr-4">
             {savedChats.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-neon-text/50">
                 No hay conversaciones guardadas
               </div>
             ) : (
@@ -534,13 +534,15 @@ export default function AIAssistant() {
                   <div
                     key={chat.id}
                     onClick={() => loadChat(chat.id)}
-                    className={`p-3 rounded-md border cursor-pointer transition-colors hover:bg-gray-100 
-                      ${chat.id === currentChatId ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'}`}
+                    className={`p-3 rounded-md border cursor-pointer transition-colors hover:bg-neon-medium/10 
+                      ${chat.id === currentChatId 
+                        ? 'bg-neon-medium/20 border-neon-accent/40 shadow-[0_0_8px_rgba(0,225,255,0.25)]' 
+                        : 'bg-neon-darker/80 border-neon-accent/20'}`}
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h4 className="font-medium text-sm text-gray-900 truncate">{chat.title}</h4>
-                        <p className="text-xs text-gray-500">
+                        <h4 className="font-medium text-sm text-neon-text truncate">{chat.title}</h4>
+                        <p className="text-xs text-neon-text/60">
                           {new Date(chat.createdAt).toLocaleDateString()} - 
                           {chat.messages.length - 1} mensaje(s)
                         </p>
@@ -549,7 +551,7 @@ export default function AIAssistant() {
                       <Button
                         variant="ghost" 
                         size="icon"
-                        className="h-7 w-7 rounded-full hover:bg-red-50 hover:text-red-500"
+                        className="h-7 w-7 rounded-full hover:bg-neon-red/10 hover:text-neon-red"
                         onClick={(e) => deleteChat(chat.id, e)}
                       >
                         <svg 
@@ -572,8 +574,8 @@ export default function AIAssistant() {
                     
                     {/* Previsualización del primer mensaje */}
                     {chat.messages.length > 1 && (
-                      <div className="mt-2 text-xs text-gray-600 line-clamp-2">
-                        <span className="text-blue-600 font-medium">Tú:</span> {chat.messages.find(m => m.isUser)?.text.substring(0, 100)}...
+                      <div className="mt-2 text-xs text-neon-text/70 line-clamp-2">
+                        <span className="text-neon-accent font-medium">Tú:</span> {chat.messages.find(m => m.isUser)?.text.substring(0, 100)}...
                       </div>
                     )}
                   </div>
@@ -583,18 +585,27 @@ export default function AIAssistant() {
           </ScrollArea>
           
           <div className="flex justify-between mt-2">
-            <Button variant="outline" onClick={() => setShowHistoryDialog(false)}>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowHistoryDialog(false)}
+              className="border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20 shadow-[0_0_8px_rgba(0,225,255,0.15)]"
+            >
               Cerrar
             </Button>
-            <Button variant="destructive" onClick={() => {
-              localStorage.removeItem('aiAssistantChats');
-              setSavedChats([]);
-              toast({
-                title: "Historial borrado",
-                description: "Se han eliminado todas las conversaciones",
-                variant: "default"
-              });
-            }} disabled={savedChats.length === 0}>
+            <Button 
+              variant="outline"
+              className="border-neon-red/30 text-neon-red hover:bg-neon-red/10 shadow-[0_0_8px_rgba(255,45,109,0.15)]"
+              onClick={() => {
+                localStorage.removeItem('aiAssistantChats');
+                setSavedChats([]);
+                toast({
+                  title: "Historial borrado",
+                  description: "Se han eliminado todas las conversaciones",
+                  variant: "default"
+                });
+              }} 
+              disabled={savedChats.length === 0}
+            >
               Borrar todo
             </Button>
           </div>
