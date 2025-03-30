@@ -255,11 +255,11 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between text-xs text-neon-text/80">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-neon-pink/80 rounded-sm mr-2 shadow-[0_0_4px_rgba(255,0,230,0.4)]"></div>
+                    <div className="w-3 h-3 bg-neon-pink/80 rounded-sm mr-2 shadow-[0_0_4px_rgba(0,225,255,0.4)]"></div>
                     <span>Completadas ({chartData.reduce((sum, day) => sum + day.completed, 0)})</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-3 h-3 border border-dashed border-neon-pink/60 rounded-sm mr-2"></div>
+                    <div className="w-3 h-3 border border-dashed border-neon-accent/60 rounded-sm mr-2"></div>
                     <span>Creadas ({chartData.reduce((sum, day) => sum + day.created, 0)})</span>
                   </div>
                 </div>
