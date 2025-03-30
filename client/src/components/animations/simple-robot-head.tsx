@@ -75,10 +75,22 @@ export const SimpleRobotHead: React.FC<RobotHeadProps> = ({
           animation: mouthChange 8s infinite ease-in-out;
         }
         
+        .robot-teeth {
+          fill: white;
+          stroke: ${robotColor};
+          stroke-width: 0.5;
+          animation: teethMovement 8s infinite ease-in-out;
+        }
+        
         @keyframes mouthChange {
           0%, 100% { d: path('M 35,48 Q 50,55 65,48'); } /* Feliz */
           33% { d: path('M 35,50 Q 50,50 65,50'); } /* Neutral */
           66% { d: path('M 35,52 Q 50,45 65,52'); } /* Triste */
+        }
+        
+        @keyframes teethMovement {
+          0%, 100% { opacity: 1; transform: translateY(0); } /* Visible con boca feliz */
+          33%, 66% { opacity: 0; transform: translateY(2px); } /* Oculto con boca neutral o triste */
         }
         
         #head {
@@ -108,11 +120,20 @@ export const SimpleRobotHead: React.FC<RobotHeadProps> = ({
           <circle className="robot-eye" cx="40" cy="35" r="5" />
           <circle className="robot-eye" cx="60" cy="35" r="5" />
           
-          {/* Boca animada */}
+          {/* Boca animada con dientes */}
           <path 
             className="robot-mouth" 
             d="M 35,48 Q 50,55 65,48" 
           />
+          
+          {/* Dientes */}
+          <g className="robot-teeth">
+            <rect x="40" y="48" width="3" height="4" />
+            <rect x="45" y="48" width="3" height="4" />
+            <rect x="50" y="48" width="3" height="4" />
+            <rect x="55" y="48" width="3" height="4" />
+            <rect x="60" y="48" width="3" height="4" />
+          </g>
         </g>
       </svg>
     </div>
