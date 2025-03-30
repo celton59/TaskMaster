@@ -51,7 +51,7 @@ function loadSavedChats(): ChatSession[] {
 }
 
 const DEFAULT_WELCOME_MESSAGE: Message = {
-  text: "¡Hola! Soy tu asistente AI con sistema orquestado multi-agente para gestión de tareas. Tengo varios agentes especializados trabajando juntos:\n\n• Agente de Tareas: experto en crear y gestionar tareas\n• Agente de Categorías: especializado en organización por categorías\n• Agente de Análisis: para estadísticas e informes detallados\n• Agente de Planificación: para programación y fechas límite\n• Agente de Marketing Digital: especialista en estrategias digitales, campañas y contenido\n• Agente de Gestión de Proyectos: experto en planificación y gestión de equipos\n\nSimplemente dime lo que necesitas, y el agente más adecuado se encargará. ¿En qué puedo ayudarte hoy?",
+  text: "**¡Bienvenido al Sistema de Gestión con IA Avanzada!**\n\nSoy tu asistente con inteligencia artificial orquestada multi-agente para optimizar tu productividad. Cuento con un equipo de especialistas virtuales trabajando juntos:\n\n• Agente de Tareas: experto en crear y gestionar tareas\n• Agente de Categorías: especializado en organización por categorías\n• Agente de Análisis: para estadísticas e informes detallados\n• Agente de Planificación: para programación y fechas límite\n• Agente de Marketing Digital: especialista en estrategias digitales, campañas y contenido\n• Agente de Gestión de Proyectos: experto en planificación y gestión de equipos\n\nSimplemente dime lo que necesitas, y el agente más adecuado se activará automáticamente para ayudarte. Puedes pedirme cosas como:\n\n• Crear una tarea urgente para mañana\n• Organizar mis tareas por prioridad\n• Generar un informe mensual de productividad\n• Desarrollar una estrategia de marketing para mi proyecto\n\n**¿En qué puedo ayudarte hoy?**",
   isUser: false,
   timestamp: new Date()
 };
@@ -370,8 +370,31 @@ export default function AIAssistant() {
     // Convertir texto entre ** a negrita
     formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     
-    // Resaltar elementos de listas
-    formattedText = formattedText.replace(/•(.*?)(?=<br>|$)/g, '<span class="text-blue-600 font-medium">•$1</span>');
+    // Colorear cada tipo de agente con un color neón diferente
+    formattedText = formattedText.replace(/• Agente de Tareas:(.*?)(?=<br>|$)/g, 
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-medium/10 border-l-2 border-neon-accent"><span class="text-neon-accent mr-1">•</span><span class="font-medium text-neon-accent">Agente de Tareas:</span>$1</span>');
+    
+    formattedText = formattedText.replace(/• Agente de Categorías:(.*?)(?=<br>|$)/g, 
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-purple/10 border-l-2 border-neon-purple"><span class="text-neon-purple mr-1">•</span><span class="font-medium text-neon-purple">Agente de Categorías:</span>$1</span>');
+      
+    formattedText = formattedText.replace(/• Agente de Análisis:(.*?)(?=<br>|$)/g, 
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-green/10 border-l-2 border-neon-green"><span class="text-neon-green mr-1">•</span><span class="font-medium text-neon-green">Agente de Análisis:</span>$1</span>');
+      
+    formattedText = formattedText.replace(/• Agente de Planificación:(.*?)(?=<br>|$)/g, 
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-yellow/10 border-l-2 border-neon-yellow"><span class="text-neon-yellow mr-1">•</span><span class="font-medium text-neon-yellow">Agente de Planificación:</span>$1</span>');
+      
+    formattedText = formattedText.replace(/• Agente de Marketing Digital:(.*?)(?=<br>|$)/g, 
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-orange/10 border-l-2 border-neon-orange"><span class="text-neon-orange mr-1">•</span><span class="font-medium text-neon-orange">Agente de Marketing Digital:</span>$1</span>');
+      
+    formattedText = formattedText.replace(/• Agente de Gestión de Proyectos:(.*?)(?=<br>|$)/g, 
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-red/10 border-l-2 border-neon-red"><span class="text-neon-red mr-1">•</span><span class="font-medium text-neon-red">Agente de Gestión de Proyectos:</span>$1</span>');
+    
+    // Para los elementos de lista generales que no sean agentes específicos
+    formattedText = formattedText.replace(/• ([^<]*?)(?=<br>|$)/g, function(match, p1) {
+      // Si ya contiene "Agente de", no lo reemplazamos (ya fue manejado arriba)
+      if (match.includes("Agente de")) return match;
+      return `<span class="flex items-center my-2 pl-1"><span class="text-neon-accent mr-1">•</span> ${p1}</span>`;
+    });
     
     return formattedText;
   };
