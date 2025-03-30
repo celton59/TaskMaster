@@ -85,33 +85,10 @@ function formatDate(dateString: string): string {
 }
 
 // Componente para Avatar con respaldo de iniciales si no hay imagen
+import { GradientAvatar } from "@/components/ui/gradient-avatar";
+
 function UserAvatar({ name, avatar }: { name: string; avatar?: string }) {
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
-  const roleColors: Record<string, string> = {
-    admin: "bg-neon-purple/20 border-neon-purple text-neon-purple",
-    manager: "bg-neon-accent/20 border-neon-accent text-neon-accent",
-    user: "bg-neon-green/20 border-neon-green text-neon-green",
-  };
-
-  const roleGlow: Record<string, string> = {
-    admin: "shadow-[0_0_10px_rgba(149,76,233,0.3)]",
-    manager: "shadow-[0_0_10px_rgba(0,225,255,0.3)]",
-    user: "shadow-[0_0_10px_rgba(74,222,128,0.3)]",
-  };
-  
-  const rolePulse: Record<string, string> = {
-    admin: "",
-    manager: "",
-    user: "",
-  };
-
-  // Determinar el color basado en el rol o usar un color por defecto
+  // Determinar el rol basado en el nombre o usar un rol por defecto
   const getUserRole = (userName: string): "admin" | "manager" | "user" => {
     // Simulando asignación de rol basada en el nombre para este ejemplo
     if (userName.toLowerCase().includes("admin")) return "admin";
@@ -120,18 +97,21 @@ function UserAvatar({ name, avatar }: { name: string; avatar?: string }) {
   };
 
   const userRole = getUserRole(name);
-  const colorClass = roleColors[userRole];
-  const glowClass = roleGlow[userRole];
-  const pulseClass = rolePulse[userRole];
 
   return (
-    <div className={`flex items-center justify-center w-10 h-10 rounded-full border ${colorClass} ${glowClass} ${pulseClass} transition-all duration-300 hover:scale-110`}>
-      {avatar ? (
-        <img src={avatar} alt={name} className="w-full h-full rounded-full object-cover" />
-      ) : (
-        <span className="font-medium text-sm">{initials}</span>
-      )}
-    </div>
+    <GradientAvatar
+      name={name}
+      image={avatar}
+      role={userRole}
+      size="md"
+      gradientType="linear"
+      neon={true}
+      animate={true}
+      border={true}
+      glow={true}
+      pulse={userRole === "admin"}
+      interactive={true}
+    />
   );
 }
 

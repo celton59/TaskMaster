@@ -576,4 +576,71 @@
   .animate-shimmer {
     animation: shimmer 2s ease-in-out infinite;
   }
+  
+  /* Animaciones para los avatares con gradiente */
+  @keyframes pulse-slow {
+    0%, 100% {
+      opacity: 0.9;
+      box-shadow: 0 0 8px rgba(0, 225, 255, 0.4);
+    }
+    50% {
+      opacity: 1;
+      box-shadow: 0 0 15px rgba(0, 225, 255, 0.6);
+    }
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+  }
+  
+  @keyframes border-flow {
+    0%, 100% {
+      border-color: var(--neon-accent);
+      box-shadow: 0 0 10px rgba(0, 225, 255, 0.5);
+    }
+    25% {
+      border-color: var(--neon-purple);
+      box-shadow: 0 0 10px rgba(187, 0, 255, 0.5);
+    }
+    50% {
+      border-color: var(--neon-green);
+      box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+    }
+    75% {
+      border-color: var(--neon-yellow);
+      box-shadow: 0 0 10px rgba(255, 234, 0, 0.5);
+    }
+  }
+  
+  .animate-border-flow {
+    animation: border-flow 8s linear infinite;
+  }
+  
+  /* Animación para rotar gradientes cónicos */
+  @keyframes rotate-gradient {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .animate-rotate-gradient {
+    animation: rotate-gradient 8s linear infinite;
+  }
+  
+  /* Animación para efecto holográfico en gradientes */
+  @keyframes holo-shift {
+    0%, 100% {
+      filter: hue-rotate(0deg) saturate(1);
+    }
+    50% {
+      filter: hue-rotate(30deg) saturate(1.2);
+    }
+  }
+  
+  .animate-holo-shift {
+    animation: holo-shift 5s ease-in-out infinite;
+  }
 }
