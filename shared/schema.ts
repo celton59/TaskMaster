@@ -83,23 +83,23 @@ export const CategoryColors = {
 export const whatsappContacts = pgTable("whatsapp_contacts", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  phoneNumber: text("phoneNumber").notNull().unique(),
+  phoneNumber: text("phone_number").notNull().unique(),
   active: boolean("active").notNull().default(true),
   notes: text("notes"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt"),
-  lastMessageAt: timestamp("lastMessageAt"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at"),
+  lastMessageAt: timestamp("last_message_at"),
 });
 
 // WhatsApp mensajes
 export const whatsappMessages = pgTable("whatsapp_messages", {
   id: serial("id").primaryKey(), 
-  contactId: integer("contactId").notNull().references(() => whatsappContacts.id),
-  messageContent: text("messageContent").notNull(),
+  contactId: integer("contact_id").notNull().references(() => whatsappContacts.id),
+  messageContent: text("message_content").notNull(),
   direction: text("direction").notNull(), // "incoming" o "outgoing"
   status: text("status").notNull().default("sent"), // "sent", "delivered", "read", "failed"
-  sentAt: timestamp("sentAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt"),
+  sentAt: timestamp("sent_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at"),
   metadata: json("metadata"),
 });
 
