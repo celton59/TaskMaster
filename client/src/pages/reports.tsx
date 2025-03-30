@@ -33,24 +33,24 @@ import {
 } from "lucide-react";
 import { Task, Category } from "@shared/schema";
 
-// Colores para los gráficos
+// Colores neón para los gráficos
 const COLORS = [
-  "#4f46e5", // Indigo
-  "#16a34a", // Verde
-  "#ea580c", // Naranja  
-  "#db2777", // Rosa
-  "#84cc16", // Lima
-  "#7c3aed", // Morado
-  "#0284c7", // Azul
-  "#dc2626", // Rojo
+  "#00E1FF", // Neón Azul (neon-accent)
+  "#FF00E6", // Neón Rosa (neon-pink)
+  "#BB00FF", // Neón Morado (neon-purple)
+  "#00FF9D", // Neón Verde (neon-green)
+  "#FFEA00", // Neón Amarillo (neon-yellow)
+  "#FF6D00", // Neón Naranja (neon-orange)
+  "#FF2D6D", // Neón Rojo (neon-red)
+  "#1AFFEF", // Neón Turquesa
 ];
 
-// Status para las tareas
+// Status para las tareas - Colores neón
 const STATUS_COLORS = {
-  "pendiente": "#f59e0b",
-  "en_progreso": "#4f46e5",
-  "revision": "#64748b",
-  "completada": "#16a34a"
+  "pendiente": "#FFEA00", // Neón Amarillo
+  "en_progreso": "#00E1FF", // Neón Azul
+  "revision": "#BB00FF", // Neón Morado
+  "completada": "#00FF9D" // Neón Verde
 };
 
 // Traducciones de estado
@@ -153,16 +153,17 @@ export default function Reports() {
   return (
     <div className="py-8 px-6 space-y-8">
       {/* Header */}
-      <div className="bg-white rounded-lg p-5 mb-6 shadow-sm border border-neutral-100 bg-gradient-to-r from-neutral-50 to-white">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+      <div className="bg-neon-darker rounded-xl p-5 mb-6 shadow-[0_0_20px_rgba(0,225,255,0.15)] border border-neon-accent/30 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,225,255,0.1)_0%,transparent_60%)]"></div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between relative z-10">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-neutral-900 flex items-center">
-              <span className="bg-primary-50 text-primary-600 p-1.5 rounded-md mr-3">
+            <h1 className="text-2xl font-bold text-neon-text neon-text flex items-center">
+              <span className="bg-neon-medium/20 text-neon-accent p-1.5 rounded-md mr-3 border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.25)]">
                 <BarChart3 className="h-5 w-5" />
               </span>
               Informes y Estadísticas
             </h1>
-            <p className="mt-2 text-sm text-neutral-500 pl-[46px]">
+            <p className="mt-2 text-sm text-neon-text/70 pl-[46px]">
               Visualiza y analiza el rendimiento de las tareas y proyectos
             </p>
           </div>
@@ -170,14 +171,14 @@ export default function Reports() {
             <Button 
               variant="outline"
               size="sm" 
-              className="h-9 border-neutral-200 text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-all"
+              className="h-9 border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20 shadow-[0_0_8px_rgba(0,225,255,0.15)] rounded-md transition-all"
             >
-              <Filter className="mr-2 h-4 w-4 text-neutral-500" />
+              <Filter className="mr-2 h-4 w-4" />
               Filtros
             </Button>
             <Button 
               size="sm" 
-              className="h-9 bg-primary-600 hover:bg-primary-700 text-white rounded-md transition-all font-medium"
+              className="h-9 bg-neon-accent/20 hover:bg-neon-accent/30 border border-neon-accent/50 text-neon-accent neon-text shadow-[0_0_10px_rgba(0,225,255,0.25)] rounded-md transition-all font-medium"
             >
               <Download className="mr-2 h-4 w-4" />
               Exportar
@@ -187,35 +188,50 @@ export default function Reports() {
       </div>
 
       {/* Tabs de Informes */}
-      <Card className="border-neutral-100 shadow-md overflow-hidden mb-6">
-        <CardHeader className="border-b border-neutral-100 bg-neutral-50/50 pb-3">
+      <Card className="bg-neon-darker border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] overflow-hidden mb-6 rounded-xl">
+        <CardHeader className="border-b border-neon-accent/20 bg-neon-medium/5 pb-3">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neutral-800">Informes</CardTitle>
-              <CardDescription>Selecciona el tipo de informe que deseas visualizar</CardDescription>
+              <CardTitle className="text-base font-medium text-neon-text">Informes</CardTitle>
+              <CardDescription className="text-neon-text/70">Selecciona el tipo de informe que deseas visualizar</CardDescription>
             </div>
             <Tabs 
               value={timeRange} 
               onValueChange={setTimeRange}
               className="mt-4 md:mt-0"
             >
-              <TabsList className="grid w-[200px] grid-cols-3 h-8">
-                <TabsTrigger value="semana">Semana</TabsTrigger>
-                <TabsTrigger value="mes">Mes</TabsTrigger>
-                <TabsTrigger value="año">Año</TabsTrigger>
+              <TabsList className="grid w-[200px] grid-cols-3 h-8 bg-neon-dark border border-neon-accent/30">
+                <TabsTrigger 
+                  value="semana" 
+                  className="data-[state=active]:bg-neon-accent/20 data-[state=active]:text-neon-accent data-[state=active]:shadow-[0_0_8px_rgba(0,225,255,0.25)] data-[state=active]:border-neon-accent/50 text-neon-text/70"
+                >
+                  Semana
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="mes" 
+                  className="data-[state=active]:bg-neon-accent/20 data-[state=active]:text-neon-accent data-[state=active]:shadow-[0_0_8px_rgba(0,225,255,0.25)] data-[state=active]:border-neon-accent/50 text-neon-text/70"
+                >
+                  Mes
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="año" 
+                  className="data-[state=active]:bg-neon-accent/20 data-[state=active]:text-neon-accent data-[state=active]:shadow-[0_0_8px_rgba(0,225,255,0.25)] data-[state=active]:border-neon-accent/50 text-neon-text/70"
+                >
+                  Año
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="flex border-b border-neutral-100">
+          <div className="flex border-b border-neon-accent/20 bg-neon-medium/5">
             <Button 
               variant="ghost" 
               onClick={() => setActiveTab("general")}
               className={`px-5 py-3 rounded-none border-b-2 transition-colors ${
                 activeTab === "general" 
-                  ? "border-primary-500 text-primary-600" 
-                  : "border-transparent text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                  ? "border-neon-accent text-neon-accent neon-text" 
+                  : "border-transparent text-neon-text/70 hover:text-neon-text hover:bg-neon-medium/10"
               }`}
             >
               General
@@ -225,8 +241,8 @@ export default function Reports() {
               onClick={() => setActiveTab("categorias")}
               className={`px-5 py-3 rounded-none border-b-2 transition-colors ${
                 activeTab === "categorias" 
-                  ? "border-primary-500 text-primary-600" 
-                  : "border-transparent text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                  ? "border-neon-accent text-neon-accent neon-text" 
+                  : "border-transparent text-neon-text/70 hover:text-neon-text hover:bg-neon-medium/10"
               }`}
             >
               Por Categorías
@@ -236,8 +252,8 @@ export default function Reports() {
               onClick={() => setActiveTab("estados")}
               className={`px-5 py-3 rounded-none border-b-2 transition-colors ${
                 activeTab === "estados" 
-                  ? "border-primary-500 text-primary-600" 
-                  : "border-transparent text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                  ? "border-neon-accent text-neon-accent neon-text" 
+                  : "border-transparent text-neon-text/70 hover:text-neon-text hover:bg-neon-medium/10"
               }`}
             >
               Por Estados
@@ -247,8 +263,8 @@ export default function Reports() {
               onClick={() => setActiveTab("prioridad")}
               className={`px-5 py-3 rounded-none border-b-2 transition-colors ${
                 activeTab === "prioridad" 
-                  ? "border-primary-500 text-primary-600" 
-                  : "border-transparent text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                  ? "border-neon-accent text-neon-accent neon-text" 
+                  : "border-transparent text-neon-text/70 hover:text-neon-text hover:bg-neon-medium/10"
               }`}
             >
               Por Prioridad
@@ -261,15 +277,15 @@ export default function Reports() {
             {activeTab === "general" && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="border-neutral-100 shadow-sm">
+                  <Card className="bg-neon-darker border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.15)] rounded-xl">
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
-                        <CardTitle className="text-base font-medium text-neutral-800">Tendencia de Tareas</CardTitle>
-                        <div className="h-8 w-8 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+                        <CardTitle className="text-base font-medium text-neon-text">Tendencia de Tareas</CardTitle>
+                        <div className="h-8 w-8 rounded-full flex items-center justify-center bg-neon-medium/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.25)]">
                           <BarChart3 className="h-4 w-4" />
                         </div>
                       </div>
-                      <CardDescription>Tareas creadas vs. completadas</CardDescription>
+                      <CardDescription className="text-neon-text/70">Tareas creadas vs. completadas</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="h-72">
@@ -278,32 +294,36 @@ export default function Reports() {
                             data={trendData}
                             margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
                           >
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                            <XAxis dataKey="name" stroke="#9ca3af" />
-                            <YAxis stroke="#9ca3af" />
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,225,255,0.1)" />
+                            <XAxis dataKey="name" stroke="rgba(255,255,255,0.7)" />
+                            <YAxis stroke="rgba(255,255,255,0.7)" />
                             <Tooltip 
                               contentStyle={{ 
                                 borderRadius: '8px', 
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)', 
-                                border: 'none' 
+                                boxShadow: '0 0 10px rgba(0,225,255,0.2)', 
+                                border: '1px solid rgba(0,225,255,0.3)',
+                                backgroundColor: '#111827',
+                                color: 'rgba(255,255,255,0.9)'
                               }} 
                             />
-                            <Legend />
+                            <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }} />
                             <Area 
                               type="monotone" 
                               dataKey="creadas" 
                               stackId="1"
-                              stroke="#4f46e5" 
-                              fill="#4f46e5"
+                              stroke="#00E1FF" 
+                              fill="#00E1FF"
                               fillOpacity={0.2}
+                              strokeWidth={2}
                             />
                             <Area 
                               type="monotone" 
                               dataKey="completadas" 
                               stackId="2" 
-                              stroke="#16a34a" 
-                              fill="#16a34a" 
+                              stroke="#00FF9D" 
+                              fill="#00FF9D" 
                               fillOpacity={0.2}
+                              strokeWidth={2}
                             />
                           </AreaChart>
                         </ResponsiveContainer>
@@ -311,15 +331,15 @@ export default function Reports() {
                     </CardContent>
                   </Card>
 
-                  <Card className="border-neutral-100 shadow-sm">
+                  <Card className="bg-neon-darker border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.15)] rounded-xl">
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-center">
-                        <CardTitle className="text-base font-medium text-neutral-800">Distribución de Tareas</CardTitle>
-                        <div className="h-8 w-8 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+                        <CardTitle className="text-base font-medium text-neon-text">Distribución de Tareas</CardTitle>
+                        <div className="h-8 w-8 rounded-full flex items-center justify-center bg-neon-medium/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.25)]">
                           <PieChartIcon className="h-4 w-4" />
                         </div>
                       </div>
-                      <CardDescription>Tareas por estado</CardDescription>
+                      <CardDescription className="text-neon-text/70">Tareas por estado</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="h-72 flex items-center justify-center">
@@ -332,20 +352,31 @@ export default function Reports() {
                               labelLine={false}
                               label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                               outerRadius={90}
-                              fill="#8884d8"
+                              fill="#00E1FF"
+                              stroke="rgba(0,225,255,0.3)"
+                              strokeWidth={2}
                               dataKey="value"
                             >
                               {statusData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                <Cell 
+                                  key={`cell-${index}`} 
+                                  fill={COLORS[index % COLORS.length]}
+                                  stroke={COLORS[index % COLORS.length]}
+                                  strokeWidth={2}
+                                  style={{ filter: `drop-shadow(0 0 3px ${COLORS[index % COLORS.length]})` }}
+                                />
                               ))}
                             </Pie>
                             <Tooltip 
                               formatter={(value) => [`${value} tarea(s)`, '']}
                               contentStyle={{ 
                                 borderRadius: '8px', 
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)', 
-                                border: 'none' 
-                              }} 
+                                boxShadow: '0 0 10px rgba(0,225,255,0.2)', 
+                                border: '1px solid rgba(0,225,255,0.3)',
+                                backgroundColor: '#111827',
+                                color: 'rgba(255,255,255,0.9)'
+                              }}
+                              wrapperStyle={{ outline: 'none' }}
                             />
                           </PieChart>
                         </ResponsiveContainer>
@@ -355,62 +386,62 @@ export default function Reports() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="border-neutral-100 shadow-sm">
+                  <Card className="bg-neon-darker border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.15)] rounded-xl">
                     <CardContent className="pt-6">
                       <div className="flex flex-col items-center">
                         <div className="text-center">
-                          <div className="text-5xl font-bold text-primary-600 mb-1">{completionRate}%</div>
-                          <div className="text-sm text-neutral-600">Tasa de finalización</div>
+                          <div className="text-5xl font-bold text-neon-accent mb-1 neon-text">{completionRate}%</div>
+                          <div className="text-sm text-neon-text/80">Tasa de finalización</div>
                         </div>
-                        <div className="w-full h-3 bg-neutral-100 rounded-full mt-4 mb-2">
+                        <div className="w-full h-3 bg-neon-medium/10 rounded-full mt-4 mb-2 border border-neon-accent/20">
                           <div 
-                            className="h-full bg-primary-600 rounded-full" 
+                            className="h-full bg-neon-accent/40 rounded-full shadow-[0_0_10px_rgba(0,225,255,0.3)]" 
                             style={{ width: `${completionRate}%` }} 
                           />
                         </div>
-                        <div className="text-xs text-neutral-500 mt-1">
+                        <div className="text-xs text-neon-text/70 mt-1">
                           {stats.completed} de {stats.total} tareas completadas
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="border-neutral-100 shadow-sm">
+                  <Card className="bg-neon-darker border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.15)] rounded-xl">
                     <CardContent className="pt-6">
                       <div className="flex flex-col items-center">
                         <div className="text-center">
-                          <div className="text-5xl font-bold text-amber-500 mb-1">
+                          <div className="text-5xl font-bold text-neon-yellow mb-1 neon-yellow-text">
                             {stats.inProgress}
                           </div>
-                          <div className="text-sm text-neutral-600">Tareas en progreso</div>
+                          <div className="text-sm text-neon-text/80">Tareas en progreso</div>
                         </div>
                         <div className="flex justify-between w-full mt-4">
-                          <div className="text-xs text-neutral-500">
-                            <span className="font-medium text-amber-600">33%</span> desde la semana pasada
+                          <div className="text-xs text-neon-text/70">
+                            <span className="font-medium text-neon-yellow neon-yellow-text">33%</span> desde la semana pasada
                           </div>
-                          <div className="text-xs text-neutral-500">Objetivo: 10</div>
+                          <div className="text-xs text-neon-text/70">Objetivo: 10</div>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card className="border-neutral-100 shadow-sm">
+                  <Card className="bg-neon-darker border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.15)] rounded-xl">
                     <CardContent className="pt-6">
                       <div className="flex flex-col items-center">
                         <div className="text-center">
-                          <div className="text-5xl font-bold text-emerald-600 mb-1">
+                          <div className="text-5xl font-bold text-neon-green mb-1 neon-green-text">
                             {categories.length}
                           </div>
-                          <div className="text-sm text-neutral-600">Categorías activas</div>
+                          <div className="text-sm text-neon-text/80">Categorías activas</div>
                         </div>
                         <div className="flex justify-between w-full mt-4 items-center">
-                          <div className="text-xs text-neutral-500">
-                            <span className="text-emerald-600 font-medium">↑ 2</span> nuevas este mes
+                          <div className="text-xs text-neon-text/70">
+                            <span className="text-neon-green font-medium">↑ 2</span> nuevas este mes
                           </div>
                           <Button 
                             variant="outline"
                             size="sm" 
-                            className="h-7 text-xs"
+                            className="h-7 text-xs border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20"
                           >
                             Gestionar
                           </Button>
