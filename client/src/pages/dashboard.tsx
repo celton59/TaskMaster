@@ -85,17 +85,17 @@ export default function Dashboard() {
   
   return (
     <div className="py-8 px-6 space-y-8">
-      <div className="neon-card rounded-lg p-5 mb-6 shadow-xl bg-neon-dark border border-neon-accent/30">
+      <div className="neon-card rounded-lg p-5 mb-6 shadow-xl bg-neon-dark border border-neon-purple/30">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight flex items-center">
-              <span className="bg-neon-accent/10 text-neon-accent p-1.5 rounded-md mr-3 border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+              <span className="bg-neon-purple/10 text-neon-purple p-1.5 rounded-md mr-3 border border-neon-purple/30 shadow-[0_0_8px_rgba(187,0,255,0.2)]">
                 <LayoutDashboard className="h-5 w-5" />
               </span>
-              <span className="neon-text neon-gradient font-mono">Panel de Control</span>
+              <span className="neon-text-purple font-mono">Panel de Control</span>
             </h1>
             <p className="mt-2 text-sm text-neon-text/90 pl-[46px]">
-              Bienvenido de nuevo, <span className="text-neon-accent font-medium">Admin Demo</span> - 
+              Bienvenido de nuevo, <span className="text-neon-purple font-medium">Admin Demo</span> - 
               <span className="text-neon-text/70"> {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long'})}</span>
             </p>
           </div>
@@ -103,15 +103,15 @@ export default function Dashboard() {
             <Button 
               variant="outline"
               size="sm" 
-              className="h-9 border-neon-accent/50 text-neon-text hover:bg-neon-accent/10 hover:text-neon-accent rounded-md transition-all neon-button"
+              className="h-9 border-neon-green/50 text-neon-text hover:bg-neon-green/10 hover:text-neon-green rounded-md transition-all neon-button-green"
             >
-              <Mail className="mr-2 h-4 w-4 text-neon-accent/80" />
+              <Mail className="mr-2 h-4 w-4 text-neon-green/80" />
               Reportes
             </Button>
             <Button 
               onClick={() => setIsTaskFormOpen(true)}
               size="sm" 
-              className="h-9 shadow-glow bg-neon-accent hover:bg-neon-accent/90 text-neon-darker rounded-md transition-all font-medium neon-button-filled"
+              className="h-9 shadow-glow bg-neon-pink hover:bg-neon-pink/90 text-neon-darker rounded-md transition-all font-medium"
             >
               <Plus className="mr-2 h-4 w-4" />
               Nueva tarea
@@ -122,21 +122,21 @@ export default function Dashboard() {
 
       {/* Task Status Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className="neon-card overflow-hidden border border-neon-green/30 bg-neon-dark shadow-[0_0_10px_rgba(0,255,157,0.1)]">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-green/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Distribución de tareas</CardTitle>
+              <CardTitle className="text-base font-medium text-neon-green neon-text-green font-mono">Distribución de tareas</CardTitle>
               <CardDescription className="text-neon-text/70">Resumen por estado</CardDescription>
             </div>
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-green/20 text-neon-green border border-neon-green/30 shadow-[0_0_8px_rgba(0,255,157,0.2)]">
                 <BarChart4 className="h-5 w-5" />
               </div>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigate("/tasks")}
-                className="h-8 border-neon-accent/50 hover:bg-neon-accent/10 text-neon-text hover:text-neon-accent rounded-md neon-button"
+                className="h-8 border-neon-green/50 hover:bg-neon-green/10 text-neon-text hover:text-neon-green rounded-md neon-button-green"
               >
                 Ver tareas
                 <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
@@ -149,62 +149,62 @@ export default function Dashboard() {
                 <div className="relative pt-1">
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-accent/30 bg-neon-accent/10 rounded-full shadow-[0_0_5px_rgba(0,225,255,0.15)]">Pendientes</span>
-                      <span className="text-xs font-semibold ml-2 text-neon-accent">{stats.pending}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-red/30 bg-neon-red/10 rounded-full shadow-[0_0_5px_rgba(255,45,109,0.15)]">Pendientes</span>
+                      <span className="text-xs font-semibold ml-2 text-neon-red">{stats.pending}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-neon-accent">
+                      <span className="text-xs font-semibold inline-block text-neon-red">
                         {stats.total > 0 ? Math.round((stats.pending / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-accent/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(220,20,60,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-rose-500 bg-gradient-to-r from-rose-600 to-rose-400 animate-pulse"></div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-red/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(255,45,109,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-red/80 animate-pulse"></div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-accent/30 bg-neon-accent/10 rounded-full shadow-[0_0_5px_rgba(0,225,255,0.15)]">En progreso</span>
-                      <span className="text-xs font-semibold ml-2 text-neon-accent">{stats.inProgress}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-yellow/30 bg-neon-yellow/10 rounded-full shadow-[0_0_5px_rgba(255,234,0,0.15)]">En progreso</span>
+                      <span className="text-xs font-semibold ml-2 text-neon-yellow">{stats.inProgress}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-neon-accent">
+                      <span className="text-xs font-semibold inline-block text-neon-yellow">
                         {stats.total > 0 ? Math.round((stats.inProgress / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-accent/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.inProgress / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(255,190,0,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-amber-500 bg-gradient-to-r from-amber-600 to-amber-400 animate-pulse"></div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-yellow/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.inProgress / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(255,234,0,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-yellow/80 animate-pulse"></div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-accent/30 bg-neon-accent/10 rounded-full shadow-[0_0_5px_rgba(0,225,255,0.15)]">En revisión</span>
-                      <span className="text-xs font-semibold ml-2 text-neon-accent">{stats.review}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-purple/30 bg-neon-purple/10 rounded-full shadow-[0_0_5px_rgba(187,0,255,0.15)]">En revisión</span>
+                      <span className="text-xs font-semibold ml-2 text-neon-purple">{stats.review}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-neon-accent">
+                      <span className="text-xs font-semibold inline-block text-neon-purple">
                         {stats.total > 0 ? Math.round((stats.review / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-accent/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.review / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(59,130,246,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-blue-500 bg-gradient-to-r from-blue-600 to-blue-400 animate-pulse"></div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-purple/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.review / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(187,0,255,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-purple/80 animate-pulse"></div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-accent/30 bg-neon-accent/10 rounded-full shadow-[0_0_5px_rgba(0,225,255,0.15)]">Completadas</span>
-                      <span className="text-xs font-semibold ml-2 text-neon-accent">{stats.completed}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-green/30 bg-neon-green/10 rounded-full shadow-[0_0_5px_rgba(0,255,157,0.15)]">Completadas</span>
+                      <span className="text-xs font-semibold ml-2 text-neon-green">{stats.completed}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-neon-accent">
+                      <span className="text-xs font-semibold inline-block text-neon-green">
                         {stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 text-xs flex rounded-full bg-neon-medium/30 border border-neon-accent/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(16,185,129,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-emerald-500 bg-gradient-to-r from-emerald-600 to-emerald-400 animate-pulse"></div>
+                  <div className="overflow-hidden h-2 text-xs flex rounded-full bg-neon-medium/30 border border-neon-green/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(0,255,157,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-green/80 animate-pulse"></div>
                   </div>
                 </div>
               </div>
@@ -212,13 +212,13 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className="border border-neon-pink/30 bg-neon-dark shadow-[0_0_15px_rgba(255,0,230,0.15)] overflow-hidden rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-pink/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Rendimiento semanal</CardTitle>
+              <CardTitle className="text-base font-medium text-neon-pink neon-text-pink font-mono">Rendimiento semanal</CardTitle>
               <CardDescription className="text-neon-text/70">Tareas completadas vs. creadas</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-pink/20 text-neon-pink border border-neon-pink/30 shadow-[0_0_8px_rgba(255,0,230,0.2)]">
               <CheckCheck className="h-5 w-5" />
             </div>
           </CardHeader>
@@ -227,9 +227,9 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="text-sm font-medium text-neon-text/90">Eficiencia</div>
-                  <div className="text-2xl font-bold text-neon-accent font-mono neon-text">83%</div>
+                  <div className="text-2xl font-bold text-neon-pink font-mono neon-text-pink">83%</div>
                 </div>
-                <div className="flex items-center text-emerald-400 font-medium text-sm">
+                <div className="flex items-center text-neon-green font-medium text-sm">
                   <ArrowUpRight className="h-4 w-4 mr-1" />
                   <span>+12% vs. semana anterior</span>
                 </div>
@@ -243,9 +243,9 @@ export default function Dashboard() {
                 </div>
                 <div className="grid grid-cols-7 gap-1 h-16">
                   {chartData.map((day, i) => (
-                    <div key={i} className="bg-neon-medium/30 rounded-md relative overflow-hidden border border-neon-accent/20">
+                    <div key={i} className="bg-neon-medium/30 rounded-md relative overflow-hidden border border-neon-pink/20">
                       <div 
-                        className="absolute bottom-0 w-full bg-neon-accent/80 shadow-[0_0_8px_rgba(0,225,255,0.4)]"
+                        className="absolute bottom-0 w-full bg-neon-pink/80 shadow-[0_0_8px_rgba(255,0,230,0.4)]"
                         style={{ 
                           height: `${(day.completed / Math.max(...chartData.map(d => Math.max(d.created, d.completed)))) * 100}%`,
                         }}
@@ -255,11 +255,11 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between text-xs text-neon-text/80">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-neon-accent/80 rounded-sm mr-2 shadow-[0_0_4px_rgba(0,225,255,0.4)]"></div>
+                    <div className="w-3 h-3 bg-neon-pink/80 rounded-sm mr-2 shadow-[0_0_4px_rgba(255,0,230,0.4)]"></div>
                     <span>Completadas ({chartData.reduce((sum, day) => sum + day.completed, 0)})</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-3 h-3 border border-dashed border-neon-accent/60 rounded-sm mr-2"></div>
+                    <div className="w-3 h-3 border border-dashed border-neon-pink/60 rounded-sm mr-2"></div>
                     <span>Creadas ({chartData.reduce((sum, day) => sum + day.created, 0)})</span>
                   </div>
                 </div>
