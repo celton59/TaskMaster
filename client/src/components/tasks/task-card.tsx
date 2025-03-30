@@ -113,16 +113,16 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
   
   // Get deadline icon
   const getDeadlineIcon = (deadline: Date | string | null) => {
-    if (!deadline) return <Clock size={14} className="text-neutral-400" />;
+    if (!deadline) return <Clock size={14} className="text-neon-text/50" />;
     
     const status = getDeadlineStatus(deadline);
     
     if (status === "overdue") {
-      return <AlertTriangle size={14} className="text-rose-500" />;
+      return <AlertTriangle size={14} className="text-rose-400" />;
     } else if (status === "soon") {
-      return <AlertCircle size={14} className="text-amber-500" />;
+      return <AlertCircle size={14} className="text-amber-300" />;
     } else {
-      return <Calendar size={14} className="text-blue-500" />;
+      return <Calendar size={14} className="text-neon-accent" />;
     }
   };
   
@@ -138,28 +138,28 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
     switch (priority) {
       case "high":
         return (
-          <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-rose-200 font-medium text-xs gap-1">
+          <Badge className="bg-rose-900/30 text-rose-400 hover:bg-rose-900/40 border-rose-500/30 font-medium text-xs gap-1">
             <FlameKindling className="h-3 w-3" />
             Alta
           </Badge>
         );
       case "medium":
         return (
-          <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-amber-200 font-medium text-xs gap-1">
+          <Badge className="bg-amber-900/30 text-amber-300 hover:bg-amber-900/40 border-amber-500/30 font-medium text-xs gap-1">
             <Star className="h-3 w-3" />
             Media
           </Badge>
         );
       case "low":
         return (
-          <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200 font-medium text-xs gap-1">
+          <Badge className="bg-emerald-900/30 text-emerald-400 hover:bg-emerald-900/40 border-emerald-500/30 font-medium text-xs gap-1">
             <Clock4 className="h-3 w-3" />
             Baja
           </Badge>
         );
       default:
         return (
-          <Badge className="bg-neutral-100 text-neutral-700 hover:bg-neutral-100 border-neutral-200 font-medium text-xs gap-1">
+          <Badge className="bg-neon-medium/30 text-neon-text/80 hover:bg-neon-medium/40 border-neon-accent/20 font-medium text-xs gap-1">
             <Circle className="h-3 w-3" />
             Normal
           </Badge>
@@ -186,34 +186,34 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
     switch (status) {
       case "completed":
         return {
-          icon: <CircleCheck className="h-5 w-5 text-emerald-500" />,
+          icon: <CircleCheck className="h-5 w-5 text-emerald-400" />,
           label: "Completada",
-          className: "bg-emerald-50 text-emerald-700 border-emerald-200"
+          className: "bg-emerald-900/30 text-emerald-400 border-emerald-600/30"
         };
       case "pending":
         return {
-          icon: <Circle className="h-5 w-5 text-amber-500" />,
+          icon: <Circle className="h-5 w-5 text-amber-300" />,
           label: "Pendiente",
-          className: "bg-amber-50 text-amber-700 border-amber-200"
+          className: "bg-amber-900/30 text-amber-300 border-amber-600/30"
         };
       case "review":
         return {
-          icon: <AlertCircle className="h-5 w-5 text-purple-500" />,
+          icon: <AlertCircle className="h-5 w-5 text-purple-400" />,
           label: "Revisión",
-          className: "bg-purple-50 text-purple-700 border-purple-200"
+          className: "bg-purple-900/30 text-purple-400 border-purple-600/30"
         };
       case "in_progress":
       case "in-progress":
         return {
-          icon: <CircleEllipsis className="h-5 w-5 text-blue-500" />,
+          icon: <CircleEllipsis className="h-5 w-5 text-blue-400" />,
           label: "En progreso",
-          className: "bg-blue-50 text-blue-700 border-blue-200"
+          className: "bg-blue-900/30 text-blue-400 border-blue-600/30"
         };
       default:
         return {
-          icon: <ArrowUpRight className="h-5 w-5 text-neutral-500" />,
+          icon: <ArrowUpRight className="h-5 w-5 text-neon-text/70" />,
           label: status,
-          className: "bg-neutral-50 text-neutral-700 border-neutral-200"
+          className: "bg-neon-medium/30 text-neon-text/80 border-neon-accent/20"
         };
     }
   };
@@ -261,27 +261,27 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
   const getCardStyles = () => {
     // Aplica estilo basado en estado
     if (task.status === "completed") {
-      return "border-l-emerald-500 bg-emerald-50/30";
+      return "border-l-emerald-500 bg-neon-darker/50 shadow-[0_0_8px_rgba(16,185,129,0.15)]";
     } else if (getDeadlineStatus(task.deadline) === "overdue" && task.status !== "completed") {
-      return "border-l-rose-500 bg-rose-50/30";
+      return "border-l-rose-500 bg-neon-darker/50 shadow-[0_0_8px_rgba(244,63,94,0.15)]";
     } else if (getDeadlineStatus(task.deadline) === "soon" && task.status !== "completed") {
-      return "border-l-amber-500 bg-amber-50/30";
+      return "border-l-amber-500 bg-neon-darker/50 shadow-[0_0_8px_rgba(245,158,11,0.15)]";
     } else if (task.status === "in_progress" || task.status === "in-progress") {
-      return "border-l-blue-500 bg-blue-50/30";
+      return "border-l-blue-500 bg-neon-darker/50 shadow-[0_0_8px_rgba(59,130,246,0.15)]";
     } else if (task.status === "review") {
-      return "border-l-purple-500 bg-purple-50/30";
+      return "border-l-purple-500 bg-neon-darker/50 shadow-[0_0_8px_rgba(168,85,247,0.15)]";
     }
     
     // Por defecto, estilo basado en prioridad
     switch (task.priority) {
       case "high": 
-        return "border-l-rose-500";
+        return "border-l-rose-500 bg-neon-darker/50 shadow-[0_0_8px_rgba(244,63,94,0.15)]";
       case "medium": 
-        return "border-l-amber-500";
+        return "border-l-amber-500 bg-neon-darker/50 shadow-[0_0_8px_rgba(245,158,11,0.15)]";
       case "low": 
-        return "border-l-emerald-500";
+        return "border-l-emerald-500 bg-neon-darker/50 shadow-[0_0_8px_rgba(16,185,129,0.15)]";
       default: 
-        return "border-l-neutral-300";
+        return "border-l-neon-accent bg-neon-darker/50 shadow-[0_0_8px_rgba(0,225,255,0.15)]";
     }
   };
   
@@ -298,7 +298,7 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
     <motion.div
       ref={dragRef}
       className={cn(
-        "task-card bg-white p-4 rounded-lg shadow-md border border-neutral-100 cursor-grab group",
+        "task-card p-4 rounded-lg shadow-md border border-neon-accent/20 cursor-grab group",
         "border-l-4",
         getCardStyles(),
         isDragging ? 'opacity-50 scale-95' : ''
@@ -311,7 +311,7 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
       transition={{ duration: 0.2 }}
       whileHover={{ 
         y: -2, 
-        boxShadow: "0 8px 24px -4px rgba(0, 0, 0, 0.08)"
+        boxShadow: "0 8px 24px -4px rgba(0, 225, 255, 0.15)"
       }}
       data-task-id={task.id}
       data-priority={task.priority}
@@ -335,40 +335,40 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="text-neutral-400 hover:text-neutral-700 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button className="text-neon-text/50 hover:text-neon-accent opacity-0 group-hover:opacity-100 transition-opacity">
               <MoreHorizontal size={16} />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 rounded-xl border border-neutral-100 shadow-lg p-1">
-            <DropdownMenuLabel className="text-xs font-medium text-neutral-800 px-2 py-1.5">Acciones</DropdownMenuLabel>
-            <DropdownMenuSeparator className="my-1 bg-neutral-100" />
-            <DropdownMenuItem onClick={editTask} className="text-xs rounded-md focus:bg-neutral-50 focus:text-neutral-900 px-2 py-1.5 cursor-pointer">
+          <DropdownMenuContent align="end" className="w-48 rounded-xl border border-neon-accent/30 bg-neon-darker shadow-[0_0_15px_rgba(0,225,255,0.15)] p-1">
+            <DropdownMenuLabel className="text-xs font-medium text-neon-accent px-2 py-1.5">Acciones</DropdownMenuLabel>
+            <DropdownMenuSeparator className="my-1 bg-neon-accent/20" />
+            <DropdownMenuItem onClick={editTask} className="text-xs rounded-md text-neon-text hover:text-neon-accent focus:bg-neon-medium/20 focus:text-neon-accent px-2 py-1.5 cursor-pointer">
               Editar tarea
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}} className="text-xs rounded-md focus:bg-neutral-50 focus:text-neutral-900 px-2 py-1.5 cursor-pointer">
+            <DropdownMenuItem onClick={() => {}} className="text-xs rounded-md text-neon-text hover:text-neon-accent focus:bg-neon-medium/20 focus:text-neon-accent px-2 py-1.5 cursor-pointer">
               Cambiar estado
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}} className="text-xs rounded-md focus:bg-neutral-50 focus:text-neutral-900 px-2 py-1.5 cursor-pointer">
+            <DropdownMenuItem onClick={() => {}} className="text-xs rounded-md text-neon-text hover:text-neon-accent focus:bg-neon-medium/20 focus:text-neon-accent px-2 py-1.5 cursor-pointer">
               Asignar usuario
             </DropdownMenuItem>
-            <DropdownMenuSeparator className="my-1 bg-neutral-100" />
-            <DropdownMenuItem onClick={deleteTask} className="text-xs text-red-600 rounded-md focus:bg-red-50 focus:text-red-600 px-2 py-1.5 cursor-pointer">
+            <DropdownMenuSeparator className="my-1 bg-neon-accent/20" />
+            <DropdownMenuItem onClick={deleteTask} className="text-xs text-rose-400 rounded-md hover:text-rose-300 focus:bg-rose-950/30 focus:text-rose-300 px-2 py-1.5 cursor-pointer">
               Eliminar tarea
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
       
-      <h4 className="font-semibold text-sm text-neutral-900 line-clamp-1 leading-relaxed">{task.title}</h4>
+      <h4 className="font-semibold text-sm text-neon-text line-clamp-1 leading-relaxed">{task.title}</h4>
       
       {task.description && (
-        <p className="text-xs text-neutral-600 mt-1 line-clamp-2 leading-relaxed">{task.description}</p>
+        <p className="text-xs text-neon-text/70 mt-1 line-clamp-2 leading-relaxed">{task.description}</p>
       )}
       
       <div className="flex items-center space-x-2 mt-3">
         <Badge 
           variant="outline" 
-          className="rounded-md border border-neutral-200 bg-neutral-50 hover:bg-neutral-100 hover:border-neutral-200 text-neutral-800 font-normal text-xs py-0 h-5"
+          className="rounded-md border border-neon-accent/30 bg-neon-medium/20 hover:bg-neon-medium/30 hover:border-neon-accent/40 text-neon-text/90 font-normal text-xs py-0 h-5"
         >
           <div className={`h-2 w-2 rounded-full mr-1.5 ${
             category.color === "blue" ? "bg-blue-500" :
@@ -383,21 +383,33 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
       
       {/* Barra de progreso */}
       <div className="mt-3">
-        <Progress value={getProgress()} className="h-1" />
+        <Progress 
+          value={getProgress()} 
+          className={cn(
+            "h-1.5 bg-neon-medium/30",
+            task.status === "completed" ? "progress-green" :
+            task.status === "review" ? "progress-purple" :
+            task.status === "in_progress" || task.status === "in-progress" ? "progress-blue" :
+            getDeadlineStatus(task.deadline) === "overdue" ? "progress-rose" :
+            getDeadlineStatus(task.deadline) === "soon" ? "progress-amber" :
+            ""
+          )}
+          indicatorClassName="progress-value"
+        />
       </div>
       
-      <div className="mt-3 pt-3 border-t border-neutral-100 flex items-center justify-between">
+      <div className="mt-3 pt-3 border-t border-neon-accent/10 flex items-center justify-between">
         <div className="flex items-center text-xs">
           <div className="flex items-center gap-1">
             {getDeadlineIcon(task.deadline)}
-            <span className={deadlineInfo.className}>{deadlineInfo.text}</span>
+            <span className={deadlineInfo.className.replace('text-neutral-500', 'text-neon-text/60')}>{deadlineInfo.text}</span>
           </div>
         </div>
         
         <div>
           {task.assignedTo && (
-            <Avatar className="h-7 w-7 border-2 border-white ring-1 ring-neutral-200">
-              <AvatarFallback className="text-[10px] bg-primary-50 text-primary-700 font-medium">
+            <Avatar className="h-7 w-7 border-2 border-neon-darker ring-1 ring-neon-accent/20 shadow-[0_0_5px_rgba(0,225,255,0.15)]">
+              <AvatarFallback className="text-[10px] bg-neon-accent/20 text-neon-accent font-medium">
                 {task.assignedTo === 1 ? 'AD' : 'US'}
               </AvatarFallback>
             </Avatar>

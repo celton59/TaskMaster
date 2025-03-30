@@ -59,15 +59,15 @@ export function TaskColumn({
   const getColumnStyle = () => {
     switch (status) {
       case "pending":
-        return "border-amber-100 bg-white";
+        return "border-amber-500/40 bg-neon-medium/20 shadow-[0_0_8px_rgba(245,158,11,0.2)]";
       case "in-progress":
-        return "border-blue-100 bg-white";
+        return "border-blue-500/40 bg-neon-medium/20 shadow-[0_0_8px_rgba(59,130,246,0.2)]";
       case "review":
-        return "border-purple-100 bg-white";
+        return "border-purple-500/40 bg-neon-medium/20 shadow-[0_0_8px_rgba(168,85,247,0.2)]";
       case "completed":
-        return "border-emerald-100 bg-white";
+        return "border-emerald-500/40 bg-neon-medium/20 shadow-[0_0_8px_rgba(16,185,129,0.2)]";
       default:
-        return "border-neutral-100 bg-white";
+        return "border-neon-accent/30 bg-neon-medium/20 shadow-[0_0_8px_rgba(0,225,255,0.15)]";
     }
   };
   
@@ -75,15 +75,15 @@ export function TaskColumn({
   const getTitleBadge = () => {
     switch (status) {
       case "pending":
-        return "bg-amber-100 text-amber-700";
+        return "bg-amber-500/20 text-amber-300 border border-amber-500/40";
       case "in-progress":
-        return "bg-blue-100 text-blue-700";
+        return "bg-blue-500/20 text-blue-300 border border-blue-500/40";
       case "review":
-        return "bg-purple-100 text-purple-700";
+        return "bg-purple-500/20 text-purple-300 border border-purple-500/40";
       case "completed":
-        return "bg-emerald-100 text-emerald-700";
+        return "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
       default:
-        return "bg-neutral-100 text-neutral-700";
+        return "bg-neon-medium/30 text-neon-text border border-neon-accent/30";
     }
   };
   
@@ -91,9 +91,9 @@ export function TaskColumn({
     <div 
       ref={columnRef}
       className={cn(
-        "p-3 rounded-xl border bg-white shadow-sm w-[280px]",
+        "p-3 rounded-xl border w-[280px]",
         getColumnStyle(),
-        isDropTarget ? "ring-2 ring-primary-400 ring-opacity-50" : ""
+        isDropTarget ? "ring-2 ring-neon-accent ring-opacity-70" : ""
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -106,7 +106,7 @@ export function TaskColumn({
             <div className={`h-2 w-2 rounded-full ${badgeColor} mr-1.5`}></div>
             <span className="font-medium">{title}</span>
           </Badge>
-          <Badge variant="outline" className="bg-white text-neutral-600 py-0.5 font-normal">
+          <Badge variant="outline" className="bg-neon-medium/20 text-neon-text/90 py-0.5 font-normal border-neon-accent/30">
             {tasks.length}
           </Badge>
         </div>
@@ -114,18 +114,18 @@ export function TaskColumn({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-7 w-7 rounded-full hover:bg-neutral-100"
+            className="h-7 w-7 rounded-full hover:bg-neon-accent/20 text-neon-text/70 hover:text-neon-accent"
             title="Añadir tarea"
           >
-            <Plus size={15} className="text-neutral-500" />
+            <Plus size={15} />
           </Button>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-7 w-7 rounded-full hover:bg-neutral-100"
+            className="h-7 w-7 rounded-full hover:bg-neon-accent/20 text-neon-text/70 hover:text-neon-accent"
             title="Más opciones"
           >
-            <MoreHorizontal size={15} className="text-neutral-500" />
+            <MoreHorizontal size={15} />
           </Button>
         </div>
       </div>
@@ -134,24 +134,24 @@ export function TaskColumn({
         {isLoading ? (
           // Loading skeletons
           Array(3).fill(0).map((_, index) => (
-            <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-neutral-200">
+            <div key={index} className="bg-neon-medium/10 p-4 rounded-lg shadow-md border border-neon-accent/10">
               <div className="flex justify-between items-start">
-                <Skeleton className="h-5 w-20 rounded-full" />
-                <Skeleton className="h-4 w-4 rounded-full" />
+                <Skeleton className="h-5 w-20 rounded-full bg-neon-accent/10" />
+                <Skeleton className="h-4 w-4 rounded-full bg-neon-accent/10" />
               </div>
-              <Skeleton className="h-5 w-full mt-2" />
-              <Skeleton className="h-3 w-full mt-1" />
-              <Skeleton className="h-3 w-3/4 mt-0.5" />
+              <Skeleton className="h-5 w-full mt-2 bg-neon-accent/10" />
+              <Skeleton className="h-3 w-full mt-1 bg-neon-accent/10" />
+              <Skeleton className="h-3 w-3/4 mt-0.5 bg-neon-accent/10" />
               <div className="mt-3 flex items-center justify-between">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-6 w-6 rounded-full" />
+                <Skeleton className="h-3 w-16 bg-neon-accent/10" />
+                <Skeleton className="h-6 w-6 rounded-full bg-neon-accent/10" />
               </div>
             </div>
           ))
         ) : tasks.length === 0 ? (
           // Empty state
-          <div className="flex flex-col items-center justify-center py-8 text-center text-neutral-400">
-            <div className="w-full border-2 border-dashed border-neutral-200 rounded-lg p-4">
+          <div className="flex flex-col items-center justify-center py-8 text-center text-neon-text/40">
+            <div className="w-full border-2 border-dashed border-neon-accent/20 rounded-lg p-4">
               <p className="text-sm">Arrastra tareas aquí</p>
             </div>
           </div>

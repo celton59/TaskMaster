@@ -86,24 +86,24 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
   };
   
   return (
-    <Card className="border-neutral-100 shadow-sm mt-8">
-      <CardHeader className="border-b border-neutral-100 pb-4">
+    <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl mt-8">
+      <CardHeader className="border-b border-neon-accent/30 pb-4 bg-gradient-to-r from-neon-darker to-neon-dark">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <CardTitle className="text-lg font-semibold">Tablero de tareas</CardTitle>
-            <CardDescription>Arrastra y suelta para cambiar el estado de las tareas</CardDescription>
+            <CardTitle className="text-lg font-semibold text-neon-accent neon-text font-mono">Tablero de tareas</CardTitle>
+            <CardDescription className="text-neon-text/70">Arrastra y suelta para cambiar el estado de las tareas</CardDescription>
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-8">
+            <Button variant="outline" size="sm" className="h-8 border-neon-accent/30 bg-neon-medium/30 text-neon-text/80 hover:text-neon-accent hover:bg-neon-accent/20">
               <Filter className="h-3.5 w-3.5 mr-2" />
               Filtros
             </Button>
-            <Button variant="outline" size="sm" className="h-8">
+            <Button variant="outline" size="sm" className="h-8 border-neon-accent/30 bg-neon-medium/30 text-neon-text/80 hover:text-neon-accent hover:bg-neon-accent/20">
               <ArrowDownUp className="h-3.5 w-3.5 mr-2" />
               Ordenar
             </Button>
-            <Button size="sm" className="h-8">
+            <Button size="sm" className="h-8 bg-neon-accent/90 hover:bg-neon-accent text-neon-darker font-medium shadow-[0_0_8px_rgba(0,225,255,0.2)]">
               <Plus className="h-3.5 w-3.5 mr-2" />
               Nueva tarea
             </Button>
@@ -111,7 +111,7 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
         </div>
       </CardHeader>
       
-      <CardContent className="p-4">
+      <CardContent className="p-4 bg-neon-dark">
         <div className="mb-4">
           <TaskFilter 
             categories={categories} 

@@ -31,10 +31,10 @@ const getBadgeStyles = (isActive: boolean, color: string) => {
   const baseClasses = "inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors";
   
   if (isActive) {
-    return `${baseClasses} bg-primary-50 text-primary-700 border border-primary-200`;
+    return `${baseClasses} bg-neon-accent/20 text-neon-accent border border-neon-accent/40 shadow-[0_0_8px_rgba(0,225,255,0.15)]`;
   }
   
-  return `${baseClasses} bg-neutral-50 text-neutral-700 border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-100`;
+  return `${baseClasses} bg-neon-medium/30 text-neon-text/80 border border-neon-accent/20 hover:border-neon-accent/40 hover:bg-neon-accent/10 hover:text-neon-accent/90`;
 };
 
 export function TaskFilter({ categories, activeFilter, onFilterChange }: TaskFilterProps) {
