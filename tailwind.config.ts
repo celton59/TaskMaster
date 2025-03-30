@@ -159,6 +159,23 @@ export default {
             filter: "brightness(0.8)"
           }
         },
+        "glitch": {
+          "0%, 100%": {
+            transform: "translate(0)"
+          },
+          "20%": {
+            transform: "translate(-2px, 2px)"
+          },
+          "40%": {
+            transform: "translate(-2px, -2px)"
+          },
+          "60%": {
+            transform: "translate(2px, 2px)"
+          },
+          "80%": {
+            transform: "translate(2px, -2px)"
+          }
+        },
         "pulse-slow": {
           "0%, 100%": {
             opacity: "1"
@@ -167,20 +184,21 @@ export default {
             opacity: "0.7"
           }
         },
-        "scanning-line": {
-          "0%": {
-            transform: "translateY(-100%)"
-          },
-          "100%": {
-            transform: "translateY(500%)"
-          }
-        },
+
         "rotate-slow": {
           "0%": {
             transform: "rotate(0deg)"
           },
           "100%": {
             transform: "rotate(360deg)"
+          }
+        },
+        "scanning-line": {
+          "0%": {
+            transform: "translateY(-100%)"
+          },
+          "100%": {
+            transform: "translateY(100%)"
           }
         },
         "float": {
@@ -226,7 +244,8 @@ export default {
         "rotate-slow": "rotate-slow 8s linear infinite",
         "float": "float 5s ease-in-out infinite",
         "fade-in": "fade-in 0.5s ease-out forwards",
-        "scale-up": "scale-up 0.4s ease-out forwards"
+        "scale-up": "scale-up 0.4s ease-out forwards",
+        "glitch": "glitch 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite"
       },
     },
   },
