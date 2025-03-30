@@ -746,13 +746,13 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                       <div className="flex flex-col space-y-1">
                         <div className="flex items-center">
                           <div className={cn(
-                            "w-1 h-5 rounded-full mr-2", 
-                            task.status === "completed" ? "bg-[#39ffa1] shadow-[0_0_8px_rgba(57,255,161,0.6)]" :
-                            task.status === "review" ? "bg-[#c77dff] shadow-[0_0_8px_rgba(199,125,255,0.6)]" :
-                            task.status === "in_progress" ? "bg-[#4d9eff] shadow-[0_0_8px_rgba(77,158,255,0.6)]" :
-                            task.priority === "high" ? "bg-[#ff3a5e] shadow-[0_0_8px_rgba(255,58,94,0.6)]" :
-                            task.priority === "medium" ? "bg-[#ffcd29] shadow-[0_0_8px_rgba(255,205,41,0.6)]" :
-                            task.priority === "low" ? "bg-[#39ffa1] shadow-[0_0_8px_rgba(57,255,161,0.6)]" : "bg-[#a8b4d4] shadow-[0_0_8px_rgba(168,180,212,0.6)]"
+                            "w-2 h-6 rounded-full mr-2 animate-pulse", 
+                            task.status === "completed" ? "bg-[#39ffa1] shadow-[0_0_15px_rgba(57,255,161,0.8)]" :
+                            task.status === "review" ? "bg-[#c77dff] shadow-[0_0_15px_rgba(199,125,255,0.8)]" :
+                            task.status === "in_progress" ? "bg-[#4d9eff] shadow-[0_0_15px_rgba(77,158,255,0.8)]" :
+                            task.priority === "high" ? "bg-[#ff3a5e] shadow-[0_0_15px_rgba(255,58,94,0.8)]" :
+                            task.priority === "medium" ? "bg-[#ffcd29] shadow-[0_0_15px_rgba(255,205,41,0.8)]" :
+                            task.priority === "low" ? "bg-[#39ffa1] shadow-[0_0_15px_rgba(57,255,161,0.8)]" : "bg-[#a8b4d4] shadow-[0_0_15px_rgba(168,180,212,0.8)]"
                           )} />
                           <span className="font-medium">{task.title}</span>
                         </div>
@@ -765,11 +765,11 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                     <TableCell>
                       <div className="inline-flex items-center gap-1">
                         <div className={cn(
-                          "relative flex items-center px-2 py-0.5 rounded-sm text-xs font-medium",
-                          task.status === "completed" ? "bg-[#092a1f]/80 text-[#39ffa1] shadow-[0_0_12px_rgba(57,255,161,0.4)] border border-[#39ffa1]/60" : 
-                          task.status === "review" ? "bg-[#240052]/80 text-[#c77dff] shadow-[0_0_12px_rgba(199,125,255,0.4)] border border-[#c77dff]/60" :
-                          task.status === "in_progress" ? "bg-[#011e60]/80 text-[#4d9eff] shadow-[0_0_12px_rgba(77,158,255,0.4)] border border-[#4d9eff]/60" :
-                          "bg-[#462800]/80 text-[#ffcd29] shadow-[0_0_12px_rgba(255,205,41,0.4)] border border-[#ffcd29]/60"
+                          "relative flex items-center px-3 py-1 rounded-md text-sm font-medium",
+                          task.status === "completed" ? "bg-[#092a1f]/90 text-[#00ff9d] shadow-[0_0_20px_rgba(0,255,157,0.6)] border-2 border-[#00ff9d]/70" : 
+                          task.status === "review" ? "bg-[#240052]/90 text-[#bb00ff] shadow-[0_0_20px_rgba(187,0,255,0.6)] border-2 border-[#bb00ff]/70" :
+                          task.status === "in_progress" ? "bg-[#011e60]/90 text-[#00e1ff] shadow-[0_0_20px_rgba(0,225,255,0.6)] border-2 border-[#00e1ff]/70" :
+                          "bg-[#462800]/90 text-[#ffcc00] shadow-[0_0_20px_rgba(255,204,0,0.6)] border-2 border-[#ffcc00]/70"
                         )}>
                           {getStatusInfo(task.status).icon}
                           <span className="ml-1">{getStatusInfo(task.status).label}</span>
@@ -781,10 +781,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                     <TableCell>
                       <div className="inline-flex items-center gap-1">
                         <div className={cn(
-                          "relative flex items-center px-2 py-0.5 rounded-sm text-xs font-medium",
-                          task.priority === "high" ? "bg-[#400012]/80 text-[#ff3a5e] shadow-[0_0_12px_rgba(255,58,94,0.4)] border border-[#ff3a5e]/60" : 
-                          task.priority === "medium" ? "bg-[#462800]/80 text-[#ffcd29] shadow-[0_0_12px_rgba(255,205,41,0.4)] border border-[#ffcd29]/60" :
-                          "bg-[#092a1f]/80 text-[#39ffa1] shadow-[0_0_12px_rgba(57,255,161,0.4)] border border-[#39ffa1]/60"
+                          "relative flex items-center px-3 py-1 rounded-md text-sm font-medium",
+                          task.priority === "high" ? "bg-[#400012]/90 text-[#ff2d55] shadow-[0_0_20px_rgba(255,45,85,0.6)] border-2 border-[#ff2d55]/70" : 
+                          task.priority === "medium" ? "bg-[#462800]/90 text-[#ffcc00] shadow-[0_0_20px_rgba(255,204,0,0.6)] border-2 border-[#ffcc00]/70" :
+                          "bg-[#092a1f]/90 text-[#00ff9d] shadow-[0_0_20px_rgba(0,255,157,0.6)] border-2 border-[#00ff9d]/70"
                         )}>
                           {getPriorityInfo(task.priority).icon}
                           <span className="ml-1">{getPriorityInfo(task.priority).label}</span>
@@ -796,13 +796,13 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                     <TableCell>
                       <div className="inline-flex items-center gap-1">
                         <div className={cn(
-                          "relative flex items-center px-2 py-0.5 rounded-sm text-xs font-medium",
-                          task.categoryId === 1 ? "bg-[#011e60]/80 text-[#4d9eff] shadow-[0_0_12px_rgba(77,158,255,0.4)] border border-[#4d9eff]/60" : 
-                          task.categoryId === 2 ? "bg-[#092a1f]/80 text-[#39ffa1] shadow-[0_0_12px_rgba(57,255,161,0.4)] border border-[#39ffa1]/60" :
-                          task.categoryId === 3 ? "bg-[#400012]/80 text-[#ff3a5e] shadow-[0_0_12px_rgba(255,58,94,0.4)] border border-[#ff3a5e]/60" :
-                          task.categoryId === 4 ? "bg-[#240052]/80 text-[#c77dff] shadow-[0_0_12px_rgba(199,125,255,0.4)] border border-[#c77dff]/60" : 
-                          task.categoryId === 5 ? "bg-[#462800]/80 text-[#ffcd29] shadow-[0_0_12px_rgba(255,205,41,0.4)] border border-[#ffcd29]/60" :
-                          "bg-[#152034]/80 text-[#a8b4d4] shadow-[0_0_12px_rgba(168,180,212,0.4)] border border-[#a8b4d4]/60"
+                          "relative flex items-center px-3 py-1 rounded-md text-sm font-medium",
+                          task.categoryId === 1 ? "bg-[#011e60]/90 text-[#00e1ff] shadow-[0_0_20px_rgba(0,225,255,0.6)] border-2 border-[#00e1ff]/70" : 
+                          task.categoryId === 2 ? "bg-[#092a1f]/90 text-[#00ff9d] shadow-[0_0_20px_rgba(0,255,157,0.6)] border-2 border-[#00ff9d]/70" :
+                          task.categoryId === 3 ? "bg-[#400012]/90 text-[#ff2d55] shadow-[0_0_20px_rgba(255,45,85,0.6)] border-2 border-[#ff2d55]/70" :
+                          task.categoryId === 4 ? "bg-[#240052]/90 text-[#bb00ff] shadow-[0_0_20px_rgba(187,0,255,0.6)] border-2 border-[#bb00ff]/70" : 
+                          task.categoryId === 5 ? "bg-[#462800]/90 text-[#ffcc00] shadow-[0_0_20px_rgba(255,204,0,0.6)] border-2 border-[#ffcc00]/70" :
+                          "bg-[#152034]/90 text-[#a8b4d4] shadow-[0_0_20px_rgba(168,180,212,0.6)] border-2 border-[#a8b4d4]/70"
                         )}>
                           <span>{getCategoryName(task.categoryId)}</span>
                           <span className="absolute inset-0 rounded-sm bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse"></span>
@@ -816,12 +816,12 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div className={cn(
-                                "relative inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium",
+                                "relative inline-flex items-center px-3 py-1 rounded-md text-sm font-medium",
                                 getDeadlineStatus(task.deadline) === "overdue" 
-                                  ? "bg-[#400012]/80 text-[#ff3a5e] shadow-[0_0_12px_rgba(255,58,94,0.4)] border border-[#ff3a5e]/60" 
+                                  ? "bg-[#400012]/90 text-[#ff2d55] shadow-[0_0_20px_rgba(255,45,85,0.6)] border-2 border-[#ff2d55]/70" 
                                   : getDeadlineStatus(task.deadline) === "soon" 
-                                  ? "bg-[#462800]/80 text-[#ffcd29] shadow-[0_0_12px_rgba(255,205,41,0.4)] border border-[#ffcd29]/60" 
-                                  : "bg-[#152034]/80 text-[#a8b4d4] shadow-[0_0_12px_rgba(168,180,212,0.4)] border border-[#a8b4d4]/60"
+                                  ? "bg-[#462800]/90 text-[#ffcc00] shadow-[0_0_20px_rgba(255,204,0,0.6)] border-2 border-[#ffcc00]/70" 
+                                  : "bg-[#152034]/90 text-[#00e1ff] shadow-[0_0_20px_rgba(0,225,255,0.6)] border-2 border-[#00e1ff]/70"
                               )}>
                                 {getDeadlineIcon(task.deadline)}
                                 <span className="ml-1.5">{formatDate(task.deadline)}</span>
@@ -838,10 +838,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                           </Tooltip>
                         </TooltipProvider>
                       ) : (
-                        <div className="relative inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-[#152034]/80 text-[#a8b4d4] shadow-[0_0_8px_rgba(168,180,212,0.2)] border border-[#a8b4d4]/30">
-                          <Clock className="h-3.5 w-3.5 mr-1.5 opacity-70" />
+                        <div className="relative inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-[#152034]/90 text-[#00e1ff] shadow-[0_0_20px_rgba(0,225,255,0.6)] border-2 border-[#00e1ff]/70">
+                          <Clock className="h-4 w-4 mr-1.5" />
                           <span>Sin fecha</span>
-                          <span className="absolute inset-0 rounded-sm bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse"></span>
+                          <span className="absolute inset-0 rounded-md bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse"></span>
                         </div>
                       )}
                     </TableCell>
