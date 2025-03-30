@@ -521,13 +521,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Webhook para Twilio WhatsApp
   app.post("/webhooks/whatsapp", express.urlencoded({ extended: false }), async (req, res) => {
     try {
+      console.log("⚡ Webhook de WhatsApp recibido:", JSON.stringify(req.body, null, 2));
       const result = await processIncomingWebhook(req.body);
       if (result.success) {
+        console.log("✅ Mensaje de WhatsApp procesado correctamente:", result.message);
         // Enviar respuesta TwiML para confirmar recepción
         res.set('Content-Type', 'text/xml');
         res.send('<Response></Response>');
       } else {
-        console.error("Error en el webhook:", result.error);
+        console.error("❌ Error en el webhook:", result.error);
         res.status(400).json({ 
           status: 'error',
           message: result.error || "Error al procesar webhook" 
