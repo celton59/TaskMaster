@@ -33,9 +33,6 @@ export function MetricCard({
         {/* Background gradient effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-neon-darker to-neon-dark opacity-80"></div>
         
-        {/* Scanning line effect */}
-        <div className="absolute h-[2px] left-0 right-0 bg-gradient-to-r from-transparent via-neon-accent/60 to-transparent animate-scanning-line opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
             <div 
@@ -121,7 +118,7 @@ export function MetricCard({
             "border-neon-accent/30"
           )}>
             <Link to={linkHref} className={cn(
-              "inline-flex items-center text-sm font-medium transition-colors ripple-btn relative overflow-hidden",
+              "inline-flex items-center text-sm font-medium transition-colors",
               iconColor === "text-neon-purple" ? "text-neon-purple hover:text-neon-purple/90" :
               iconColor === "text-neon-pink" ? "text-neon-pink hover:text-neon-pink/90" :
               iconColor === "text-neon-green" ? "text-neon-green hover:text-neon-green/90" :
