@@ -598,65 +598,51 @@ function UsersList({
           <table className="w-full border-collapse relative">
             <thead>
               <tr className="bg-gradient-to-r from-neon-medium/30 to-neon-medium/10 border-b border-neon-accent/30">
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
-                  <span className="inline-flex items-center">
-                    <span className="inline-block w-2 h-2 bg-neon-accent rounded-full animate-pulse-slow mr-2"></span>
-                    Usuario
-                  </span>
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-mono tracking-wider">
+                  Usuario
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-mono tracking-wider">
                   <button 
                     onClick={() => toggleSort("name")}
                     className="flex items-center text-neon-text hover:text-neon-accent group transition-all duration-300"
                   >
-                    <span className="inline-block w-2 h-2 bg-neon-pink rounded-full animate-pulse-slow [animation-delay:0.4s] mr-2"></span>
                     Nombre
                     {sortBy === "name" ? (
-                      <div className="ml-2 w-5 h-5 flex items-center justify-center bg-neon-accent/10 rounded-full border border-neon-accent/50 overflow-hidden group-hover:border-neon-accent transition-all duration-300">
+                      <div className="ml-2 flex items-center justify-center">
                         <ArrowUpDown className={`h-3 w-3 text-neon-accent transition-transform duration-500 ${sortOrder === "asc" ? "rotate-180" : ""}`} />
                       </div>
                     ) : (
-                      <div className="ml-2 w-5 h-5 flex items-center justify-center bg-transparent rounded-full border border-transparent overflow-hidden opacity-0 group-hover:opacity-100 group-hover:border-neon-accent/30 group-hover:bg-neon-accent/5 transition-all duration-300">
+                      <div className="ml-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                         <ArrowUpDown className="h-3 w-3 text-neon-accent/50" />
                       </div>
                     )}
                   </button>
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
-                  <span className="inline-flex items-center">
-                    <span className="inline-block w-2 h-2 bg-neon-purple rounded-full animate-pulse-slow [animation-delay:0.2s] mr-2"></span>
-                    Rol
-                  </span>
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-mono tracking-wider">
+                  Rol
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-mono tracking-wider">
                   <button 
                     onClick={() => toggleSort("lastActive")}
                     className="flex items-center text-neon-text hover:text-neon-accent group transition-all duration-300"
                   >
-                    <span className="inline-block w-2 h-2 bg-neon-green rounded-full animate-pulse-slow [animation-delay:0.6s] mr-2"></span>
                     Última actividad
                     {sortBy === "lastActive" ? (
-                      <div className="ml-2 w-5 h-5 flex items-center justify-center bg-neon-accent/10 rounded-full border border-neon-accent/50 overflow-hidden group-hover:border-neon-accent transition-all duration-300">
+                      <div className="ml-2 flex items-center justify-center">
                         <ArrowUpDown className={`h-3 w-3 text-neon-accent transition-transform duration-500 ${sortOrder === "asc" ? "rotate-180" : ""}`} />
                       </div>
                     ) : (
-                      <div className="ml-2 w-5 h-5 flex items-center justify-center bg-transparent rounded-full border border-transparent overflow-hidden opacity-0 group-hover:opacity-100 group-hover:border-neon-accent/30 group-hover:bg-neon-accent/5 transition-all duration-300">
+                      <div className="ml-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                         <ArrowUpDown className="h-3 w-3 text-neon-accent/50" />
                       </div>
                     )}
                   </button>
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
-                  <span className="inline-flex items-center">
-                    <span className="inline-block w-2 h-2 bg-neon-orange rounded-full animate-pulse-slow [animation-delay:0.8s] mr-2"></span>
-                    Estado
-                  </span>
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-mono tracking-wider">
+                  Estado
                 </th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
-                  <span className="inline-flex items-center justify-end">
-                    <span className="inline-block w-2 h-2 bg-neon-yellow rounded-full animate-pulse-slow [animation-delay:1s] mr-2"></span>
-                    Acciones
-                  </span>
+                <th className="px-4 py-3 text-right text-sm font-medium text-neon-text font-mono tracking-wider">
+                  Acciones
                 </th>
               </tr>
             </thead>
@@ -711,10 +697,7 @@ function UsersList({
                           onClick={() => handleUserAction('deactivate', user.id, user.name)}
                           className="h-8 border-neon-red/30 text-neon-red hover:bg-neon-red/10 hover:border-neon-red hover:shadow-[0_0_12px_rgba(255,45,109,0.3)] transition-all duration-300"
                         >
-                          <span className="relative">
-                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-neon-red rounded-full animate-pulse"></span>
-                            Desactivar
-                          </span>
+                          Desactivar
                         </Button>
                       ) : (
                         <Button
@@ -723,10 +706,7 @@ function UsersList({
                           onClick={() => handleUserAction('activate', user.id, user.name)}
                           className="h-8 border-neon-green/30 text-neon-green hover:bg-neon-green/10 hover:border-neon-green hover:shadow-[0_0_12px_rgba(74,222,128,0.3)] transition-all duration-300"
                         >
-                          <span className="relative">
-                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-neon-green rounded-full animate-pulse"></span>
-                            Activar
-                          </span>
+                          Activar
                         </Button>
                       )}
                     </div>
