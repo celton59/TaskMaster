@@ -120,8 +120,7 @@ IMPORTANTE:
       if (!contact) {
         return {
           action: "response",
-          response: `No encontré ningún contacto con el número ${args.contactPhoneNumber}. ¿Quieres añadirlo a tu lista de contactos primero?`,
-          confidence: 1.0
+          message: `No encontré ningún contacto con el número ${args.contactPhoneNumber}. ¿Quieres añadirlo a tu lista de contactos primero?`
         };
       }
 
@@ -129,8 +128,7 @@ IMPORTANTE:
       if (args.contactName && contact.name.toLowerCase() !== args.contactName.toLowerCase()) {
         return {
           action: "response",
-          response: `El nombre proporcionado (${args.contactName}) no coincide con el contacto registrado (${contact.name}). ¿Quieres continuar con el envío al contacto ${contact.name}?`,
-          confidence: 1.0
+          message: `El nombre proporcionado (${args.contactName}) no coincide con el contacto registrado (${contact.name}). ¿Quieres continuar con el envío al contacto ${contact.name}?`
         };
       }
 
@@ -149,27 +147,24 @@ IMPORTANTE:
 
         return {
           action: "whatsapp_message_sent",
-          response: `¡Mensaje enviado correctamente a ${contact.name}! El mensaje se está entregando ahora.`,
-          data: {
+          message: `¡Mensaje enviado correctamente a ${contact.name}! El mensaje se está entregando ahora.`,
+          parameters: {
             contactName: contact.name,
             contactPhone: contact.phoneNumber,
             message: args.message,
-          },
-          confidence: 1.0
+          }
         };
       } else {
         return {
           action: "response",
-          response: `Hubo un problema al enviar el mensaje: ${result.error || "Error desconocido"}. Por favor, verifica la configuración de WhatsApp e intenta nuevamente.`,
-          confidence: 1.0
+          message: `Hubo un problema al enviar el mensaje: ${result.error || "Error desconocido"}. Por favor, verifica la configuración de WhatsApp e intenta nuevamente.`
         };
       }
     } catch (error) {
       console.error("Error en handleSendWhatsAppMessage:", error);
       return {
         action: "response",
-        response: `Lo siento, ocurrió un error al intentar enviar el mensaje. Detalles: ${error instanceof Error ? error.message : "Error desconocido"}`,
-        confidence: 1.0
+        message: `Lo siento, ocurrió un error al intentar enviar el mensaje. Detalles: ${error instanceof Error ? error.message : "Error desconocido"}`
       };
     }
   }
@@ -181,8 +176,7 @@ IMPORTANTE:
       if (contacts.length === 0) {
         return {
           action: "response",
-          response: "No tienes contactos de WhatsApp guardados. Para agregar contactos, ve a la sección de Configuración de WhatsApp.",
-          confidence: 1.0
+          message: "No tienes contactos de WhatsApp guardados. Para agregar contactos, ve a la sección de Configuración de WhatsApp."
         };
       }
 
@@ -193,18 +187,16 @@ IMPORTANTE:
 
       return {
         action: "whatsapp_contacts_listed",
-        response: `Aquí están tus contactos de WhatsApp:\n\n${contactList}`,
-        data: {
-          contacts: contacts,
-        },
-        confidence: 1.0
+        message: `Aquí están tus contactos de WhatsApp:\n\n${contactList}`,
+        parameters: {
+          contacts: contacts
+        }
       };
     } catch (error) {
       console.error("Error en handleListWhatsAppContacts:", error);
       return {
         action: "response",
-        response: `Lo siento, ocurrió un error al intentar obtener tus contactos. Detalles: ${error instanceof Error ? error.message : "Error desconocido"}`,
-        confidence: 1.0
+        message: `Lo siento, ocurrió un error al intentar obtener tus contactos. Detalles: ${error instanceof Error ? error.message : "Error desconocido"}`
       };
     }
   }
@@ -220,8 +212,7 @@ IMPORTANTE:
       if (!contact) {
         return {
           action: "response",
-          response: `No encontré ningún contacto con el número ${args.contactPhoneNumber}.`,
-          confidence: 1.0
+          message: `No encontré ningún contacto con el número ${args.contactPhoneNumber}.`
         };
       }
 
@@ -231,8 +222,7 @@ IMPORTANTE:
       if (messages.length === 0) {
         return {
           action: "response",
-          response: `No hay mensajes intercambiados con ${contact.name} (${contact.phoneNumber}).`,
-          confidence: 1.0
+          message: `No hay mensajes intercambiados con ${contact.name} (${contact.phoneNumber}).`
         };
       }
 
@@ -257,19 +247,17 @@ IMPORTANTE:
 
       return {
         action: "whatsapp_messages_retrieved",
-        response: `Aquí están los últimos ${limitedMessages.length} mensajes con ${contact.name}:\n\n${formattedMessages}`,
-        data: {
+        message: `Aquí están los últimos ${limitedMessages.length} mensajes con ${contact.name}:\n\n${formattedMessages}`,
+        parameters: {
           contact: contact,
-          messages: limitedMessages,
-        },
-        confidence: 1.0
+          messages: limitedMessages
+        }
       };
     } catch (error) {
       console.error("Error en handleGetContactMessages:", error);
       return {
         action: "response",
-        response: `Lo siento, ocurrió un error al intentar obtener los mensajes. Detalles: ${error instanceof Error ? error.message : "Error desconocido"}`,
-        confidence: 1.0
+        message: `Lo siento, ocurrió un error al intentar obtener los mensajes. Detalles: ${error instanceof Error ? error.message : "Error desconocido"}`
       };
     }
   }

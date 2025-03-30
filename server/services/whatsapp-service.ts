@@ -140,15 +140,57 @@ export async function processIncomingWebhook(body: any): Promise<{
     const messageBody = body.Body;
     const messageId = body.MessageSid || body.SmsSid;
 
-    // Aquí puedes agregar lógica adicional para guardar el mensaje en la base de datos
-    // o realizar otras acciones con el mensaje entrante
+    // Importamos las utilidades necesarias para guardar el mensaje
+    const { storage } = await import("../storage");
+    const { MessageDirection } = await import("../../shared/schema");
 
-    return {
-      success: true,
-      messageId,
-      from,
-      body: messageBody,
-    };
+    try {
+      // Buscar el contacto por número de teléfono
+      const contact = await storage.getWhatsappContactByPhone(from);
+
+      // Si no existe el contacto, lo creamos
+      let contactId: number;
+      if (!contact) {
+        // Crear un nuevo contacto con el número de teléfono
+        const newContact = await storage.createWhatsappContact({
+          name: `Contacto ${from}`, // Nombre genérico basado en el número
+          phoneNumber: from,
+          active: true,
+          notes: "Contacto creado automáticamente desde un mensaje entrante"
+        });
+        contactId = newContact.id;
+      } else {
+        contactId = contact.id;
+      }
+
+      // Guardar el mensaje en la base de datos
+      const message = await storage.createWhatsappMessage({
+        contactId,
+        messageContent: messageBody,
+        direction: MessageDirection.INCOMING,
+        status: "received",
+        metadata: { messageId, source: "webhook" }
+      });
+
+      console.log(`Mensaje de WhatsApp guardado: ${messageId}`);
+
+      return {
+        success: true,
+        messageId,
+        from,
+        body: messageBody,
+      };
+    } catch (error) {
+      console.error("Error al guardar mensaje de WhatsApp:", error);
+      // Aún devolvemos éxito para responder al webhook de Twilio correctamente
+      return {
+        success: true,
+        messageId,
+        from,
+        body: messageBody,
+        error: error instanceof Error ? error.message : "Error al guardar mensaje"
+      };
+    }
   } catch (error) {
     console.error("Error procesando webhook de WhatsApp:", error);
     return {
