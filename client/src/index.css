@@ -96,13 +96,32 @@
   box-shadow: 0 0 10px rgba(0, 225, 255, 0.5);
 }
 
-.with-task-indicator {
+.with-task-indicator-high {
   position: relative;
-  color: var(--neon-accent) !important;
-  text-shadow: 0 0 5px rgba(0, 225, 255, 0.3);
+  color: var(--neon-red) !important;
+  text-shadow: 0 0 5px rgba(255, 45, 85, 0.5);
 }
 
-.with-task-indicator::after {
+.with-task-indicator-high::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  background-color: var(--neon-red);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--neon-red);
+}
+
+.with-task-indicator-medium {
+  position: relative;
+  color: var(--neon-yellow) !important;
+  text-shadow: 0 0 5px rgba(255, 234, 0, 0.5);
+}
+
+.with-task-indicator-medium::after {
   content: '';
   position: absolute;
   bottom: 2px;
@@ -110,9 +129,28 @@
   transform: translateX(-50%);
   width: 4px;
   height: 4px;
-  background-color: var(--neon-accent);
+  background-color: var(--neon-yellow);
   border-radius: 50%;
-  box-shadow: 0 0 5px rgba(0, 225, 255, 0.5);
+  box-shadow: 0 0 6px var(--neon-yellow);
+}
+
+.with-task-indicator-low {
+  position: relative;
+  color: var(--neon-green) !important;
+  text-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+}
+
+.with-task-indicator-low::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: var(--neon-green);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--neon-green);
 }
 
 /* Personalizar cabecera de días */

@@ -76,24 +76,42 @@ export default function CalendarPage() {
 
   // Función para determinar fechas que tienen tareas en el mes actual (para mostrar puntos en el calendario)
   const getDaysWithTasks = (tasks: Task[]) => {
-    const daysWithTasks = new Set<string>();
+    const allDays = new Set<string>();
+    const highPriorityDays = new Set<string>();
+    const mediumPriorityDays = new Set<string>();
+    const lowPriorityDays = new Set<string>();
     
     tasks.forEach((task: Task) => {
       if (task.deadline) {
         try {
           const taskDate = task.deadline instanceof Date ? task.deadline : parseISO(task.deadline as unknown as string);
-          daysWithTasks.add(format(taskDate, 'yyyy-MM-dd'));
+          const dateStr = format(taskDate, 'yyyy-MM-dd');
+          allDays.add(dateStr);
+          
+          // Agrupar por prioridad
+          if (task.priority === 'alta') {
+            highPriorityDays.add(dateStr);
+          } else if (task.priority === 'media') {
+            mediumPriorityDays.add(dateStr);
+          } else {
+            lowPriorityDays.add(dateStr);
+          }
         } catch (error) {
           console.error('Error al procesar fecha de la tarea para los puntos del calendario:', error);
         }
       }
     });
     
-    return daysWithTasks;
+    return {
+      all: allDays,
+      high: highPriorityDays,
+      medium: mediumPriorityDays,
+      low: lowPriorityDays
+    };
   };
 
-  // Obtener el conjunto de días con tareas
-  const daysWithTasks = getDaysWithTasks(tasks);
+  // Obtener el conjunto de días con tareas por prioridad
+  const daysWithTasksByPriority = getDaysWithTasks(tasks);
 
   // Función para navegar entre fechas
   const navigateDate = (direction: 'previous' | 'next') => {
@@ -130,15 +148,25 @@ export default function CalendarPage() {
                 selected={date}
                 onSelect={(date) => date && setDate(date)}
                 modifiers={{
-                  withTasks: (date) => daysWithTasks.has(format(date, 'yyyy-MM-dd')),
+                  withHighPriorityTasks: (date) => daysWithTasksByPriority.high.has(format(date, 'yyyy-MM-dd')),
+                  withMediumPriorityTasks: (date) => daysWithTasksByPriority.medium.has(format(date, 'yyyy-MM-dd')),
+                  withLowPriorityTasks: (date) => daysWithTasksByPriority.low.has(format(date, 'yyyy-MM-dd'))
                 }}
                 modifiersStyles={{
-                  withTasks: {
+                  withHighPriorityTasks: {
+                    fontWeight: "bold"
+                  },
+                  withMediumPriorityTasks: {
+                    fontWeight: "bold"
+                  },
+                  withLowPriorityTasks: {
                     fontWeight: "bold"
                   }
                 }}
                 modifiersClassNames={{
-                  withTasks: "with-task-indicator"
+                  withHighPriorityTasks: "with-task-indicator-high",
+                  withMediumPriorityTasks: "with-task-indicator-medium",
+                  withLowPriorityTasks: "with-task-indicator-low"
                 }}
                 className="border-0"
               />
@@ -192,27 +220,36 @@ export default function CalendarPage() {
                         // Determinar colores según prioridad
                         let priorityColor = "";
                         let priorityLabel = "";
+                        let priorityShadow = "";
                         if (task.priority === 'alta') {
-                          priorityColor = "bg-rose-500";
+                          priorityColor = "bg-neon-red";
                           priorityLabel = "Alta";
+                          priorityShadow = "shadow-neon-red/50";
                         } else if (task.priority === 'media') {
-                          priorityColor = "bg-amber-500";
+                          priorityColor = "bg-neon-yellow";
                           priorityLabel = "Media";
+                          priorityShadow = "shadow-neon-yellow/50";
                         } else {
-                          priorityColor = "bg-emerald-500";
+                          priorityColor = "bg-neon-green";
                           priorityLabel = "Baja";
+                          priorityShadow = "shadow-neon-green/50";
                         }
                         
                         // Determinar colores según estado (soportando inglés y español)
                         let statusColor = "";
+                        let statusShadow = "";
                         if (task.status === 'pendiente' || task.status === 'pending') {
-                          statusColor = "bg-neutral-100 text-neutral-600";
+                          statusColor = "bg-neon-medium/20 text-neon-yellow border border-neon-yellow/30";
+                          statusShadow = "0 0 8px rgba(255, 234, 0, 0.3)";
                         } else if (task.status === 'en_progreso' || task.status === 'in-progress') {
-                          statusColor = "bg-blue-100 text-blue-700";
+                          statusColor = "bg-neon-medium/20 text-neon-accent border border-neon-accent/30";
+                          statusShadow = "0 0 8px rgba(0, 225, 255, 0.3)";
                         } else if (task.status === 'revision' || task.status === 'review') {
-                          statusColor = "bg-purple-100 text-purple-700";
+                          statusColor = "bg-neon-medium/20 text-neon-purple border border-neon-purple/30";
+                          statusShadow = "0 0 8px rgba(187, 0, 255, 0.3)";
                         } else if (task.status === 'completada' || task.status === 'completed') {
-                          statusColor = "bg-green-100 text-green-700";
+                          statusColor = "bg-neon-medium/20 text-neon-green border border-neon-green/30";
+                          statusShadow = "0 0 8px rgba(0, 255, 157, 0.3)";
                         }
                         
                         return (
@@ -226,7 +263,7 @@ export default function CalendarPage() {
                           >
                             <div className="flex justify-between items-start mb-2">
                               <div className="flex items-start gap-2">
-                                <div className={`h-3 w-3 rounded-full mt-1 flex-shrink-0 ${priorityColor} shadow-[0_0_8px] shadow-neon-accent/30`}></div>
+                                <div className={`h-3 w-3 rounded-full mt-1 flex-shrink-0 ${priorityColor} shadow-[0_0_8px] ${priorityShadow}`}></div>
                                 <h3 className="font-medium text-neon-text line-clamp-1">{task.title}</h3>
                               </div>
                               {task.categoryId && (
@@ -247,7 +284,7 @@ export default function CalendarPage() {
                                 <Clock className="h-3 w-3 mr-1 text-neon-accent/70" />
                                 {task.deadline && format(task.deadline instanceof Date ? task.deadline : parseISO(task.deadline as unknown as string), 'HH:mm', { locale: es })}
                               </div>
-                              <Badge className="bg-neon-medium/30 text-neon-accent text-xs border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.15)]">
+                              <Badge className={`${statusColor} text-xs shadow-[${statusShadow}]`}>
                                 {task.status.replace('_', ' ')}
                               </Badge>
                             </div>
@@ -337,26 +374,35 @@ export default function CalendarPage() {
                     // Calcular colores para categoría, prioridad y estado
                     let priorityColor = "";
                     let priorityLabel = "";
+                    let priorityShadow = "";
                     if (task.priority === 'alta') {
-                      priorityColor = "bg-rose-500";
+                      priorityColor = "bg-neon-red";
                       priorityLabel = "Alta";
+                      priorityShadow = "shadow-neon-red/50";
                     } else if (task.priority === 'media') {
-                      priorityColor = "bg-amber-500";
+                      priorityColor = "bg-neon-yellow";
                       priorityLabel = "Media";
+                      priorityShadow = "shadow-neon-yellow/50";
                     } else {
-                      priorityColor = "bg-emerald-500";
+                      priorityColor = "bg-neon-green";
                       priorityLabel = "Baja";
+                      priorityShadow = "shadow-neon-green/50";
                     }
                     
                     let statusColor = "";
+                    let statusShadow = "";
                     if (task.status === 'pendiente' || task.status === 'pending') {
-                      statusColor = "bg-neutral-100 text-neutral-600";
+                      statusColor = "bg-neon-medium/20 text-neon-yellow border border-neon-yellow/30";
+                      statusShadow = "0 0 8px rgba(255, 234, 0, 0.3)";
                     } else if (task.status === 'en_progreso' || task.status === 'in-progress') {
-                      statusColor = "bg-blue-100 text-blue-700";
+                      statusColor = "bg-neon-medium/20 text-neon-accent border border-neon-accent/30";
+                      statusShadow = "0 0 8px rgba(0, 225, 255, 0.3)";
                     } else if (task.status === 'revision' || task.status === 'review') {
-                      statusColor = "bg-purple-100 text-purple-700";
+                      statusColor = "bg-neon-medium/20 text-neon-purple border border-neon-purple/30";
+                      statusShadow = "0 0 8px rgba(187, 0, 255, 0.3)";
                     } else if (task.status === 'completada' || task.status === 'completed') {
-                      statusColor = "bg-green-100 text-green-700";
+                      statusColor = "bg-neon-medium/20 text-neon-green border border-neon-green/30";
+                      statusShadow = "0 0 8px rgba(0, 255, 157, 0.3)";
                     }
                     
                     return (
@@ -370,7 +416,7 @@ export default function CalendarPage() {
                       >
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex items-start gap-2">
-                            <div className={`h-3 w-3 rounded-full mt-1.5 flex-shrink-0 ${priorityColor} shadow-[0_0_8px] shadow-neon-accent/30`}></div>
+                            <div className={`h-3 w-3 rounded-full mt-1.5 flex-shrink-0 ${priorityColor} shadow-[0_0_8px] ${priorityShadow}`}></div>
                             <h3 className="font-medium text-lg text-neon-text line-clamp-1">{task.title}</h3>
                           </div>
                           {task.categoryId && (
@@ -393,11 +439,11 @@ export default function CalendarPage() {
                               {task.deadline && format(task.deadline instanceof Date ? task.deadline : parseISO(task.deadline as unknown as string), 'HH:mm', { locale: es })}
                             </div>
                             <div className="flex items-center text-xs text-neon-text/70">
-                              <div className={`h-2 w-2 rounded-full ${priorityColor} shadow-[0_0_5px] shadow-neon-accent/30 mr-1`}></div>
+                              <div className={`h-2 w-2 rounded-full ${priorityColor} shadow-[0_0_5px] ${priorityShadow} mr-1`}></div>
                               Prioridad {priorityLabel}
                             </div>
                           </div>
-                          <Badge className="bg-neon-medium/30 text-neon-accent text-xs border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.15)]">
+                          <Badge className={`${statusColor} text-xs shadow-[${statusShadow}]`}>
                             {task.status.replace('_', ' ')}
                           </Badge>
                         </div>
