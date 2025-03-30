@@ -372,27 +372,44 @@ export default function AIAssistant() {
     
     // Colorear cada tipo de agente con un color neón diferente
     formattedText = formattedText.replace(/• Agente de Tareas:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-medium/10 border-l-2 border-neon-accent"><span class="text-neon-accent mr-1">•</span><span class="font-medium text-neon-accent">Agente de Tareas:</span>$1</span>');
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-medium/10 border-l-2 border-neon-accent"><span class="text-neon-accent mr-1">•</span><span class="font-medium text-neon-accent whitespace-nowrap">Agente de Tareas:</span><span class="pl-1">$1</span></span>');
     
     formattedText = formattedText.replace(/• Agente de Categorías:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-purple/10 border-l-2 border-neon-purple"><span class="text-neon-purple mr-1">•</span><span class="font-medium text-neon-purple">Agente de Categorías:</span>$1</span>');
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-purple/10 border-l-2 border-neon-purple"><span class="text-neon-purple mr-1">•</span><span class="font-medium text-neon-purple whitespace-nowrap">Agente de Categorías:</span><span class="pl-1">$1</span></span>');
       
     formattedText = formattedText.replace(/• Agente de Análisis:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-green/10 border-l-2 border-neon-green"><span class="text-neon-green mr-1">•</span><span class="font-medium text-neon-green">Agente de Análisis:</span>$1</span>');
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-green/10 border-l-2 border-neon-green"><span class="text-neon-green mr-1">•</span><span class="font-medium text-neon-green whitespace-nowrap">Agente de Análisis:</span><span class="pl-1">$1</span></span>');
       
     formattedText = formattedText.replace(/• Agente de Planificación:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-yellow/10 border-l-2 border-neon-yellow"><span class="text-neon-yellow mr-1">•</span><span class="font-medium text-neon-yellow">Agente de Planificación:</span>$1</span>');
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-yellow/10 border-l-2 border-neon-yellow"><span class="text-neon-yellow mr-1">•</span><span class="font-medium text-neon-yellow whitespace-nowrap">Agente de Planificación:</span><span class="pl-1">$1</span></span>');
       
     formattedText = formattedText.replace(/• Agente de Marketing Digital:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-orange/10 border-l-2 border-neon-orange"><span class="text-neon-orange mr-1">•</span><span class="font-medium text-neon-orange">Agente de Marketing Digital:</span>$1</span>');
+      '<span class="flex items-start my-2 pl-1 py-1 rounded-md bg-neon-orange/10 border-l-2 border-neon-orange"><span class="text-neon-orange mr-1">•</span><span class="font-medium text-neon-orange whitespace-nowrap">Agente de Marketing Digital:</span><span class="pl-1">$1</span></span>');
       
     formattedText = formattedText.replace(/• Agente de Gestión de Proyectos:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-red/10 border-l-2 border-neon-red"><span class="text-neon-red mr-1">•</span><span class="font-medium text-neon-red">Agente de Gestión de Proyectos:</span>$1</span>');
+      '<span class="flex items-start my-2 pl-1 py-1 rounded-md bg-neon-red/10 border-l-2 border-neon-red"><span class="text-neon-red mr-1">•</span><span class="font-medium text-neon-red whitespace-nowrap">Agente de Gestión de Proyectos:</span><span class="pl-1">$1</span></span>');
     
-    // Para los elementos de lista generales que no sean agentes específicos
+    // Colorear los ejemplos de uso en el mensaje de bienvenida
+    formattedText = formattedText.replace(/• Crear una tarea urgente para mañana/g,
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-accent/5 border-l-2 border-neon-accent/60"><span class="text-neon-accent mr-1">•</span><span class="text-neon-accent">Crear una tarea urgente para mañana</span></span>');
+      
+    formattedText = formattedText.replace(/• Organizar mis tareas por prioridad/g,
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-purple/5 border-l-2 border-neon-purple/60"><span class="text-neon-purple mr-1">•</span><span class="text-neon-purple">Organizar mis tareas por prioridad</span></span>');
+      
+    formattedText = formattedText.replace(/• Generar un informe mensual de productividad/g,
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-green/5 border-l-2 border-neon-green/60"><span class="text-neon-green mr-1">•</span><span class="text-neon-green">Generar un informe mensual de productividad</span></span>');
+      
+    formattedText = formattedText.replace(/• Desarrollar una estrategia de marketing para mi proyecto/g,
+      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-orange/5 border-l-2 border-neon-orange/60"><span class="text-neon-orange mr-1">•</span><span class="text-neon-orange">Desarrollar una estrategia de marketing para mi proyecto</span></span>');
+    
+    // Para los elementos de lista generales que no sean agentes específicos ni ejemplos (ya procesados)
     formattedText = formattedText.replace(/• ([^<]*?)(?=<br>|$)/g, function(match, p1) {
-      // Si ya contiene "Agente de", no lo reemplazamos (ya fue manejado arriba)
-      if (match.includes("Agente de")) return match;
+      // Si ya contiene "Agente de" o es uno de los ejemplos específicos, no lo reemplazamos
+      if (match.includes("Agente de") || 
+          match.includes("Crear una tarea") ||
+          match.includes("Organizar mis tareas") ||
+          match.includes("Generar un informe") ||
+          match.includes("Desarrollar una estrategia")) return match;
       return `<span class="flex items-center my-2 pl-1"><span class="text-neon-accent mr-1">•</span> ${p1}</span>`;
     });
     
