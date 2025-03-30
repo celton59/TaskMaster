@@ -379,13 +379,13 @@ export default function Dashboard() {
 
       {/* Additional Metrics Row */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className="neon-card overflow-hidden border border-neon-green/30 bg-neon-dark shadow-[0_0_10px_rgba(0,255,157,0.1)]">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-green/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Proyecto destacado</CardTitle>
+              <CardTitle className="text-base font-medium text-neon-green neon-text-green font-mono">Proyecto destacado</CardTitle>
               <CardDescription className="text-neon-text/70">Mayor actividad</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-green/20 text-neon-green border border-neon-green/30 shadow-[0_0_8px_rgba(0,255,157,0.2)]">
               <BarChart4 className="h-5 w-5" />
             </div>
           </CardHeader>
@@ -393,25 +393,25 @@ export default function Dashboard() {
             <div className="text-lg font-bold text-neon-text font-mono">Rediseño de UI</div>
             <div className="flex items-center text-sm text-neon-text/80 mt-1.5 space-x-4">
               <div className="flex items-center">
-                <Users className="w-3.5 h-3.5 mr-1.5 text-neon-accent/60" />
+                <Users className="w-3.5 h-3.5 mr-1.5 text-neon-green/60" />
                 <span className="font-medium">4 miembros</span>
               </div>
               <div className="flex items-center">
-                <CheckCheck className="w-3.5 h-3.5 mr-1.5 text-neon-accent/60" />
+                <CheckCheck className="w-3.5 h-3.5 mr-1.5 text-neon-green/60" />
                 <span className="font-medium">12 tareas</span>
               </div>
             </div>
             <div className="mt-5 mb-2 space-y-1">
               <div className="flex justify-between items-center text-sm">
                 <span className="font-medium text-neon-text/90">Progreso</span>
-                <span className="font-semibold text-neon-accent">75%</span>
+                <span className="font-semibold text-neon-green">75%</span>
               </div>
-              <div className="h-2.5 w-full bg-neon-medium/30 rounded-full overflow-hidden border border-neon-accent/20">
-                <div className="bg-neon-accent/80 h-full w-3/4 rounded-full shadow-[0_0_8px_rgba(0,225,255,0.4)]"></div>
+              <div className="h-2.5 w-full bg-neon-medium/30 rounded-full overflow-hidden border border-neon-green/20">
+                <div className="bg-neon-green/80 h-full w-3/4 rounded-full shadow-[0_0_8px_rgba(0,255,157,0.4)]"></div>
               </div>
             </div>
             <div className="mt-4 text-xs text-right">
-              <span className="text-neon-accent hover:text-neon-accent/80 font-medium inline-flex items-center hover:underline cursor-pointer transition-colors" onClick={() => navigate("/projects")}>
+              <span className="text-neon-green hover:text-neon-green/80 font-medium inline-flex items-center hover:underline cursor-pointer transition-colors" onClick={() => navigate("/projects")}>
                 Ver todos los proyectos
                 <ArrowUpRight className="ml-1 h-3 w-3" />
               </span>
@@ -419,18 +419,18 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className="neon-card overflow-hidden border border-neon-yellow/30 bg-neon-dark shadow-[0_0_10px_rgba(255,234,0,0.1)]">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-yellow/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Próximos vencimientos</CardTitle>
+              <CardTitle className="text-base font-medium text-neon-yellow neon-text-yellow font-mono">Próximos vencimientos</CardTitle>
               <CardDescription className="text-neon-text/70">Tareas pendientes</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-yellow/20 text-neon-yellow border border-neon-yellow/30 shadow-[0_0_8px_rgba(255,234,0,0.2)]">
               <CalendarDays className="h-5 w-5" />
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="divide-y divide-neon-accent/10">
+            <div className="divide-y divide-neon-yellow/10">
               {[
                 { title: "Entrega de prototipo", days: 1, category: "Diseño" },
                 { title: "Revisión con cliente", days: 2, category: "Reunión" },
@@ -438,7 +438,7 @@ export default function Dashboard() {
               ].map((task, i) => (
                 <div key={i} className="flex items-start p-4 hover:bg-neon-medium/10 transition-colors cursor-pointer">
                   <div className="flex-shrink-0 mr-3">
-                    <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent text-xs font-bold border border-neon-accent/30 shadow-[0_0_5px_rgba(0,225,255,0.3)]">
+                    <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-yellow/20 text-neon-yellow text-xs font-bold border border-neon-yellow/30 shadow-[0_0_5px_rgba(255,234,0,0.3)]">
                       {task.days}d
                     </div>
                   </div>
@@ -446,8 +446,8 @@ export default function Dashboard() {
                     <div className="text-sm font-semibold text-neon-text truncate">{task.title}</div>
                     <div className="flex items-center mt-1">
                       <span className="text-xs text-neon-text/60">{task.category}</span>
-                      <span className="mx-1.5 text-neon-accent/30">•</span>
-                      <span className="text-xs font-medium text-neon-accent">
+                      <span className="mx-1.5 text-neon-yellow/30">•</span>
+                      <span className="text-xs font-medium text-neon-yellow">
                         {task.days === 1 ? 'Mañana' : `En ${task.days} días`}
                       </span>
                     </div>
@@ -458,13 +458,13 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className="neon-card overflow-hidden border border-neon-purple/30 bg-neon-dark shadow-[0_0_10px_rgba(187,0,255,0.1)]">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-purple/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Rendimiento del equipo</CardTitle>
+              <CardTitle className="text-base font-medium text-neon-purple neon-text-purple font-mono">Rendimiento del equipo</CardTitle>
               <CardDescription className="text-neon-text/70">Top 3 miembros</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-purple/20 text-neon-purple border border-neon-purple/30 shadow-[0_0_8px_rgba(187,0,255,0.2)]">
               <Users className="h-5 w-5" />
             </div>
           </CardHeader>
@@ -477,7 +477,7 @@ export default function Dashboard() {
               ].map((member, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <div className="h-10 w-10 rounded-full bg-neon-medium/40 border border-neon-accent/30 text-neon-text flex items-center justify-center text-sm font-medium mr-3 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+                    <div className="h-10 w-10 rounded-full bg-neon-medium/40 border border-neon-purple/30 text-neon-text flex items-center justify-center text-sm font-medium mr-3 shadow-[0_0_8px_rgba(187,0,255,0.2)]">
                       {member.name.split(" ").map(n => n[0]).join("")}
                     </div>
                     <div>
@@ -486,15 +486,15 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i === 0 ? 'bg-neon-accent/30 border-neon-accent text-neon-accent' : 'bg-neon-medium/30 border-neon-accent/30 text-neon-text/80'} text-xs font-bold mr-1.5 border shadow-[0_0_5px_rgba(0,225,255,0.2)]`}>
+                    <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i === 0 ? 'bg-neon-purple/30 border-neon-purple text-neon-purple' : 'bg-neon-medium/30 border-neon-purple/30 text-neon-text/80'} text-xs font-bold mr-1.5 border shadow-[0_0_5px_rgba(187,0,255,0.2)]`}>
                       {i + 1}
                     </div>
-                    <div className="text-sm font-bold text-neon-accent">{member.score}<span className="text-neon-text/40 font-normal">%</span></div>
+                    <div className="text-sm font-bold text-neon-purple">{member.score}<span className="text-neon-text/40 font-normal">%</span></div>
                   </div>
                 </div>
               ))}
-              <div className="pt-2 mt-1 border-t border-neon-accent/20 text-center">
-                <span className="text-neon-accent hover:text-neon-accent/80 text-xs font-medium inline-flex items-center hover:underline cursor-pointer transition-colors" onClick={() => navigate("/team")}>
+              <div className="pt-2 mt-1 border-t border-neon-purple/20 text-center">
+                <span className="text-neon-purple hover:text-neon-purple/80 text-xs font-medium inline-flex items-center hover:underline cursor-pointer transition-colors" onClick={() => navigate("/team")}>
                   Ver todo el equipo
                   <ArrowUpRight className="ml-1 h-3 w-3" />
                 </span>
