@@ -358,4 +358,23 @@
     background: linear-gradient(to right, rgba(168, 85, 247, 0.5), rgba(168, 85, 247, 0.8));
     box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
   }
+  
+  /* Animación para el efecto de impulso en las barras */
+  @keyframes pulse-scale {
+    0% {
+      transform: scaleY(0.97);
+      opacity: 0.85;
+      box-shadow: 0 0 8px rgba(0, 225, 255, 0.4);
+    }
+    50% {
+      transform: scaleY(1);
+      opacity: 1;
+      box-shadow: 0 0 12px rgba(0, 225, 255, 0.7);
+    }
+    100% {
+      transform: scaleY(0.97);
+      opacity: 0.85;
+      box-shadow: 0 0 8px rgba(0, 225, 255, 0.4);
+    }
+  }
 }

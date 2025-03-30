@@ -247,11 +247,15 @@ export default function Dashboard() {
                   {chartData.map((day, i) => (
                     <div key={i} className="bg-neon-medium/30 rounded-md relative overflow-hidden border border-neon-accent/20">
                       <div 
-                        className="absolute bottom-0 w-full bg-neon-pink/80 shadow-[0_0_8px_rgba(0,225,255,0.4)]"
+                        className="absolute bottom-0 w-full bg-gradient-to-t from-neon-pink/90 to-neon-pink/70 shadow-[0_0_10px_rgba(0,225,255,0.6)] transition-all duration-500 ease-in-out hover:shadow-[0_0_15px_rgba(0,255,230,0.8)]"
                         style={{ 
                           height: `${(day.completed / Math.max(...chartData.map(d => Math.max(d.created, d.completed)))) * 100}%`,
+                          animation: `pulse-scale 1.5s ease-in-out ${i * 0.15}s infinite alternate`,
                         }}
-                      ></div>
+                      >
+                        <div className="absolute bottom-0 w-full h-1/4 bg-white/20 opacity-70"></div>
+                        <div className="absolute top-0 w-full h-[1px] bg-white/40 opacity-80"></div>
+                      </div>
                     </div>
                   ))}
                 </div>
