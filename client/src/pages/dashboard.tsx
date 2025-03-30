@@ -8,6 +8,7 @@ import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DancingRobot } from "@/components/animations/dancing-robot";
 import { 
   FileText, 
   Clock, 
@@ -88,12 +89,17 @@ export default function Dashboard() {
       <div className="neon-card rounded-lg p-5 mb-6 shadow-xl bg-neon-dark border border-neon-purple/30">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center">
-              <span className="bg-neon-purple/10 text-neon-purple p-1.5 rounded-md mr-3 border border-neon-purple/30 shadow-[0_0_8px_rgba(187,0,255,0.2)]">
-                <LayoutDashboard className="h-5 w-5" />
-              </span>
-              <span className="terminal-text">Panel de Control</span>
-            </h1>
+            <div className="flex items-center">
+              <h1 className="text-3xl font-bold tracking-tight flex items-center">
+                <span className="bg-neon-purple/10 text-neon-purple p-1.5 rounded-md mr-3 border border-neon-purple/30 shadow-[0_0_8px_rgba(187,0,255,0.2)]">
+                  <LayoutDashboard className="h-5 w-5" />
+                </span>
+                <span className="terminal-text">Panel de Control</span>
+              </h1>
+              <div className="ml-6">
+                <DancingRobot width={80} height={120} color="var(--neon-purple)" />
+              </div>
+            </div>
             <p className="mt-2 text-sm text-neon-text/90 pl-[46px]">
               Bienvenido de nuevo, <span className="text-neon-purple font-medium">Admin Demo</span> - 
               <span className="text-neon-text/70"> {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long'})}</span>
