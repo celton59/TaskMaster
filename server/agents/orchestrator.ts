@@ -165,12 +165,23 @@ export class AgentOrchestrator {
         this.lastTaskId = result.data.id;
       }
       
-      return {
-        action: result.action,
-        message: result.response,
-        data: result.data,
-        agentUsed: agentType
-      };
+      // Si estamos trabajando con WhatsApp, asegurarse de que los parámetros se transfieran correctamente
+      if (result.action && result.action.startsWith('whatsapp_')) {
+        return {
+          action: result.action,
+          message: result.message,
+          parameters: result.parameters,
+          data: result.data,
+          agentUsed: agentType
+        };
+      } else {
+        return {
+          action: result.action,
+          message: result.message || result.response,
+          data: result.data,
+          agentUsed: agentType
+        };
+      }
     } catch (error) {
       console.error("Error en el orquestador:", error);
       
