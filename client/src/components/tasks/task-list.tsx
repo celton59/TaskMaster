@@ -628,14 +628,14 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
         
         {/* Acciones para tareas seleccionadas */}
         {selectedTasks.length > 0 && (
-          <div className="mt-4 flex items-center gap-2 bg-neon-medium/10 border border-neon-accent/20 p-3 rounded-md shadow-[0_0_10px_rgba(0,225,255,0.1)]">
-            <span className="text-sm text-neon-accent font-medium neon-text">{selectedTasks.length} tareas seleccionadas</span>
+          <div className="mt-4 flex items-center gap-2 bg-[#001a25]/80 border border-[#00e1ff]/30 p-3 rounded-md shadow-[0_0_15px_rgba(0,225,255,0.15)]">
+            <span className="text-sm text-[#00e1ff] font-medium">{selectedTasks.length} tareas seleccionadas</span>
             <div className="ml-auto flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={markAsCompleted}
-                className="relative h-8 text-xs gap-1 border-emerald-500/40 text-emerald-300 bg-emerald-950/40 hover:text-emerald-200 hover:bg-emerald-900/40 hover:border-emerald-500/60 shadow-[0_0_8px_rgba(16,185,129,0.3)] transition-all"
+                className="relative h-8 text-xs gap-1 border-[#39ffa1]/60 text-[#39ffa1] bg-[#092a1f]/80 hover:text-[#5dffc0] hover:bg-[#092a1f] hover:border-[#39ffa1]/80 shadow-[0_0_12px_rgba(57,255,161,0.4)] transition-all"
               >
                 <CheckCircle className="h-3.5 w-3.5" />
                 <span>Completar</span>
@@ -645,7 +645,7 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                 variant="outline"
                 size="sm"
                 onClick={deleteSelected}
-                className="relative h-8 text-xs gap-1 border-rose-500/40 text-rose-300 bg-rose-950/40 hover:text-rose-200 hover:bg-rose-900/40 hover:border-rose-500/60 shadow-[0_0_8px_rgba(244,63,94,0.3)] transition-all"
+                className="relative h-8 text-xs gap-1 border-[#ff3a5e]/60 text-[#ff3a5e] bg-[#400012]/80 hover:text-[#ff617c] hover:bg-[#400012] hover:border-[#ff3a5e]/80 shadow-[0_0_12px_rgba(255,58,94,0.4)] transition-all"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 <span>Eliminar</span>
@@ -747,12 +747,12 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                         <div className="flex items-center">
                           <div className={cn(
                             "w-1 h-5 rounded-full mr-2", 
-                            task.status === "completed" ? "bg-emerald-500" :
-                            task.status === "review" ? "bg-purple-500" :
-                            task.status === "in_progress" ? "bg-blue-500" :
-                            task.priority === "high" ? "bg-rose-500" :
-                            task.priority === "medium" ? "bg-amber-500" :
-                            task.priority === "low" ? "bg-emerald-500" : "bg-neutral-300"
+                            task.status === "completed" ? "bg-[#39ffa1] shadow-[0_0_8px_rgba(57,255,161,0.6)]" :
+                            task.status === "review" ? "bg-[#c77dff] shadow-[0_0_8px_rgba(199,125,255,0.6)]" :
+                            task.status === "in_progress" ? "bg-[#4d9eff] shadow-[0_0_8px_rgba(77,158,255,0.6)]" :
+                            task.priority === "high" ? "bg-[#ff3a5e] shadow-[0_0_8px_rgba(255,58,94,0.6)]" :
+                            task.priority === "medium" ? "bg-[#ffcd29] shadow-[0_0_8px_rgba(255,205,41,0.6)]" :
+                            task.priority === "low" ? "bg-[#39ffa1] shadow-[0_0_8px_rgba(57,255,161,0.6)]" : "bg-[#a8b4d4] shadow-[0_0_8px_rgba(168,180,212,0.6)]"
                           )} />
                           <span className="font-medium">{task.title}</span>
                         </div>
@@ -766,10 +766,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                       <div className="inline-flex items-center gap-1">
                         <div className={cn(
                           "relative flex items-center px-2 py-0.5 rounded-sm text-xs font-medium",
-                          task.status === "completed" ? "bg-emerald-950/40 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.3)] border border-emerald-500/30" : 
-                          task.status === "review" ? "bg-purple-950/40 text-purple-300 shadow-[0_0_8px_rgba(168,85,247,0.3)] border border-purple-500/30" :
-                          task.status === "in_progress" ? "bg-blue-950/40 text-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.3)] border border-blue-500/30" :
-                          "bg-amber-950/40 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.3)] border border-amber-500/30"
+                          task.status === "completed" ? "bg-[#092a1f]/80 text-[#39ffa1] shadow-[0_0_12px_rgba(57,255,161,0.4)] border border-[#39ffa1]/60" : 
+                          task.status === "review" ? "bg-[#240052]/80 text-[#c77dff] shadow-[0_0_12px_rgba(199,125,255,0.4)] border border-[#c77dff]/60" :
+                          task.status === "in_progress" ? "bg-[#011e60]/80 text-[#4d9eff] shadow-[0_0_12px_rgba(77,158,255,0.4)] border border-[#4d9eff]/60" :
+                          "bg-[#462800]/80 text-[#ffcd29] shadow-[0_0_12px_rgba(255,205,41,0.4)] border border-[#ffcd29]/60"
                         )}>
                           {getStatusInfo(task.status).icon}
                           <span className="ml-1">{getStatusInfo(task.status).label}</span>
@@ -782,9 +782,9 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                       <div className="inline-flex items-center gap-1">
                         <div className={cn(
                           "relative flex items-center px-2 py-0.5 rounded-sm text-xs font-medium",
-                          task.priority === "high" ? "bg-rose-950/40 text-rose-300 shadow-[0_0_8px_rgba(244,63,94,0.3)] border border-rose-500/30" : 
-                          task.priority === "medium" ? "bg-amber-950/40 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.3)] border border-amber-500/30" :
-                          "bg-emerald-950/40 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.3)] border border-emerald-500/30"
+                          task.priority === "high" ? "bg-[#400012]/80 text-[#ff3a5e] shadow-[0_0_12px_rgba(255,58,94,0.4)] border border-[#ff3a5e]/60" : 
+                          task.priority === "medium" ? "bg-[#462800]/80 text-[#ffcd29] shadow-[0_0_12px_rgba(255,205,41,0.4)] border border-[#ffcd29]/60" :
+                          "bg-[#092a1f]/80 text-[#39ffa1] shadow-[0_0_12px_rgba(57,255,161,0.4)] border border-[#39ffa1]/60"
                         )}>
                           {getPriorityInfo(task.priority).icon}
                           <span className="ml-1">{getPriorityInfo(task.priority).label}</span>
@@ -797,12 +797,12 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                       <div className="inline-flex items-center gap-1">
                         <div className={cn(
                           "relative flex items-center px-2 py-0.5 rounded-sm text-xs font-medium",
-                          task.categoryId === 1 ? "bg-blue-950/40 text-blue-300 shadow-[0_0_8px_rgba(59,130,246,0.3)] border border-blue-500/30" : 
-                          task.categoryId === 2 ? "bg-emerald-950/40 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.3)] border border-emerald-500/30" :
-                          task.categoryId === 3 ? "bg-rose-950/40 text-rose-300 shadow-[0_0_8px_rgba(244,63,94,0.3)] border border-rose-500/30" :
-                          task.categoryId === 4 ? "bg-purple-950/40 text-purple-300 shadow-[0_0_8px_rgba(168,85,247,0.3)] border border-purple-500/30" : 
-                          task.categoryId === 5 ? "bg-amber-950/40 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.3)] border border-amber-500/30" :
-                          "bg-slate-950/40 text-slate-300 shadow-[0_0_8px_rgba(148,163,184,0.3)] border border-slate-500/30"
+                          task.categoryId === 1 ? "bg-[#011e60]/80 text-[#4d9eff] shadow-[0_0_12px_rgba(77,158,255,0.4)] border border-[#4d9eff]/60" : 
+                          task.categoryId === 2 ? "bg-[#092a1f]/80 text-[#39ffa1] shadow-[0_0_12px_rgba(57,255,161,0.4)] border border-[#39ffa1]/60" :
+                          task.categoryId === 3 ? "bg-[#400012]/80 text-[#ff3a5e] shadow-[0_0_12px_rgba(255,58,94,0.4)] border border-[#ff3a5e]/60" :
+                          task.categoryId === 4 ? "bg-[#240052]/80 text-[#c77dff] shadow-[0_0_12px_rgba(199,125,255,0.4)] border border-[#c77dff]/60" : 
+                          task.categoryId === 5 ? "bg-[#462800]/80 text-[#ffcd29] shadow-[0_0_12px_rgba(255,205,41,0.4)] border border-[#ffcd29]/60" :
+                          "bg-[#152034]/80 text-[#a8b4d4] shadow-[0_0_12px_rgba(168,180,212,0.4)] border border-[#a8b4d4]/60"
                         )}>
                           <span>{getCategoryName(task.categoryId)}</span>
                           <span className="absolute inset-0 rounded-sm bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse"></span>
@@ -818,10 +818,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                               <div className={cn(
                                 "relative inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium",
                                 getDeadlineStatus(task.deadline) === "overdue" 
-                                  ? "bg-rose-950/40 text-rose-300 shadow-[0_0_8px_rgba(244,63,94,0.3)] border border-rose-500/30" 
+                                  ? "bg-[#400012]/80 text-[#ff3a5e] shadow-[0_0_12px_rgba(255,58,94,0.4)] border border-[#ff3a5e]/60" 
                                   : getDeadlineStatus(task.deadline) === "soon" 
-                                  ? "bg-amber-950/40 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.3)] border border-amber-500/30" 
-                                  : "bg-slate-950/40 text-slate-300 shadow-[0_0_8px_rgba(148,163,184,0.3)] border border-slate-500/30"
+                                  ? "bg-[#462800]/80 text-[#ffcd29] shadow-[0_0_12px_rgba(255,205,41,0.4)] border border-[#ffcd29]/60" 
+                                  : "bg-[#152034]/80 text-[#a8b4d4] shadow-[0_0_12px_rgba(168,180,212,0.4)] border border-[#a8b4d4]/60"
                               )}>
                                 {getDeadlineIcon(task.deadline)}
                                 <span className="ml-1.5">{formatDate(task.deadline)}</span>
@@ -838,9 +838,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                           </Tooltip>
                         </TooltipProvider>
                       ) : (
-                        <div className="relative inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-slate-950/30 text-slate-400 border border-slate-700/30">
-                          <Clock className="h-3.5 w-3.5 mr-1.5 opacity-60" />
+                        <div className="relative inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-[#152034]/80 text-[#a8b4d4] shadow-[0_0_8px_rgba(168,180,212,0.2)] border border-[#a8b4d4]/30">
+                          <Clock className="h-3.5 w-3.5 mr-1.5 opacity-70" />
                           <span>Sin fecha</span>
+                          <span className="absolute inset-0 rounded-sm bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse"></span>
                         </div>
                       )}
                     </TableCell>
