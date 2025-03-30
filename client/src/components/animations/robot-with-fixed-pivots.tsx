@@ -18,10 +18,10 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
                     color.includes('green') ? 'rgba(0,255,157,0.6)' : 
                     color.includes('yellow') ? 'rgba(255,234,0,0.6)' : 
                     'rgba(0,225,255,0.6)';
-
+  
   const cigaretteGlow = 'rgba(255, 100, 50, 0.7)';
   const smokeColor = 'rgba(200, 200, 200, 0.8)';
-
+  
   return (
     <div className={`walking-robot-container ${className}`}>
       <style dangerouslySetInnerHTML={{ __html: `
@@ -32,7 +32,7 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           position: relative;
           filter: drop-shadow(0 0 8px ${glowColor});
         }
-
+        
         .robot-part {
           fill: ${robotColor};
           stroke: rgba(0, 0, 0, 0.5);
@@ -86,11 +86,7 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           mix-blend-mode: screen;
           animation: effectPulse 3s infinite alternate;
         }
-
-        #robot {
-          animation: robotWalk 2s ease-in-out infinite;
-        }
-
+        
         /* ============= AJUSTES DE ORIGEN DE TRANSFORMACIÓN ============= */
         /* Forzamos el sistema de coordenadas del grupo con transform-box: fill-box */
         #head,
@@ -109,7 +105,7 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
         }
 
         /* Ajustamos cada transform-origin al centro de la articulación (coincidiendo con cx,cy de cada 'joint') */
-
+        
         /* Cabeza: su punto de pivote es la parte de abajo del rect (100, 65) */
         #head {
           transform-origin: 100px 65px;
@@ -164,67 +160,80 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           transform-origin: 115px 225px;
         }
         /* ============= FIN DE AJUSTES DE ORIGEN ============= */
-
-
+        
+        #robot {
+          animation: robotWalk 2s ease-in-out infinite;
+        }
+        
         @keyframes robotWalk {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-3px); }
         }
-
+        
+        #head {
+          animation: headBob 2s ease-in-out infinite;
+        }
+        
         @keyframes headBob {
           0%, 100% { transform: rotate(0deg); }
           25% { transform: rotate(2deg); }
           75% { transform: rotate(-2deg); }
         }
-        #head {
-          animation: headBob 2s ease-in-out infinite;
+        
+        #leftArmGroup {
+          animation: leftArmMove 2s ease-in-out infinite;
         }
-
+        
         @keyframes leftArmMove {
           0% { transform: rotate(20deg); }
           50% { transform: rotate(-15deg); }
           100% { transform: rotate(20deg); }
         }
-        #leftArmGroup {
-          animation: leftArmMove 2s ease-in-out infinite;
+        
+        #leftElbow {
+          animation: leftElbowBend 2s ease-in-out infinite;
         }
-
+        
         @keyframes leftElbowBend {
           0% { transform: rotate(-10deg); }
           50% { transform: rotate(15deg); }
           100% { transform: rotate(-10deg); }
         }
-        #leftElbow {
-          animation: leftElbowBend 2s ease-in-out infinite;
+        
+        #rightArmGroup {
+          animation: rightArmMove 2s ease-in-out infinite;
         }
-
+        
         @keyframes rightArmMove {
           0% { transform: rotate(-15deg); }
           50% { transform: rotate(20deg); }
           100% { transform: rotate(-15deg); }
         }
-        #rightArmGroup {
-          animation: rightArmMove 2s ease-in-out infinite;
+        
+        #rightElbow {
+          animation: rightElbowBend 2s ease-in-out infinite;
         }
-
+        
         @keyframes rightElbowBend {
           0% { transform: rotate(15deg); }
           50% { transform: rotate(-10deg); }
           100% { transform: rotate(15deg); }
         }
-        #rightElbow {
-          animation: rightElbowBend 2s ease-in-out infinite;
+        
+        #hips {
+          animation: hipRotate 2s ease-in-out infinite;
         }
-
+        
         @keyframes hipRotate {
           0%, 100% { transform: rotate(0deg); }
           25% { transform: rotate(-3deg); }
           75% { transform: rotate(3deg); }
         }
-        #hips {
-          animation: hipRotate 2s ease-in-out infinite;
+        
+        #leftLegGroup {
+          animation: leftLegStride 2s ease-in-out infinite;
         }
-
+        
         @keyframes leftLegStride {
           0% { transform: rotate(25deg); }
           25% { transform: rotate(15deg); }
@@ -232,10 +241,11 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           75% { transform: rotate(-10deg); }
           100% { transform: rotate(25deg); }
         }
-        #leftLegGroup {
-          animation: leftLegStride 2s ease-in-out infinite;
+        
+        #leftKnee {
+          animation: leftKneeBend 2s ease-in-out infinite;
         }
-
+        
         @keyframes leftKneeBend {
           0% { transform: rotate(-25deg); }
           25% { transform: rotate(-40deg); }
@@ -243,10 +253,11 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           75% { transform: rotate(0deg); }
           100% { transform: rotate(-25deg); }
         }
-        #leftKnee {
-          animation: leftKneeBend 2s ease-in-out infinite;
+        
+        #leftAnkle {
+          animation: leftAnkleFlex 2s ease-in-out infinite;
         }
-
+        
         @keyframes leftAnkleFlex {
           0% { transform: rotate(0deg); }
           25% { transform: rotate(5deg); }
@@ -254,10 +265,11 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           75% { transform: rotate(0deg); }
           100% { transform: rotate(0deg); }
         }
-        #leftAnkle {
-          animation: leftAnkleFlex 2s ease-in-out infinite;
+        
+        #rightLegGroup {
+          animation: rightLegStride 2s ease-in-out infinite;
         }
-
+        
         @keyframes rightLegStride {
           0% { transform: rotate(-20deg); }
           25% { transform: rotate(-10deg); }
@@ -265,10 +277,11 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           75% { transform: rotate(15deg); }
           100% { transform: rotate(-20deg); }
         }
-        #rightLegGroup {
-          animation: rightLegStride 2s ease-in-out infinite;
+        
+        #rightKnee {
+          animation: rightKneeBend 2s ease-in-out infinite;
         }
-
+        
         @keyframes rightKneeBend {
           0% { transform: rotate(-5deg); }
           25% { transform: rotate(0deg); }
@@ -276,19 +289,17 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           75% { transform: rotate(-40deg); }
           100% { transform: rotate(-5deg); }
         }
-        #rightKnee {
-          animation: rightKneeBend 2s ease-in-out infinite;
+        
+        #rightAnkle {
+          animation: rightAnkleFlex 2s ease-in-out infinite;
         }
-
+        
         @keyframes rightAnkleFlex {
           0% { transform: rotate(15deg); }
           25% { transform: rotate(0deg); }
           50% { transform: rotate(0deg); }
           75% { transform: rotate(5deg); }
           100% { transform: rotate(15deg); }
-        }
-        #rightAnkle {
-          animation: rightAnkleFlex 2s ease-in-out infinite;
         }
 
         @keyframes eyeGlow {
@@ -352,7 +363,7 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
             <stop offset="0%" stopColor={robotColor} stopOpacity="0.2" />
             <stop offset="100%" stopColor={robotColor} stopOpacity="0" />
           </radialGradient>
-
+          
           <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="2" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
@@ -364,14 +375,14 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           <g id="head">
             <ellipse className="robot-glow" cx="100" cy="40" rx="30" ry="25" />
             <rect className="robot-part" x="75" y="15" width="50" height="50" rx="12" ry="12" />
-
+            
             {/* Ojos */}
             <circle className="robot-eye" cx="90" cy="35" r="5" />
             <circle className="robot-eye" cx="110" cy="35" r="5" />
-
+            
             {/* Boca pequeña */}
             <rect className="robot-detail" x="90" y="50" width="20" height="2" rx="1" />
-
+            
             {/* Cigarrillo */}
             <line 
               className="cigarette" 
@@ -380,92 +391,92 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
               stroke="white" 
               strokeWidth="2" 
             />
-
+            
             {/* Punta del cigarrillo */}
             <circle className="cigarette-tip" cx="120" cy="50" r="2" />
-
+            
             {/* Humo */}
             <circle className="smoke smoke-1" cx="137" cy="43" r="3" />
             <circle className="smoke smoke-2" cx="137" cy="43" r="2.5" />
             <circle className="smoke smoke-3" cx="137" cy="43" r="2" />
           </g>
-
+          
           {/* Cuello */}
           <rect className="robot-part" x="95" y="65" width="10" height="10" rx="2" ry="2" />
           <circle className="robot-joint" cx="100" cy="65" r="4" />
-
+          
           {/* Torso */}
           <g id="torso">
             <ellipse className="robot-glow" cx="100" cy="100" rx="35" ry="30" />
             <rect className="robot-part" x="75" y="75" width="50" height="60" rx="10" ry="10" />
-
+            
             {/* Panel de control en el pecho */}
             <rect className="robot-panel" x="85" y="85" width="30" height="20" rx="4" />
             <circle className="robot-joint" cx="95" cy="95" r="3" />
             <circle className="robot-joint" cx="105" cy="95" r="3" />
-
+            
             {/* Líneas de detalle */}
             <line className="robot-detail" x1="85" y1="115" x2="115" y2="115" />
             <line className="robot-detail" x1="85" y1="125" x2="115" y2="125" />
           </g>
-
+          
           {/* Cadera y pelvis */}
           <g id="hips">
             <circle className="robot-joint" cx="85" cy="135" r="5" />
             <circle className="robot-joint" cx="115" cy="135" r="5" />
             <rect className="robot-panel" x="85" y="130" width="30" height="10" rx="3" ry="3" />
           </g>
-
+          
           {/* Brazo izquierdo */}
           <g id="leftArmGroup">
             <ellipse className="robot-glow" cx="55" cy="100" rx="10" ry="25" />
-
+            
             {/* Hombro y parte superior del brazo */}
             <circle className="robot-joint" cx="75" cy="80" r="5" /> 
             <rect className="robot-part" x="45" y="80" width="30" height="10" rx="5" ry="5" />
-
+            
             {/* Grupo de codo y antebrazo */}
             <g id="leftElbow">
               <circle className="robot-joint" cx="45" cy="90" r="4" />
               <rect className="robot-part" x="40" y="90" width="10" height="40" rx="5" ry="5" />
-
+              
               {/* Muñeca y mano */}
               <circle className="robot-joint" cx="45" cy="130" r="3" />
               <rect className="robot-part" x="35" y="130" width="18" height="8" rx="4" ry="4" />
             </g>
           </g>
-
+          
           {/* Brazo derecho */}
           <g id="rightArmGroup">
             <ellipse className="robot-glow" cx="145" cy="100" rx="10" ry="25" />
-
+            
             {/* Hombro y parte superior del brazo */}
             <circle className="robot-joint" cx="125" cy="80" r="5" />
             <rect className="robot-part" x="125" y="80" width="30" height="10" rx="5" ry="5" />
-
+            
             {/* Grupo de codo y antebrazo */}
             <g id="rightElbow">
               <circle className="robot-joint" cx="155" cy="90" r="4" />
               <rect className="robot-part" x="150" y="90" width="10" height="40" rx="5" ry="5" />
-
+              
               {/* Muñeca y mano */}
               <circle className="robot-joint" cx="155" cy="130" r="3" />
               <rect className="robot-part" x="147" y="130" width="18" height="8" rx="4" ry="4" />
             </g>
           </g>
-
+          
           {/* Pierna izquierda */}
           <g id="leftLegGroup">
             <ellipse className="robot-glow" cx="85" cy="160" rx="10" ry="30" />
-
+            
             {/* Muslo */}
             <rect className="robot-part" x="80" y="140" width="10" height="40" rx="5" ry="5" />
-
+            
             {/* Rodilla y grupo de pantorrilla */}
             <g id="leftKnee">
               <circle className="robot-joint" cx="85" cy="180" r="5" />
               <rect className="robot-part" x="80" y="180" width="10" height="45" rx="5" ry="5" />
-
+              
               {/* Tobillo y pie */}
               <g id="leftAnkle">
                 <circle className="robot-joint" cx="85" cy="225" r="4" />
@@ -473,19 +484,19 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
               </g>
             </g>
           </g>
-
+          
           {/* Pierna derecha */}
           <g id="rightLegGroup">
             <ellipse className="robot-glow" cx="115" cy="160" rx="10" ry="30" />
-
+            
             {/* Muslo */}
             <rect className="robot-part" x="110" y="140" width="10" height="40" rx="5" ry="5" />
-
+            
             {/* Rodilla y grupo de pantorrilla */}
             <g id="rightKnee">
               <circle className="robot-joint" cx="115" cy="180" r="5" />
               <rect className="robot-part" x="110" y="180" width="10" height="45" rx="5" ry="5" />
-
+              
               {/* Tobillo y pie */}
               <g id="rightAnkle">
                 <circle className="robot-joint" cx="115" cy="225" r="4" />
@@ -495,7 +506,7 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           </g>
         </g>
       </svg>
-
+      
       <div className="effect-layer"></div>
     </div>
   );
