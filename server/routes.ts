@@ -319,6 +319,172 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Rutas para contactos de WhatsApp
+  apiRouter.get("/whatsapp/contacts", async (req, res) => {
+    try {
+      const contacts = await storage.getWhatsappContacts();
+      res.json(contacts);
+    } catch (error) {
+      console.error("Error al obtener contactos de WhatsApp:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al obtener contactos de WhatsApp" 
+      });
+    }
+  });
+  
+  apiRouter.get("/whatsapp/contacts/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const contact = await storage.getWhatsappContact(id);
+      
+      if (!contact) {
+        return res.status(404).json({ 
+          status: 'error',
+          message: "Contacto no encontrado" 
+        });
+      }
+      
+      res.json(contact);
+    } catch (error) {
+      console.error("Error al obtener contacto de WhatsApp:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al obtener contacto de WhatsApp" 
+      });
+    }
+  });
+  
+  apiRouter.post("/whatsapp/contacts", async (req, res) => {
+    try {
+      const { name, phoneNumber, notes } = req.body;
+      
+      if (!name || !phoneNumber) {
+        return res.status(400).json({ 
+          status: 'error',
+          message: "Se requiere nombre y número de teléfono" 
+        });
+      }
+      
+      // Validar formato del número de teléfono (E.164)
+      const phoneRegex = /^\+[1-9]\d{1,14}$/;
+      if (!phoneRegex.test(phoneNumber)) {
+        return res.status(400).json({ 
+          status: 'error',
+          message: "El número debe estar en formato E.164 (ej: +34600000000)" 
+        });
+      }
+      
+      // Verificar si ya existe un contacto con ese número
+      const existingContact = await storage.getWhatsappContactByPhone(phoneNumber);
+      if (existingContact) {
+        return res.status(400).json({ 
+          status: 'error',
+          message: "Ya existe un contacto con ese número de teléfono" 
+        });
+      }
+      
+      const newContact = await storage.createWhatsappContact({
+        name,
+        phoneNumber,
+        notes: notes || null,
+        active: true,
+        createdAt: new Date(),
+        updatedAt: null,
+        lastMessageAt: null
+      });
+      
+      res.status(201).json({ 
+        status: 'success',
+        message: "Contacto creado correctamente",
+        contact: newContact
+      });
+    } catch (error) {
+      console.error("Error al crear contacto de WhatsApp:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al crear contacto de WhatsApp" 
+      });
+    }
+  });
+  
+  apiRouter.patch("/whatsapp/contacts/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { name, phoneNumber, notes, active } = req.body;
+      
+      // Si se incluye phoneNumber, validar formato
+      if (phoneNumber) {
+        const phoneRegex = /^\+[1-9]\d{1,14}$/;
+        if (!phoneRegex.test(phoneNumber)) {
+          return res.status(400).json({ 
+            status: 'error',
+            message: "El número debe estar en formato E.164 (ej: +34600000000)" 
+          });
+        }
+        
+        // Verificar si ya existe otro contacto con ese número
+        const existingContact = await storage.getWhatsappContactByPhone(phoneNumber);
+        if (existingContact && existingContact.id !== id) {
+          return res.status(400).json({ 
+            status: 'error',
+            message: "Ya existe otro contacto con ese número de teléfono" 
+          });
+        }
+      }
+      
+      const updateData: any = {};
+      if (name !== undefined) updateData.name = name;
+      if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+      if (notes !== undefined) updateData.notes = notes;
+      if (active !== undefined) updateData.active = active;
+      updateData.updatedAt = new Date();
+      
+      const updatedContact = await storage.updateWhatsappContact(id, updateData);
+      
+      if (!updatedContact) {
+        return res.status(404).json({ 
+          status: 'error',
+          message: "Contacto no encontrado" 
+        });
+      }
+      
+      res.json({ 
+        status: 'success',
+        message: "Contacto actualizado correctamente",
+        contact: updatedContact
+      });
+    } catch (error) {
+      console.error("Error al actualizar contacto de WhatsApp:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al actualizar contacto de WhatsApp" 
+      });
+    }
+  });
+  
+  apiRouter.delete("/whatsapp/contacts/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteWhatsappContact(id);
+      
+      if (!success) {
+        return res.status(404).json({ 
+          status: 'error',
+          message: "Contacto no encontrado" 
+        });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error al eliminar contacto de WhatsApp:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al eliminar contacto de WhatsApp" 
+      });
+    }
+  });
+  
   // Enviar mensaje de prueba por WhatsApp
   apiRouter.post("/whatsapp/send-test", async (req, res) => {
     try {

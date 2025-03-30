@@ -7,20 +7,59 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, CheckCircle2, Send, Loader2, PhoneCall, MessageCircle } from "lucide-react";
+import { 
+  AlertCircle, 
+  CheckCircle2, 
+  Send, 
+  Loader2, 
+  PhoneCall, 
+  MessageCircle, 
+  Users, 
+  Plus, 
+  Pencil, 
+  Trash2 
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function WhatsAppSettings() {
+  // Estados para mensajes de prueba
   const [testPhoneNumber, setTestPhoneNumber] = useState("");
   const [testMessage, setTestMessage] = useState("¡Hola! Este es un mensaje de prueba desde Aitorin.");
   const [sendingMessage, setSendingMessage] = useState(false);
   const [selectedTab, setSelectedTab] = useState("general");
+  
+  // Estados para contactos
+  const [isContactDialogOpen, setIsContactDialogOpen] = useState(false);
+  const [contactName, setContactName] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactNotes, setContactNotes] = useState("");
+  const [editingContactId, setEditingContactId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Definir el tipo para la respuesta de la API de estado de Twilio
+  // Definir los tipos para las respuestas de la API
   interface TwilioStatusResponse {
     status: 'success' | 'error';
     message: string;
@@ -28,6 +67,23 @@ export default function WhatsAppSettings() {
     phoneConfigured?: boolean;
     phoneNumber?: string;
   }
+  
+  interface WhatsAppContact {
+    id: number;
+    name: string;
+    phoneNumber: string;
+    active: boolean;
+    notes: string | null;
+    createdAt: string;
+    updatedAt: string | null;
+    lastMessageAt: string | null;
+  }
+  
+  // Consultar los contactos de WhatsApp
+  const { data: contacts, isLoading: isLoadingContacts, refetch: refetchContacts } = useQuery<WhatsAppContact[]>({
+    queryKey: ["/api/whatsapp/contacts"],
+    refetchOnWindowFocus: false,
+  });
   
   // Consultar el estado de la configuración de Twilio
   const { data: twilioStatus, isLoading: isLoadingStatus, refetch: refetchTwilioStatus } = useQuery<TwilioStatusResponse>({
@@ -53,6 +109,163 @@ export default function WhatsAppSettings() {
       });
     }
   }
+  
+  // Mutación para crear un nuevo contacto
+  const createContactMutation = useMutation({
+    mutationFn: async (contactData: { name: string, phoneNumber: string, notes: string | null }) => {
+      return await apiRequest("/api/whatsapp/contacts", "POST", contactData);
+    },
+    onSuccess: () => {
+      // Actualizar la lista de contactos
+      queryClient.invalidateQueries({ queryKey: ["/api/whatsapp/contacts"] });
+      // Limpiar el formulario
+      setContactName("");
+      setContactPhone("");
+      setContactNotes("");
+      setIsContactDialogOpen(false);
+      
+      toast({
+        title: "Contacto creado",
+        description: "El contacto ha sido creado correctamente",
+        variant: "default",
+      });
+    },
+    onError: (error: any) => {
+      console.error("Error al crear contacto:", error);
+      toast({
+        title: "Error al crear contacto",
+        description: error?.message || "No se pudo crear el contacto, intenta nuevamente",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Mutación para actualizar un contacto
+  const updateContactMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number, data: { name?: string, phoneNumber?: string, notes?: string | null, active?: boolean } }) => {
+      return await apiRequest(`/api/whatsapp/contacts/${id}`, "PATCH", data);
+    },
+    onSuccess: () => {
+      // Actualizar la lista de contactos
+      queryClient.invalidateQueries({ queryKey: ["/api/whatsapp/contacts"] });
+      // Limpiar el formulario
+      setContactName("");
+      setContactPhone("");
+      setContactNotes("");
+      setEditingContactId(null);
+      setIsContactDialogOpen(false);
+      
+      toast({
+        title: "Contacto actualizado",
+        description: "El contacto ha sido actualizado correctamente",
+        variant: "default",
+      });
+    },
+    onError: (error: any) => {
+      console.error("Error al actualizar contacto:", error);
+      toast({
+        title: "Error al actualizar contacto",
+        description: error?.message || "No se pudo actualizar el contacto, intenta nuevamente",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Mutación para eliminar un contacto
+  const deleteContactMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest(`/api/whatsapp/contacts/${id}`, "DELETE", {});
+    },
+    onSuccess: () => {
+      // Actualizar la lista de contactos
+      queryClient.invalidateQueries({ queryKey: ["/api/whatsapp/contacts"] });
+      
+      toast({
+        title: "Contacto eliminado",
+        description: "El contacto ha sido eliminado correctamente",
+        variant: "default",
+      });
+    },
+    onError: (error: any) => {
+      console.error("Error al eliminar contacto:", error);
+      toast({
+        title: "Error al eliminar contacto",
+        description: error?.message || "No se pudo eliminar el contacto, intenta nuevamente",
+        variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      setIsDeleting(false);
+    }
+  });
+  
+  // Función para abrir el formulario de nuevo contacto
+  const handleAddContact = () => {
+    setContactName("");
+    setContactPhone("");
+    setContactNotes("");
+    setEditingContactId(null);
+    setIsContactDialogOpen(true);
+  };
+  
+  // Función para abrir el formulario de edición de contacto
+  const handleEditContact = (contact: WhatsAppContact) => {
+    setContactName(contact.name);
+    setContactPhone(contact.phoneNumber);
+    setContactNotes(contact.notes || "");
+    setEditingContactId(contact.id);
+    setIsContactDialogOpen(true);
+  };
+  
+  // Función para eliminar un contacto
+  const handleDeleteContact = async (id: number) => {
+    setIsDeleting(true);
+    await deleteContactMutation.mutateAsync(id);
+  };
+  
+  // Función para guardar un contacto (nuevo o actualizado)
+  const handleSaveContact = async () => {
+    // Validar los campos requeridos
+    if (!contactName || !contactPhone) {
+      toast({
+        title: "Campos requeridos",
+        description: "El nombre y número de teléfono son obligatorios",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validar formato del número de teléfono
+    const phoneRegex = /^\+[1-9]\d{1,14}$/;
+    if (!phoneRegex.test(contactPhone)) {
+      toast({
+        title: "Formato de teléfono incorrecto",
+        description: "El número debe tener el formato +[código de país][número] (ej: +34612345678)",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Crear o actualizar contacto
+    if (editingContactId === null) {
+      // Crear nuevo contacto
+      await createContactMutation.mutateAsync({
+        name: contactName,
+        phoneNumber: contactPhone,
+        notes: contactNotes || null,
+      });
+    } else {
+      // Actualizar contacto existente
+      await updateContactMutation.mutateAsync({
+        id: editingContactId,
+        data: {
+          name: contactName,
+          phoneNumber: contactPhone,
+          notes: contactNotes || null,
+        }
+      });
+    }
+  };
   
   // Función para enviar un mensaje de prueba
   async function sendTestMessage() {
@@ -135,9 +348,12 @@ export default function WhatsAppSettings() {
       </div>
       
       <Tabs defaultValue="general" className="w-full" value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="w-full grid grid-cols-3 mb-6 bg-neon-medium/30 border border-neon-accent/20">
+        <TabsList className="w-full grid grid-cols-4 mb-6 bg-neon-medium/30 border border-neon-accent/20">
           <TabsTrigger value="general" className="data-[state=active]:bg-neon-accent/20 data-[state=active]:text-neon-accent">
             General
+          </TabsTrigger>
+          <TabsTrigger value="contacts" className="data-[state=active]:bg-neon-accent/20 data-[state=active]:text-neon-accent">
+            Contactos
           </TabsTrigger>
           <TabsTrigger value="test" className="data-[state=active]:bg-neon-accent/20 data-[state=active]:text-neon-accent">
             Pruebas
@@ -146,6 +362,179 @@ export default function WhatsAppSettings() {
             Webhook
           </TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="contacts" className="space-y-6">
+          <Card className="border-neon-accent/20 bg-neon-dark shadow-lg">
+            <CardHeader className="flex justify-between items-start">
+              <div>
+                <CardTitle className="text-neon-text"><span className="neon-text">Contactos de WhatsApp</span></CardTitle>
+                <CardDescription>
+                  Gestiona los contactos para enviar mensajes de WhatsApp
+                </CardDescription>
+              </div>
+              
+              <Button
+                onClick={handleAddContact}
+                className="bg-neon-accent/90 text-neon-dark hover:bg-neon-accent border border-neon-accent/70 neon-button"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Añadir contacto
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {isLoadingContacts ? (
+                <div className="flex justify-center items-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-neon-accent" />
+                  <span className="ml-2 text-neon-text/80">Cargando contactos...</span>
+                </div>
+              ) : contacts && contacts.length > 0 ? (
+                <div className="rounded-md border border-neon-accent/20 overflow-hidden">
+                  <Table>
+                    <TableHeader className="bg-neon-medium/20">
+                      <TableRow className="hover:bg-neon-medium/30 border-neon-accent/10">
+                        <TableHead className="text-neon-text/90 font-medium">Nombre</TableHead>
+                        <TableHead className="text-neon-text/90 font-medium">Teléfono</TableHead>
+                        <TableHead className="text-neon-text/90 font-medium">Estado</TableHead>
+                        <TableHead className="text-neon-text/90 font-medium">Última actividad</TableHead>
+                        <TableHead className="text-neon-text/90 font-medium text-right">Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {contacts.map((contact) => (
+                        <TableRow key={contact.id} className="hover:bg-neon-medium/10 border-neon-accent/10">
+                          <TableCell className="font-medium text-neon-text">{contact.name}</TableCell>
+                          <TableCell className="text-neon-text/90">{contact.phoneNumber}</TableCell>
+                          <TableCell>
+                            <Badge 
+                              className={`${contact.active ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/50' : 'bg-slate-600/20 text-slate-400 border-slate-500/50'}`}
+                            >
+                              {contact.active ? "Activo" : "Inactivo"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-neon-text/80 text-sm">
+                            {contact.lastMessageAt ? new Date(contact.lastMessageAt).toLocaleString('es-ES', { 
+                              day: '2-digit', 
+                              month: '2-digit', 
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }) : 'Nunca'}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEditContact(contact)}
+                                className="h-8 w-8 text-neon-accent hover:text-neon-accent/80 hover:bg-neon-medium/20"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteContact(contact.id)}
+                                disabled={isDeleting}
+                                className="h-8 w-8 text-rose-400 hover:text-rose-400/80 hover:bg-rose-500/10"
+                              >
+                                {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="py-12 text-center border border-dashed border-neon-accent/20 rounded-lg bg-neon-medium/5">
+                  <Users className="h-12 w-12 mx-auto text-neon-accent/30" />
+                  <h3 className="mt-4 text-lg font-medium text-neon-text">No hay contactos</h3>
+                  <p className="mt-1 text-neon-text/70">
+                    Añade tu primer contacto para comenzar a enviar mensajes
+                  </p>
+                  <Button
+                    onClick={handleAddContact}
+                    className="mt-4 bg-neon-accent/90 text-neon-dark hover:bg-neon-accent border border-neon-accent/70 neon-button"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Añadir contacto
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+          {/* Modal de contacto */}
+          <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
+            <DialogContent className="bg-neon-dark border-neon-accent/30 text-neon-text">
+              <DialogHeader>
+                <DialogTitle className="neon-text">
+                  {editingContactId ? 'Editar contacto' : 'Nuevo contacto'}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingContactId 
+                    ? 'Modifica los datos del contacto para actualizar la información.' 
+                    : 'Añade un nuevo contacto para enviar mensajes de WhatsApp.'}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <div className="space-y-2">
+                  <Label htmlFor="contact-name" className="text-neon-text/90">Nombre</Label>
+                  <Input
+                    id="contact-name"
+                    placeholder="Nombre del contacto"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    className="bg-neon-darker border-neon-accent/20 text-neon-text placeholder:text-neon-text/50 focus:border-neon-accent/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contact-phone" className="text-neon-text/90">Número de teléfono</Label>
+                  <Input
+                    id="contact-phone"
+                    placeholder="+34612345678"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    className="bg-neon-darker border-neon-accent/20 text-neon-text placeholder:text-neon-text/50 focus:border-neon-accent/50"
+                  />
+                  <p className="text-xs text-neon-text/60">
+                    Formato internacional: +[código de país][número]
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contact-notes" className="text-neon-text/90">Notas</Label>
+                  <Textarea
+                    id="contact-notes"
+                    placeholder="Información adicional del contacto"
+                    value={contactNotes}
+                    onChange={(e) => setContactNotes(e.target.value)}
+                    className="bg-neon-darker border-neon-accent/20 text-neon-text placeholder:text-neon-text/50 focus:border-neon-accent/50 min-h-[100px]"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsContactDialogOpen(false)}
+                  className="border-neon-accent/20 text-neon-text hover:bg-neon-medium/20"
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={handleSaveContact}
+                  disabled={createContactMutation.isPending || updateContactMutation.isPending}
+                  className="bg-neon-accent/90 text-neon-dark hover:bg-neon-accent border border-neon-accent/70 neon-button"
+                >
+                  {(createContactMutation.isPending || updateContactMutation.isPending) && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {editingContactId ? 'Actualizar' : 'Guardar'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
         
         <TabsContent value="general" className="space-y-6">
           <Card className="border-neon-accent/20 bg-neon-dark shadow-lg">
