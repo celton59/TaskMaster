@@ -13,58 +13,61 @@ interface RecentTasksListProps {
 }
 
 export function RecentTasksList({ tasks, onViewAll }: RecentTasksListProps) {
-  // Status badge color variants
+  // Status badge color variants con colores neon mejorados
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
         return (
           <div className="flex items-center">
-            <div className="h-2 w-2 rounded-full bg-amber-500 shadow-[0_0_5px_rgba(245,158,11,0.5)] mr-2"></div>
-            <span className="text-xs font-medium text-neon-text">Pendiente</span>
+            <div className="h-2 w-2 rounded-full bg-neon-yellow animation-pulse-yellow shadow-[0_0_8px_rgba(255,234,0,0.7)] mr-2"></div>
+            <span className="text-xs font-medium text-neon-yellow text-glow-yellow">Pendiente</span>
           </div>
         );
       case "in-progress":
         return (
           <div className="flex items-center">
-            <div className="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.5)] mr-2"></div>
-            <span className="text-xs font-medium text-neon-text">En progreso</span>
+            <div className="h-2 w-2 rounded-full bg-neon-purple animation-pulse-purple shadow-[0_0_8px_rgba(187,0,255,0.7)] mr-2"></div>
+            <span className="text-xs font-medium text-neon-purple text-glow-purple">En progreso</span>
           </div>
         );
       case "review":
         return (
           <div className="flex items-center">
-            <div className="h-2 w-2 rounded-full bg-purple-500 shadow-[0_0_5px_rgba(168,85,247,0.5)] mr-2"></div>
-            <span className="text-xs font-medium text-neon-text">Revisión</span>
+            <div className="h-2 w-2 rounded-full bg-neon-pink animation-pulse-pink shadow-[0_0_8px_rgba(255,0,170,0.7)] mr-2"></div>
+            <span className="text-xs font-medium text-neon-pink text-glow-pink">Revisión</span>
           </div>
         );
       case "completed":
         return (
           <div className="flex items-center">
-            <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)] mr-2"></div>
-            <span className="text-xs font-medium text-neon-text">Completado</span>
+            <div className="h-2 w-2 rounded-full bg-neon-green animation-pulse-green shadow-[0_0_8px_rgba(0,255,157,0.7)] mr-2"></div>
+            <span className="text-xs font-medium text-neon-green text-glow-green">Completado</span>
           </div>
         );
       default:
         return (
           <div className="flex items-center">
-            <div className="h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_5px_rgba(244,63,94,0.5)] mr-2"></div>
-            <span className="text-xs font-medium text-neon-text">Atrasado</span>
+            <div className="h-2 w-2 rounded-full bg-neon-red animation-pulse-red shadow-[0_0_8px_rgba(255,45,109,0.7)] mr-2"></div>
+            <span className="text-xs font-medium text-neon-red text-glow-red">Atrasado</span>
           </div>
         );
     }
   };
   
-  // Icon for task priority
+  // Icon for task priority con colores neon mejorados
   const getTaskIcon = (priority: string | null) => {
     switch (priority) {
       case "high":
-        return <Badge className="bg-rose-900/30 text-rose-300 hover:bg-rose-900/40 border-rose-800/50 shadow-[0_0_5px_rgba(244,63,94,0.3)]">Alta</Badge>;
+      case "alta":
+        return <Badge className="bg-neon-darker text-neon-red hover:bg-neon-dark border border-neon-red/40 shadow-[0_0_8px_rgba(255,45,109,0.4)] text-glow-red">Alta</Badge>;
       case "medium":
-        return <Badge className="bg-amber-900/30 text-amber-300 hover:bg-amber-900/40 border-amber-800/50 shadow-[0_0_5px_rgba(245,158,11,0.3)]">Media</Badge>;
+      case "media":
+        return <Badge className="bg-neon-darker text-neon-yellow hover:bg-neon-dark border border-neon-yellow/40 shadow-[0_0_8px_rgba(255,234,0,0.4)] text-glow-yellow">Media</Badge>;
       case "low":
-        return <Badge className="bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/40 border-emerald-800/50 shadow-[0_0_5px_rgba(16,185,129,0.3)]">Baja</Badge>;
+      case "baja":
+        return <Badge className="bg-neon-darker text-neon-green hover:bg-neon-dark border border-neon-green/40 shadow-[0_0_8px_rgba(0,255,157,0.4)] text-glow-green">Baja</Badge>;
       default:
-        return <Badge className="bg-neon-medium/30 text-neon-text hover:bg-neon-medium/40 border-neon-accent/30 shadow-[0_0_5px_rgba(0,225,255,0.3)]">Normal</Badge>;
+        return <Badge className="bg-neon-darker text-neon-purple hover:bg-neon-dark border border-neon-purple/40 shadow-[0_0_8px_rgba(187,0,255,0.4)] text-glow-purple">Normal</Badge>;
     }
   };
   
@@ -123,8 +126,18 @@ export function RecentTasksList({ tasks, onViewAll }: RecentTasksListProps) {
                 {getTaskIcon(task.priority)}
                 
                 {task.assignedTo && (
-                  <Avatar className="h-6 w-6 border border-neon-accent/30 shadow-[0_0_5px_rgba(0,225,255,0.2)]">
-                    <AvatarFallback className="text-[10px] bg-neon-medium/50 text-neon-accent">
+                  <Avatar className={`h-6 w-6 border ${
+                    task.assignedTo === 1 
+                      ? 'border-neon-purple/50 shadow-[0_0_8px_rgba(187,0,255,0.3)]' 
+                      : 'border-neon-pink/50 shadow-[0_0_8px_rgba(255,0,170,0.3)]'
+                    }`}
+                  >
+                    <AvatarFallback className={`text-[10px] ${
+                      task.assignedTo === 1 
+                        ? 'bg-gradient-to-br from-neon-purple/30 to-neon-darker text-neon-purple text-glow-purple' 
+                        : 'bg-gradient-to-br from-neon-pink/30 to-neon-darker text-neon-pink text-glow-pink'
+                      }`}
+                    >
                       {task.assignedTo === 1 ? 'AD' : 'US'}
                     </AvatarFallback>
                   </Avatar>
@@ -138,10 +151,11 @@ export function RecentTasksList({ tasks, onViewAll }: RecentTasksListProps) {
       <div className="mt-6 pt-4 border-t border-neon-accent/30">
         <Button 
           variant="outline" 
-          className="w-full text-center text-sm h-9 bg-transparent border border-neon-accent/40 text-neon-text hover:bg-neon-accent/10 hover:text-neon-accent transition-colors neon-button" 
+          className="w-full text-center text-sm h-9 bg-transparent border border-neon-accent/40 text-neon-accent/90 hover:bg-gradient-to-r hover:from-neon-darker hover:to-neon-accent/20 hover:text-neon-accent hover:border-neon-accent/80 transition-all duration-300 relative overflow-hidden group neon-button" 
           onClick={onViewAll}
         >
-          Ver todas las tareas
+          <span className="z-10 relative">Ver todas las tareas</span>
+          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-neon-accent/10 to-transparent -translate-x-full group-hover:animate-shimmer"></span>
         </Button>
       </div>
     </>

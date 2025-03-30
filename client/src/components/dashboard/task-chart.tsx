@@ -106,17 +106,35 @@ export function TaskChart({ data }: TaskChartProps) {
             }}
           >
             <defs>
+              {/* Gradiente mejorado para tareas completadas (azul neon) */}
               <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="rgba(0, 225, 255, 0.8)" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="rgba(0, 225, 255, 0.1)" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor="rgba(0, 225, 255, 0.9)" stopOpacity={0.8}/>
+                <stop offset="50%" stopColor="rgba(0, 195, 255, 0.4)" stopOpacity={0.4}/>
+                <stop offset="95%" stopColor="rgba(0, 225, 255, 0.05)" stopOpacity={0.1}/>
               </linearGradient>
+              
+              {/* Gradiente mejorado para tareas creadas (purpura neon) */}
               <linearGradient id="colorCreated" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="rgba(138, 180, 248, 0.5)" stopOpacity={0.5}/>
-                <stop offset="95%" stopColor="rgba(138, 180, 248, 0.05)" stopOpacity={0.05}/>
+                <stop offset="5%" stopColor="rgba(187, 0, 255, 0.7)" stopOpacity={0.7}/>
+                <stop offset="50%" stopColor="rgba(187, 0, 255, 0.3)" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="rgba(187, 0, 255, 0.05)" stopOpacity={0.05}/>
               </linearGradient>
+              
+              {/* Filtro de brillo mejorado */}
               <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feGaussianBlur stdDeviation="3" result="blur" />
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              
+              {/* Patrón de scanner futurista */}
+              <pattern id="scanline" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(0, 255, 255, 0.1)" strokeWidth="2" />
+              </pattern>
+              
+              {/* Filtro para efecto holográfico */}
+              <filter id="holographic" x="0" y="0" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
               </filter>
             </defs>
             <XAxis 
@@ -146,6 +164,10 @@ export function TaskChart({ data }: TaskChartProps) {
               wrapperStyle={{ color: 'rgba(237, 248, 255, 0.8)' }}
               formatter={(value) => <span style={{ color: 'rgba(237, 248, 255, 0.8)' }}>{value}</span>}
             />
+            {/* Fondo con patrón de escaneo */}
+            <rect x="0" y="0" width="100%" height="100%" fill="url(#scanline)" fillOpacity={0.05} />
+            
+            {/* Área de tareas completadas con efecto mejorado */}
             <Area
               type="monotone"
               dataKey="completed"
@@ -159,21 +181,25 @@ export function TaskChart({ data }: TaskChartProps) {
               isAnimationActive={true}
               animationDuration={1500}
               animationEasing="ease-in-out"
+              style={{filter: "drop-shadow(0 0 3px rgba(0, 225, 255, 0.5))"}}
             />
+            
+            {/* Área de tareas nuevas con efecto mejorado y color púrpura neón */}
             <Area
               type="monotone"
               dataKey="created"
               name="Tareas nuevas"
-              stroke="rgba(138, 180, 248, 0.8)"
+              stroke="rgba(187, 0, 255, 0.8)" // Cambiado a morado neon
               fillOpacity={1}
               fill="url(#colorCreated)"
               strokeWidth={2}
               strokeDasharray="5 5"
-              activeDot={props => <AnimatedActiveDot {...props} fill="rgba(138, 180, 248, 0.8)" stroke="rgba(138, 180, 248, 0.3)" />}
-              dot={props => <AnimatedDot {...props} fill="rgba(138, 180, 248, 0.8)" stroke="rgba(138, 180, 248, 0.3)" />}
+              activeDot={props => <AnimatedActiveDot {...props} fill="rgba(187, 0, 255, 0.9)" stroke="rgba(187, 0, 255, 0.3)" />}
+              dot={props => <AnimatedDot {...props} fill="rgba(187, 0, 255, 0.8)" stroke="rgba(187, 0, 255, 0.3)" />}
               isAnimationActive={true}
               animationDuration={1500}
               animationEasing="ease-in-out"
+              style={{filter: "drop-shadow(0 0 3px rgba(187, 0, 255, 0.5))"}}
             />
           </AreaChart>
         </ResponsiveContainer>
