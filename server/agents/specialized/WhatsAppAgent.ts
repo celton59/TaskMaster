@@ -144,8 +144,18 @@ EJEMPLOS:
       const probabilidadLluvia = Math.floor(Math.random() * 20); // 0-20% probabilidad
       const viento = Math.floor(Math.random() * 15) + 5; // 5-20 km/h
       
+      // Obtener la fecha correcta para mañana
+      const hoy = new Date();
+      const manana = new Date(hoy);
+      manana.setDate(hoy.getDate() + 1);
+      
+      // Formatear la fecha correctamente
+      const fechaFormateada = esMañana 
+        ? manana.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', year: 'numeric' }) 
+        : hoy.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', year: 'numeric' });
+      
       // Formato de mensaje de clima
-      const climaMsg = `Información del tiempo para ${ubicacion}, ${dia} ${new Date().toLocaleDateString('es-ES')}:\n` +
+      const climaMsg = `Información del tiempo para ${ubicacion}, ${dia} ${fechaFormateada}:\n` +
         `🌡️ Temperatura: ${temperatura}°C\n` +
         `☀️ Condiciones: ${condiciones}\n` +
         `🌧️ Probabilidad de lluvia: ${probabilidadLluvia}%\n` +
@@ -244,8 +254,18 @@ EJEMPLOS:
           const probabilidadLluvia = Math.floor(Math.random() * 20); // 0-20% probabilidad
           const viento = Math.floor(Math.random() * 15) + 5; // 5-20 km/h
           
+          // Obtener la fecha correcta para mañana
+          const hoy = new Date();
+          const manana = new Date(hoy);
+          manana.setDate(hoy.getDate() + 1);
+          
+          // Formatear la fecha correctamente
+          const fechaFormateada = esMañana 
+            ? manana.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', year: 'numeric' }) 
+            : hoy.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', year: 'numeric' });
+            
           // Enriquecer el mensaje
-          args.message = `Información del tiempo para ${ubicacion}, ${dia} ${new Date().toLocaleDateString('es-ES')}:\n` +
+          args.message = `Información del tiempo para ${ubicacion}, ${dia} ${fechaFormateada}:\n` +
             `🌡️ Temperatura: ${temperatura}°C\n` +
             `☀️ Condiciones: ${condiciones}\n` +
             `🌧️ Probabilidad de lluvia: ${probabilidadLluvia}%\n` +
