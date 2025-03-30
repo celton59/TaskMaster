@@ -17,10 +17,10 @@ function Router() {
     <div className="flex h-screen w-full overflow-hidden">
       <Sidebar />
       
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden bg-neon-darker">
         <Header />
         
-        <main className="flex-1 overflow-auto bg-neutral-50 scrollbar-hide">
+        <main className="flex-1 overflow-auto bg-neon-dark p-3">
           <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/tasks" component={Tasks} />

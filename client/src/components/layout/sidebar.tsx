@@ -84,26 +84,26 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-neutral-100 h-full shrink-0 shadow-lg overflow-hidden">
-        <div className="py-2 px-4 flex items-center justify-between">
+      <aside className="hidden md:flex flex-col w-64 bg-neon-dark border-r border-neon-accent/20 h-full shrink-0 shadow-lg overflow-hidden">
+        <div className="py-4 px-4 flex items-center justify-between">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center text-white">
+            <div className="h-8 w-8 rounded-lg bg-neon-accent/90 flex items-center justify-center text-neon-dark neon-box">
               <CheckCircle2 className="h-4 w-4" />
             </div>
-            <h1 className="font-bold text-base ml-2 text-neutral-900">Aitorin</h1>
+            <h1 className="font-bold text-base ml-2 text-neon-text neon-text">Aitorin</h1>
           </div>
           <Button 
             size="icon" 
             variant="ghost" 
-            className="h-7 w-7 rounded-full text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100"
+            className="h-7 w-7 rounded-full text-neon-text hover:text-neon-accent hover:bg-neon-medium"
           >
             <Bell className="h-4 w-4" />
           </Button>
         </div>
         
-        <div className="px-3 py-0.5">
+        <div className="px-3 py-2">
           <Button 
-            className="w-full bg-primary-600 hover:bg-primary-700 text-white shadow-sm h-8"
+            className="w-full bg-transparent text-neon-accent border border-neon-accent hover:bg-neon-medium hover:shadow-[0_0_10px_rgba(0,225,255,0.5)] transition-all duration-300 h-8 neon-button"
             size="sm"
           >
             <PlusCircle className="mr-1.5 h-3.5 w-3.5" />

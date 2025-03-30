@@ -49,13 +49,15 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        // Paleta de lujo
-        luxury: {
-          dark: "#2A1E12",
-          medium: "#4A3322",
-          light: "#7C5E3C",
-          gold: "#D4AF37",
-          cream: "#EFE6DA"
+        // Paleta de neón
+        neon: {
+          dark: "#061621",
+          darker: "#020B10",
+          medium: "#0C2840",
+          light: "#0E3A5A",
+          accent: "#00E1FF",
+          hover: "#00D1FF",
+          text: "#E0F8FF"
         },
         chart: {
           "1": "hsl(var(--chart-1))",
@@ -100,14 +102,14 @@ export default {
             backgroundPosition: "100% 50%"
           }
         },
-        "border-glow": {
+        "neon-glow": {
           "0%, 100%": {
-            boxShadow: "0 0 5px rgba(212, 175, 55, 0.5)",
-            borderColor: "rgba(212, 175, 55, 0.8)"
+            boxShadow: "0 0 5px rgba(0, 225, 255, 0.5)",
+            borderColor: "rgba(0, 225, 255, 0.8)"
           },
           "50%": {
-            boxShadow: "0 0 15px rgba(212, 175, 55, 0.8)",
-            borderColor: "rgba(212, 175, 55, 1)"
+            boxShadow: "0 0 15px rgba(0, 225, 255, 0.8)",
+            borderColor: "rgba(0, 225, 255, 1)"
           }
         },
         "fade-in": {
@@ -125,7 +127,7 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "gold-shimmer": "gold-shimmer 3s ease infinite",
-        "border-glow": "border-glow 2s ease-in-out infinite",
+        "neon-glow": "neon-glow 2s ease-in-out infinite",
         "fade-in": "fade-in 0.5s ease-out forwards"
       },
     },
