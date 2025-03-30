@@ -112,7 +112,7 @@ export function Sidebar() {
         </div>
         
         <nav className="flex-1 px-2 py-0.5 flex flex-col overflow-hidden">
-          <div className="space-y-0.5 px-1 flex-shrink-0">            
+          <div className="space-y-1.5 px-1 flex-shrink-0 mt-2">            
             <NavLink 
               href="/" 
               icon={<LayoutDashboard className="h-5 w-5" />} 
@@ -120,20 +120,11 @@ export function Sidebar() {
             />
               
             {/* Tareas section with dropdown - Always visible links */}
-            <div>
-              <Link 
-                to="/tasks"
-                className={cn(
-                  "w-full flex items-center justify-between px-2 py-1.5 text-sm font-medium rounded-md",
-                  location.includes('/tasks') ? "bg-primary-50 text-primary-700" : "text-neutral-700 hover:bg-neutral-50"
-                )}
-              >
-                <div className="flex items-center">
-                  <ListTodo className={`h-5 w-5 ${location.includes('/tasks') ? 'text-primary-600' : 'text-neutral-500'}`} />
-                  <span className="ml-2">Gestión de tareas</span>
-                </div>
-              </Link>
-            </div>
+            <NavLink 
+              href="/tasks" 
+              icon={<ListTodo className="h-5 w-5" />} 
+              label="Gestión de tareas" 
+            />
             
             <NavLink 
               href="/calendar" 
@@ -160,10 +151,10 @@ export function Sidebar() {
             />
           </div>
           
-          <Separator className="my-2 bg-neutral-100 flex-shrink-0" />
+          <Separator className="my-3 bg-neon-accent/20 flex-shrink-0" />
           
           <div className="px-2 pt-0 flex-shrink-0">
-            <div className="text-sm font-medium text-neutral-500 px-2 py-1">
+            <div className="text-sm font-medium text-neon-accent px-2 py-1 uppercase tracking-wider text-xs">
               Categorías
             </div>
             
@@ -171,14 +162,14 @@ export function Sidebar() {
             {categories.slice(0, 3).map((category) => (
               <div 
                 key={category.id} 
-                className="flex justify-between items-center px-2 py-1 text-sm font-medium rounded-md text-neutral-700 hover:bg-neutral-50 cursor-pointer transition-colors"
+                className="flex justify-between items-center px-2 py-1.5 text-sm font-medium rounded-md text-neon-text hover:bg-neon-medium/30 cursor-pointer transition-all duration-300"
               >
                 <div className="flex items-center">
-                  <span className={`h-2.5 w-2.5 rounded-full ${getCategoryColor(category.color)} mr-2`}></span>
+                  <span className={`h-2.5 w-2.5 rounded-full ${getCategoryColor(category.color)} mr-2 shadow-[0_0_4px_rgba(0,225,255,0.7)]`}></span>
                   {category.name}
                 </div>
                 <Badge 
-                  className="bg-neutral-100 border-0 text-xs font-normal h-5 text-neutral-600 hover:bg-neutral-100"
+                  className="bg-neon-medium border-0 text-xs font-normal h-5 text-neon-text hover:bg-neon-medium/80"
                 >
                   {Math.floor(Math.random() * 10) + 2}
                 </Badge>
@@ -186,29 +177,29 @@ export function Sidebar() {
             ))}
             
             {categories.length > 3 && (
-              <div className="px-2 py-1 text-xs text-primary-600 font-medium cursor-pointer hover:underline">
+              <div className="px-2 py-1 text-xs text-neon-accent font-medium cursor-pointer hover:underline">
                 Ver más ({categories.length - 3})
               </div>
             )}
           </div>
         </nav>
         
-        <div className="p-2 border-t border-neutral-100">
+        <div className="p-3 border-t border-neon-accent/20 mt-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Avatar className="h-8 w-8 border border-white">
+              <Avatar className="h-8 w-8 border border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]">
                 <AvatarImage src="/avatar.png" />
-                <AvatarFallback className="bg-primary-100 text-primary-700 text-xs">AD</AvatarFallback>
+                <AvatarFallback className="bg-neon-medium text-neon-accent text-xs">AD</AvatarFallback>
               </Avatar>
               <div className="ml-2">
-                <p className="text-sm font-medium text-neutral-800">Admin Demo</p>
-                <p className="text-xs text-neutral-500">admin@example.com</p>
+                <p className="text-sm font-medium text-neon-text">Admin Demo</p>
+                <p className="text-xs text-neon-text/70">admin@example.com</p>
               </div>
             </div>
             <Button 
               size="icon" 
               variant="ghost" 
-              className="h-7 w-7 rounded-full text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100"
+              className="h-7 w-7 rounded-full text-neon-text hover:text-neon-accent hover:bg-neon-medium"
             >
               <LogOut className="h-3.5 w-3.5" />
             </Button>
@@ -220,26 +211,26 @@ export function Sidebar() {
       {isMobileMenuOpen && (
         <div className="md:hidden fixed inset-0 flex z-40" role="dialog" aria-modal="true">
           <div 
-            className="fixed inset-0 bg-neutral-600 bg-opacity-75" 
+            className="fixed inset-0 bg-neon-darker/90 backdrop-blur-sm" 
             aria-hidden="true"
             onClick={() => setIsMobileMenuOpen(false)}
           ></div>
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-neon-dark border-r border-neon-accent/30 shadow-[0_0_25px_rgba(0,225,255,0.2)]">
             {/* Mobile menu content - mirror of desktop sidebar */}
-            <div className="py-5 px-6 border-b border-neutral-200 flex items-center">
-              <div className="h-10 w-10 rounded-md bg-primary-700 flex items-center justify-center text-white">
+            <div className="py-5 px-6 border-b border-neon-accent/20 flex items-center">
+              <div className="h-10 w-10 rounded-lg bg-neon-accent/90 flex items-center justify-center text-neon-dark neon-box">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
-              <h1 className="font-bold text-xl ml-3 text-neutral-900">Aitorin</h1>
+              <h1 className="font-bold text-xl ml-3 text-neon-text neon-text">Aitorin</h1>
             </div>
             
             <nav className="flex-1 py-5 px-5 overflow-y-auto">
               <div className="mb-6">
-                <p className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3">
+                <p className="px-3 text-xs font-semibold text-neon-accent uppercase tracking-wider mb-3">
                   Menú principal
                 </p>
                 
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <NavLink 
                     href="/" 
                     icon={<LayoutDashboard className="h-5 w-5" />} 
@@ -273,20 +264,20 @@ export function Sidebar() {
                 </div>
               </div>
               
-              <Separator className="my-5" />
+              <Separator className="my-5 bg-neon-accent/20" />
               
               <div className="mb-6">
-                <p className="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3">
+                <p className="px-3 text-xs font-semibold text-neon-accent uppercase tracking-wider mb-3">
                   Categorías
                 </p>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   {categories.map((category) => (
-                    <div key={category.id} className="flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md text-neutral-700 hover:bg-neutral-50 cursor-pointer transition-colors">
+                    <div key={category.id} className="flex justify-between items-center px-3 py-2 text-sm font-medium rounded-md text-neon-text hover:bg-neon-medium/30 cursor-pointer transition-all duration-300">
                       <div className="flex items-center">
-                        <span className={`h-3 w-3 rounded-full ${getCategoryColor(category.color)} mr-3`}></span>
+                        <span className={`h-3 w-3 rounded-full ${getCategoryColor(category.color)} mr-3 shadow-[0_0_4px_rgba(0,225,255,0.7)]`}></span>
                         {category.name}
                       </div>
-                      <Badge variant="outline" className="bg-neutral-50 text-neutral-600 text-xs font-normal">
+                      <Badge className="bg-neon-medium border-0 text-xs font-normal text-neon-text">
                         {Math.floor(Math.random() * 10) + 2}
                       </Badge>
                     </div>
@@ -295,15 +286,15 @@ export function Sidebar() {
               </div>
             </nav>
             
-            <div className="p-4 border-t border-neutral-200 bg-neutral-50">
+            <div className="p-4 border-t border-neon-accent/20 bg-neon-darker/50">
               <div className="flex items-center">
-                <Avatar className="h-10 w-10 border-2 border-white">
+                <Avatar className="h-10 w-10 border border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]">
                   <AvatarImage src="/avatar.png" />
-                  <AvatarFallback className="bg-primary-100 text-primary-700">AD</AvatarFallback>
+                  <AvatarFallback className="bg-neon-medium text-neon-accent">AD</AvatarFallback>
                 </Avatar>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-neutral-800">Admin Demo</p>
-                  <p className="text-xs text-neutral-500">Administrador</p>
+                  <p className="text-sm font-medium text-neon-text">Admin Demo</p>
+                  <p className="text-xs text-neon-text/70">Administrador</p>
                 </div>
               </div>
             </div>
@@ -331,20 +322,28 @@ function NavLink({ href, icon, label, isSubmenu = false }: NavLinkProps) {
       <Link 
         to={href}
         className={cn(
-          "flex items-center px-2 py-1.5 text-sm font-medium rounded-md cursor-pointer transition-colors",
+          "flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-pointer transition-all duration-300 relative overflow-hidden",
           isActive 
-            ? "bg-primary-50 text-primary-700" 
-            : "text-neutral-700 hover:bg-neutral-50 hover:text-primary-700"
+            ? "text-neon-accent bg-neon-medium/40 shadow-[0_0_8px_rgba(0,225,255,0.3)]" 
+            : "text-neon-text hover:bg-neon-medium/30 hover:text-neon-accent"
         )}
       >
         <div className={cn(
-          "flex-shrink-0 mr-2 transition-colors",
-          isActive ? 'text-primary-600' : 'text-neutral-400'
+          "flex-shrink-0 mr-2.5 transition-colors",
+          isActive ? 'text-neon-accent' : 'text-neon-text'
         )}>
           {icon}
         </div>
-        <span className="truncate">{label}</span>
-        {isActive && <div className="absolute inset-y-0 left-0 w-1 bg-primary-500 rounded-r-full" />}
+        <span className={cn(
+          "truncate",
+          isActive && "text-neon-accent neon-text"
+        )}>{label}</span>
+        {isActive && (
+          <>
+            <div className="absolute inset-y-0 left-0 w-1 bg-neon-accent rounded-r-full shadow-[0_0_8px_rgba(0,225,255,0.6)]" />
+            <div className="absolute inset-0 border border-neon-accent/20 rounded-md pointer-events-none" />
+          </>
+        )}
       </Link>
     );
   }
@@ -354,15 +353,15 @@ function NavLink({ href, icon, label, isSubmenu = false }: NavLinkProps) {
     <Link 
       to={href}
       className={cn(
-        "flex items-center px-2 py-1 text-sm font-medium rounded-md cursor-pointer transition-colors",
+        "flex items-center px-2 py-1.5 text-sm font-medium rounded-md cursor-pointer transition-all duration-300",
         isActive 
-          ? "text-primary-700 bg-primary-50" 
-          : "text-neutral-600 hover:bg-neutral-50 hover:text-primary-700"
+          ? "text-neon-accent bg-neon-medium/40" 
+          : "text-neon-text/80 hover:bg-neon-medium/30 hover:text-neon-accent"
       )}
     >
       <div className={cn(
-        "flex-shrink-0 mr-1.5 transition-colors",
-        isActive ? 'text-primary-600' : 'text-neutral-400'
+        "flex-shrink-0 mr-2 transition-colors",
+        isActive ? 'text-neon-accent' : 'text-neon-text/70'
       )}>
         {icon}
       </div>

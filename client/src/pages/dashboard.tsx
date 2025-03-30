@@ -85,33 +85,33 @@ export default function Dashboard() {
   
   return (
     <div className="py-8 px-6 space-y-8">
-      <div className="luxury-card rounded-lg p-5 mb-6 shadow-lg">
+      <div className="neon-card rounded-lg p-5 mb-6 shadow-xl bg-neon-dark border border-neon-accent/30">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight flex items-center">
-              <span className="bg-luxury-gold/20 text-luxury-gold p-1.5 rounded-md mr-3 border border-luxury-gold/50">
+              <span className="bg-neon-accent/10 text-neon-accent p-1.5 rounded-md mr-3 border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
                 <LayoutDashboard className="h-5 w-5" />
               </span>
-              <span className="luxury-gold-gradient font-serif">Panel de Control</span>
+              <span className="neon-text neon-gradient font-mono">Panel de Control</span>
             </h1>
-            <p className="mt-2 text-sm text-luxury-cream/90 pl-[46px]">
-              Bienvenido de nuevo, <span className="text-luxury-gold font-medium">Admin Demo</span> - 
-              <span className="text-luxury-cream/70"> {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long'})}</span>
+            <p className="mt-2 text-sm text-neon-text/90 pl-[46px]">
+              Bienvenido de nuevo, <span className="text-neon-accent font-medium">Admin Demo</span> - 
+              <span className="text-neon-text/70"> {new Date().toLocaleDateString('es-ES', {weekday: 'long', day: 'numeric', month: 'long'})}</span>
             </p>
           </div>
           <div className="mt-4 md:mt-0 flex items-center gap-3">
             <Button 
               variant="outline"
               size="sm" 
-              className="h-9 border-luxury-gold/50 text-luxury-cream hover:bg-luxury-gold/10 hover:text-luxury-gold rounded-md transition-all"
+              className="h-9 border-neon-accent/50 text-neon-text hover:bg-neon-accent/10 hover:text-neon-accent rounded-md transition-all neon-button"
             >
-              <Mail className="mr-2 h-4 w-4 text-luxury-gold/80" />
+              <Mail className="mr-2 h-4 w-4 text-neon-accent/80" />
               Reportes
             </Button>
             <Button 
               onClick={() => setIsTaskFormOpen(true)}
               size="sm" 
-              className="h-9 shadow-md bg-luxury-gold hover:bg-luxury-gold/90 text-luxury-dark rounded-md transition-all font-medium"
+              className="h-9 shadow-glow bg-neon-accent hover:bg-neon-accent/90 text-neon-darker rounded-md transition-all font-medium neon-button-filled"
             >
               <Plus className="mr-2 h-4 w-4" />
               Nueva tarea
@@ -122,21 +122,21 @@ export default function Dashboard() {
 
       {/* Task Status Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card className="luxury-card overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-luxury-gold/30 bg-gradient-to-r from-luxury-dark to-luxury-medium">
+        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-luxury-gold font-serif">Distribución de tareas</CardTitle>
-              <CardDescription className="text-luxury-cream/70">Resumen por estado</CardDescription>
+              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Distribución de tareas</CardTitle>
+              <CardDescription className="text-neon-text/70">Resumen por estado</CardDescription>
             </div>
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-luxury-gold/20 text-luxury-gold border border-luxury-gold/30">
+              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
                 <BarChart4 className="h-5 w-5" />
               </div>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigate("/tasks")}
-                className="h-8 border-luxury-gold/50 hover:bg-luxury-gold/10 text-luxury-cream hover:text-luxury-gold rounded-md"
+                className="h-8 border-neon-accent/50 hover:bg-neon-accent/10 text-neon-text hover:text-neon-accent rounded-md neon-button"
               >
                 Ver tareas
                 <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
@@ -149,62 +149,62 @@ export default function Dashboard() {
                 <div className="relative pt-1">
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-luxury-cream border border-luxury-gold/30 bg-luxury-gold/10 rounded-full">Pendientes</span>
-                      <span className="text-xs font-semibold ml-2 text-luxury-gold">{stats.pending}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-accent/30 bg-neon-accent/10 rounded-full shadow-[0_0_5px_rgba(0,225,255,0.15)]">Pendientes</span>
+                      <span className="text-xs font-semibold ml-2 text-neon-accent">{stats.pending}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-luxury-gold">
+                      <span className="text-xs font-semibold inline-block text-neon-accent">
                         {stats.total > 0 ? Math.round((stats.pending / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-luxury-medium/50 border border-luxury-gold/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-rose-500 bg-gradient-to-r from-rose-600 to-rose-400 animate-gold-shimmer"></div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-accent/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(220,20,60,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-rose-500 bg-gradient-to-r from-rose-600 to-rose-400 animate-pulse"></div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-luxury-cream border border-luxury-gold/30 bg-luxury-gold/10 rounded-full">En progreso</span>
-                      <span className="text-xs font-semibold ml-2 text-luxury-gold">{stats.inProgress}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-accent/30 bg-neon-accent/10 rounded-full shadow-[0_0_5px_rgba(0,225,255,0.15)]">En progreso</span>
+                      <span className="text-xs font-semibold ml-2 text-neon-accent">{stats.inProgress}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-luxury-gold">
+                      <span className="text-xs font-semibold inline-block text-neon-accent">
                         {stats.total > 0 ? Math.round((stats.inProgress / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-luxury-medium/50 border border-luxury-gold/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.inProgress / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-amber-500 bg-gradient-to-r from-amber-600 to-amber-400 animate-gold-shimmer"></div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-accent/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.inProgress / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(255,190,0,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-amber-500 bg-gradient-to-r from-amber-600 to-amber-400 animate-pulse"></div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-luxury-cream border border-luxury-gold/30 bg-luxury-gold/10 rounded-full">En revisión</span>
-                      <span className="text-xs font-semibold ml-2 text-luxury-gold">{stats.review}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-accent/30 bg-neon-accent/10 rounded-full shadow-[0_0_5px_rgba(0,225,255,0.15)]">En revisión</span>
+                      <span className="text-xs font-semibold ml-2 text-neon-accent">{stats.review}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-luxury-gold">
+                      <span className="text-xs font-semibold inline-block text-neon-accent">
                         {stats.total > 0 ? Math.round((stats.review / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-luxury-medium/50 border border-luxury-gold/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.review / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-blue-500 bg-gradient-to-r from-blue-600 to-blue-400 animate-gold-shimmer"></div>
+                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-accent/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.review / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(59,130,246,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-blue-500 bg-gradient-to-r from-blue-600 to-blue-400 animate-pulse"></div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-luxury-cream border border-luxury-gold/30 bg-luxury-gold/10 rounded-full">Completadas</span>
-                      <span className="text-xs font-semibold ml-2 text-luxury-gold">{stats.completed}</span>
+                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-accent/30 bg-neon-accent/10 rounded-full shadow-[0_0_5px_rgba(0,225,255,0.15)]">Completadas</span>
+                      <span className="text-xs font-semibold ml-2 text-neon-accent">{stats.completed}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-luxury-gold">
+                      <span className="text-xs font-semibold inline-block text-neon-accent">
                         {stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 text-xs flex rounded-full bg-luxury-medium/50 border border-luxury-gold/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap justify-center bg-emerald-500 bg-gradient-to-r from-emerald-600 to-emerald-400 animate-gold-shimmer"></div>
+                  <div className="overflow-hidden h-2 text-xs flex rounded-full bg-neon-medium/30 border border-neon-accent/20">
+                    <div style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(16,185,129,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-emerald-500 bg-gradient-to-r from-emerald-600 to-emerald-400 animate-pulse"></div>
                   </div>
                 </div>
               </div>
@@ -212,13 +212,13 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="border-neutral-100 shadow-md overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neutral-100 bg-neutral-50/50">
+        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neutral-800">Rendimiento semanal</CardTitle>
-              <CardDescription>Tareas completadas vs. creadas</CardDescription>
+              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Rendimiento semanal</CardTitle>
+              <CardDescription className="text-neon-text/70">Tareas completadas vs. creadas</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-emerald-50 text-emerald-600">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
               <CheckCheck className="h-5 w-5" />
             </div>
           </CardHeader>
@@ -226,26 +226,26 @@ export default function Dashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <div className="text-sm font-medium text-neutral-700">Eficiencia</div>
-                  <div className="text-2xl font-bold text-neutral-900">83%</div>
+                  <div className="text-sm font-medium text-neon-text/90">Eficiencia</div>
+                  <div className="text-2xl font-bold text-neon-accent font-mono neon-text">83%</div>
                 </div>
-                <div className="flex items-center text-emerald-600 font-medium text-sm">
+                <div className="flex items-center text-emerald-400 font-medium text-sm">
                   <ArrowUpRight className="h-4 w-4 mr-1" />
                   <span>+12% vs. semana anterior</span>
                 </div>
               </div>
               
               <div className="space-y-2">
-                <div className="grid grid-cols-3 text-xs text-neutral-500 font-medium">
+                <div className="grid grid-cols-3 text-xs text-neon-text/70 font-medium">
                   <div>Lun</div>
                   <div>Mié</div>
                   <div>Vie</div>
                 </div>
                 <div className="grid grid-cols-7 gap-1 h-16">
                   {chartData.map((day, i) => (
-                    <div key={i} className="bg-primary-50 rounded-md relative overflow-hidden">
+                    <div key={i} className="bg-neon-medium/30 rounded-md relative overflow-hidden border border-neon-accent/20">
                       <div 
-                        className="absolute bottom-0 w-full bg-primary-500"
+                        className="absolute bottom-0 w-full bg-neon-accent/80 shadow-[0_0_8px_rgba(0,225,255,0.4)]"
                         style={{ 
                           height: `${(day.completed / Math.max(...chartData.map(d => Math.max(d.created, d.completed)))) * 100}%`,
                         }}
@@ -253,13 +253,13 @@ export default function Dashboard() {
                     </div>
                   ))}
                 </div>
-                <div className="flex items-center justify-between text-xs text-neutral-600">
+                <div className="flex items-center justify-between text-xs text-neon-text/80">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-primary-500 rounded-sm mr-2"></div>
+                    <div className="w-3 h-3 bg-neon-accent/80 rounded-sm mr-2 shadow-[0_0_4px_rgba(0,225,255,0.4)]"></div>
                     <span>Completadas ({chartData.reduce((sum, day) => sum + day.completed, 0)})</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-3 h-3 border border-dashed border-primary-500 rounded-sm mr-2"></div>
+                    <div className="w-3 h-3 border border-dashed border-neon-accent/60 rounded-sm mr-2"></div>
                     <span>Creadas ({chartData.reduce((sum, day) => sum + day.created, 0)})</span>
                   </div>
                 </div>
@@ -318,14 +318,14 @@ export default function Dashboard() {
 
       {/* Overview Tabs */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-6">
-        <Card className="md:col-span-4 border-neutral-100 shadow-md overflow-hidden">
-          <CardHeader className="pb-3 border-b border-neutral-100 bg-neutral-50/50">
+        <Card className="md:col-span-4 border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+          <CardHeader className="pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <CardTitle className="text-base font-medium text-neutral-800">Resumen de actividad</CardTitle>
-                <CardDescription>Actividad de tareas en la última semana</CardDescription>
+                <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Resumen de actividad</CardTitle>
+                <CardDescription className="text-neon-text/70">Actividad de tareas en la última semana</CardDescription>
               </div>
-              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
                 <BarChart4 className="h-5 w-5" />
               </div>
             </div>
@@ -333,10 +333,10 @@ export default function Dashboard() {
           <CardContent className="p-5">
             <Tabs defaultValue="semana" className="w-full mb-2">
               <div className="flex justify-end mb-3">
-                <TabsList className="grid w-[200px] grid-cols-3 h-8">
-                  <TabsTrigger value="dia">Día</TabsTrigger>
-                  <TabsTrigger value="semana">Semana</TabsTrigger>
-                  <TabsTrigger value="mes">Mes</TabsTrigger>
+                <TabsList className="grid w-[200px] grid-cols-3 h-8 bg-neon-medium/30 border border-neon-accent/30">
+                  <TabsTrigger value="dia" className="data-[state=active]:bg-neon-accent/30 data-[state=active]:text-neon-accent text-neon-text/80">Día</TabsTrigger>
+                  <TabsTrigger value="semana" className="data-[state=active]:bg-neon-accent/30 data-[state=active]:text-neon-accent text-neon-text/80">Semana</TabsTrigger>
+                  <TabsTrigger value="mes" className="data-[state=active]:bg-neon-accent/30 data-[state=active]:text-neon-accent text-neon-text/80">Mes</TabsTrigger>
                 </TabsList>
               </div>
               <TabsContent value="dia" className="m-0">
@@ -352,13 +352,13 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="md:col-span-2 border-neutral-100 shadow-md overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neutral-100 bg-neutral-50/50">
+        <Card className="md:col-span-2 border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neutral-800">Tareas recientes</CardTitle>
-              <CardDescription>Últimas adiciones</CardDescription>
+              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Tareas recientes</CardTitle>
+              <CardDescription className="text-neon-text/70">Últimas adiciones</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
               <Clock className="h-5 w-5" />
             </div>
           </CardHeader>
@@ -373,39 +373,39 @@ export default function Dashboard() {
 
       {/* Additional Metrics Row */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <Card className="border-neutral-100 shadow-md overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neutral-100 bg-neutral-50/50">
+        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neutral-800">Proyecto destacado</CardTitle>
-              <CardDescription>Mayor actividad</CardDescription>
+              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Proyecto destacado</CardTitle>
+              <CardDescription className="text-neon-text/70">Mayor actividad</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-primary-50 text-primary-600">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
               <BarChart4 className="h-5 w-5" />
             </div>
           </CardHeader>
           <CardContent className="p-5">
-            <div className="text-lg font-bold text-neutral-900">Rediseño de UI</div>
-            <div className="flex items-center text-sm text-neutral-600 mt-1.5 space-x-4">
+            <div className="text-lg font-bold text-neon-text font-mono">Rediseño de UI</div>
+            <div className="flex items-center text-sm text-neon-text/80 mt-1.5 space-x-4">
               <div className="flex items-center">
-                <Users className="w-3.5 h-3.5 mr-1.5 text-neutral-500" />
+                <Users className="w-3.5 h-3.5 mr-1.5 text-neon-accent/60" />
                 <span className="font-medium">4 miembros</span>
               </div>
               <div className="flex items-center">
-                <CheckCheck className="w-3.5 h-3.5 mr-1.5 text-neutral-500" />
+                <CheckCheck className="w-3.5 h-3.5 mr-1.5 text-neon-accent/60" />
                 <span className="font-medium">12 tareas</span>
               </div>
             </div>
             <div className="mt-5 mb-2 space-y-1">
               <div className="flex justify-between items-center text-sm">
-                <span className="font-medium text-neutral-700">Progreso</span>
-                <span className="font-semibold text-primary-700">75%</span>
+                <span className="font-medium text-neon-text/90">Progreso</span>
+                <span className="font-semibold text-neon-accent">75%</span>
               </div>
-              <div className="h-2.5 w-full bg-neutral-100 rounded-full overflow-hidden">
-                <div className="bg-primary-500 h-full w-3/4 rounded-full"></div>
+              <div className="h-2.5 w-full bg-neon-medium/30 rounded-full overflow-hidden border border-neon-accent/20">
+                <div className="bg-neon-accent/80 h-full w-3/4 rounded-full shadow-[0_0_8px_rgba(0,225,255,0.4)]"></div>
               </div>
             </div>
             <div className="mt-4 text-xs text-right">
-              <span className="text-primary-600 hover:text-primary-700 font-medium inline-flex items-center hover:underline cursor-pointer" onClick={() => navigate("/projects")}>
+              <span className="text-neon-accent hover:text-neon-accent/80 font-medium inline-flex items-center hover:underline cursor-pointer transition-colors" onClick={() => navigate("/projects")}>
                 Ver todos los proyectos
                 <ArrowUpRight className="ml-1 h-3 w-3" />
               </span>
@@ -413,35 +413,35 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="border-neutral-100 shadow-md overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neutral-100 bg-neutral-50/50">
+        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neutral-800">Próximos vencimientos</CardTitle>
-              <CardDescription>Tareas pendientes</CardDescription>
+              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Próximos vencimientos</CardTitle>
+              <CardDescription className="text-neon-text/70">Tareas pendientes</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-amber-50 text-amber-600">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
               <CalendarDays className="h-5 w-5" />
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="divide-y divide-neutral-100">
+            <div className="divide-y divide-neon-accent/10">
               {[
                 { title: "Entrega de prototipo", days: 1, category: "Diseño" },
                 { title: "Revisión con cliente", days: 2, category: "Reunión" },
                 { title: "Implementar feedback", days: 3, category: "Desarrollo" }
               ].map((task, i) => (
-                <div key={i} className="flex items-start p-4 hover:bg-neutral-50 transition-colors cursor-pointer">
+                <div key={i} className="flex items-start p-4 hover:bg-neon-medium/10 transition-colors cursor-pointer">
                   <div className="flex-shrink-0 mr-3">
-                    <div className="h-9 w-9 rounded-full flex items-center justify-center bg-amber-100 text-amber-600 text-xs font-bold">
+                    <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent text-xs font-bold border border-neon-accent/30 shadow-[0_0_5px_rgba(0,225,255,0.3)]">
                       {task.days}d
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-neutral-900 truncate">{task.title}</div>
+                    <div className="text-sm font-semibold text-neon-text truncate">{task.title}</div>
                     <div className="flex items-center mt-1">
-                      <span className="text-xs text-neutral-500">{task.category}</span>
-                      <span className="mx-1.5 text-neutral-300">•</span>
-                      <span className="text-xs font-medium text-amber-600">
+                      <span className="text-xs text-neon-text/60">{task.category}</span>
+                      <span className="mx-1.5 text-neon-accent/30">•</span>
+                      <span className="text-xs font-medium text-neon-accent">
                         {task.days === 1 ? 'Mañana' : `En ${task.days} días`}
                       </span>
                     </div>
@@ -452,43 +452,43 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="border-neutral-100 shadow-md overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neutral-100 bg-neutral-50/50">
+        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neutral-800">Rendimiento del equipo</CardTitle>
-              <CardDescription>Top 3 miembros</CardDescription>
+              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Rendimiento del equipo</CardTitle>
+              <CardDescription className="text-neon-text/70">Top 3 miembros</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-emerald-50 text-emerald-600">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
               <Users className="h-5 w-5" />
             </div>
           </CardHeader>
           <CardContent className="p-4">
             <div className="space-y-4">
               {[
-                { name: "María L.", role: "Diseñadora", score: 92, color: "bg-primary-500" },
+                { name: "María L.", role: "Diseñadora", score: 92, color: "bg-blue-500" },
                 { name: "Juan P.", role: "Desarrollador", score: 86, color: "bg-emerald-500" },
                 { name: "Carlos M.", role: "Gerente", score: 78, color: "bg-amber-500" },
               ].map((member, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <div className="h-10 w-10 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-800 flex items-center justify-center text-sm font-medium mr-3">
+                    <div className="h-10 w-10 rounded-full bg-neon-medium/40 border border-neon-accent/30 text-neon-text flex items-center justify-center text-sm font-medium mr-3 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
                       {member.name.split(" ").map(n => n[0]).join("")}
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-neutral-900">{member.name}</div>
-                      <div className="text-xs text-neutral-500">{member.role}</div>
+                      <div className="text-sm font-semibold text-neon-text">{member.name}</div>
+                      <div className="text-xs text-neon-text/60">{member.role}</div>
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="h-6 w-6 rounded-full flex items-center justify-center bg-emerald-100 border border-emerald-200 text-emerald-700 text-xs font-bold mr-1.5">
+                    <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i === 0 ? 'bg-neon-accent/30 border-neon-accent text-neon-accent' : 'bg-neon-medium/30 border-neon-accent/30 text-neon-text/80'} text-xs font-bold mr-1.5 border shadow-[0_0_5px_rgba(0,225,255,0.2)]`}>
                       {i + 1}
                     </div>
-                    <div className="text-sm font-bold text-neutral-800">{member.score}<span className="text-neutral-400 font-normal">%</span></div>
+                    <div className="text-sm font-bold text-neon-accent">{member.score}<span className="text-neon-text/40 font-normal">%</span></div>
                   </div>
                 </div>
               ))}
-              <div className="pt-2 mt-1 border-t border-neutral-100 text-center">
-                <span className="text-primary-600 hover:text-primary-700 text-xs font-medium inline-flex items-center hover:underline cursor-pointer" onClick={() => navigate("/team")}>
+              <div className="pt-2 mt-1 border-t border-neon-accent/20 text-center">
+                <span className="text-neon-accent hover:text-neon-accent/80 text-xs font-medium inline-flex items-center hover:underline cursor-pointer transition-colors" onClick={() => navigate("/team")}>
                   Ver todo el equipo
                   <ArrowUpRight className="ml-1 h-3 w-3" />
                 </span>

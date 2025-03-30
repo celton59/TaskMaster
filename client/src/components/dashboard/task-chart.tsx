@@ -14,58 +14,68 @@ interface TaskChartProps {
 
 export function TaskChart({ data }: TaskChartProps) {
   return (
-    <Card className="lg:col-span-2">
-      <CardHeader>
-        <CardTitle>Progreso de tareas</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={data}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
+    <div className="w-full">
+      <div className="h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={data}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <XAxis 
+              dataKey="name" 
+              tick={{ fontSize: 12, fill: 'rgba(237, 248, 255, 0.8)' }}
+              axisLine={{ stroke: 'rgba(0, 225, 255, 0.3)' }}
+              tickLine={{ stroke: 'rgba(0, 225, 255, 0.3)' }}
+            />
+            <YAxis 
+              tick={{ fontSize: 12, fill: 'rgba(237, 248, 255, 0.8)' }} 
+              axisLine={{ stroke: 'rgba(0, 225, 255, 0.3)' }}
+              tickLine={{ stroke: 'rgba(0, 225, 255, 0.3)' }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: 'rgba(5, 25, 35, 0.9)',
+                borderColor: 'rgba(0, 225, 255, 0.5)',
+                color: 'rgba(237, 248, 255, 0.9)',
+                boxShadow: '0 0 10px rgba(0, 225, 255, 0.3)',
+                borderRadius: '8px',
+                fontFamily: 'monospace'
               }}
-            >
-              <XAxis 
-                dataKey="name" 
-                tick={{ fontSize: 12 }}
-                axisLine={{ stroke: '#e5e7eb' }}
-                tickLine={{ stroke: '#e5e7eb' }}
-              />
-              <YAxis 
-                tick={{ fontSize: 12 }} 
-                axisLine={{ stroke: '#e5e7eb' }}
-                tickLine={{ stroke: '#e5e7eb' }}
-              />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="completed"
-                name="Tareas completadas"
-                stroke="#22c55e"
-                activeDot={{ r: 8 }}
-                strokeWidth={2}
-                dot={{ strokeWidth: 2 }}
-                fill="rgba(34, 197, 94, 0.1)"
-              />
-              <Line
-                type="monotone"
-                dataKey="created"
-                name="Tareas nuevas"
-                stroke="#3b82f6"
-                strokeWidth={2}
-                dot={{ strokeWidth: 2 }}
-                fill="rgba(59, 130, 246, 0.1)"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
+              itemStyle={{ color: 'rgba(237, 248, 255, 0.9)' }}
+              labelStyle={{ color: 'rgba(0, 225, 255, 0.9)', fontWeight: 'bold' }}
+            />
+            <Legend 
+              wrapperStyle={{ color: 'rgba(237, 248, 255, 0.8)' }}
+              formatter={(value) => <span style={{ color: 'rgba(237, 248, 255, 0.8)' }}>{value}</span>}
+            />
+            <Line
+              type="monotone"
+              dataKey="completed"
+              name="Tareas completadas"
+              stroke="rgba(0, 225, 255, 0.9)"
+              activeDot={{ r: 8, fill: 'rgba(0, 225, 255, 0.9)', stroke: 'rgba(0, 225, 255, 0.3)' }}
+              strokeWidth={2}
+              dot={{ fill: 'rgba(0, 225, 255, 0.8)', strokeWidth: 2, r: 4, stroke: 'rgba(0, 225, 255, 0.3)' }}
+              fill="rgba(0, 225, 255, 0.05)"
+            />
+            <Line
+              type="monotone"
+              dataKey="created"
+              name="Tareas nuevas"
+              stroke="rgba(138, 180, 248, 0.8)"
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={{ fill: 'rgba(138, 180, 248, 0.8)', strokeWidth: 2, r: 4, stroke: 'rgba(138, 180, 248, 0.3)' }}
+              fill="rgba(138, 180, 248, 0.05)"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }

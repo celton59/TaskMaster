@@ -30,28 +30,30 @@ export function Header() {
   };
   
   return (
-    <header className="bg-white border-b border-neutral-100 shadow-sm z-20 sticky top-0">
+    <header className="bg-neon-darker border-b border-neon-accent/20 shadow-md z-20 sticky top-0">
       <div className="px-5 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center">
           <button 
             onClick={toggleMobileMenu}
-            className="md:hidden text-neutral-500 hover:text-neutral-700 focus:outline-none"
+            className="md:hidden text-neon-text hover:text-neon-accent focus:outline-none transition-colors"
           >
             <Menu className="h-6 w-6" />
           </button>
           <div className="md:hidden ml-2 flex items-center">
-            <span className="font-bold text-lg text-neutral-900">Aitorin</span>
+            <span className="font-bold text-lg text-neon-accent neon-text">Aitorin</span>
           </div>
         </div>
         
         <div className="ml-4 flex items-center md:ml-6 space-x-3">
           <div className="relative flex-1 max-w-md hidden md:block">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="text-neutral-400 h-4 w-4" />
+              <Search className="text-neon-accent/70 h-4 w-4" />
             </div>
             <Input
               placeholder="Buscar tareas, proyectos..."
-              className="pl-10 pr-3 py-2 h-9 bg-neutral-50 border-neutral-200 rounded-lg text-sm focus-visible:ring-primary-500 focus-visible:border-primary-400"
+              className="pl-10 pr-3 py-2 h-9 bg-neon-dark/50 border-neon-accent/30 rounded-lg text-sm text-neon-text 
+              focus-visible:ring-neon-accent focus-visible:border-neon-accent/50 focus-visible:ring-opacity-40
+              placeholder:text-neon-text/40"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -59,31 +61,31 @@ export function Header() {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="relative h-8 w-8 rounded-full bg-neutral-50 border border-neutral-200 text-neutral-500 hover:text-primary-600 hover:bg-neutral-100 focus:outline-none transition-colors flex items-center justify-center">
+              <button className="relative h-8 w-8 rounded-full bg-neon-medium/50 border border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80 focus:outline-none transition-all duration-300 flex items-center justify-center neon-box">
                 <Bell className="h-4 w-4" />
-                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-primary-500 border-2 border-white rounded-full"></span>
+                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-neon-accent border-2 border-neon-dark rounded-full shadow-[0_0_4px_rgba(0,225,255,0.7)]"></span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-80 p-0 overflow-hidden rounded-xl border border-neutral-100 shadow-lg" align="end">
-              <div className="px-4 py-3 bg-neutral-50 border-b border-neutral-100 flex justify-between items-center">
-                <h3 className="text-sm font-semibold text-neutral-900">Notificaciones</h3>
-                <Badge className="bg-primary-100 text-primary-700 hover:bg-primary-100">3 nuevas</Badge>
+            <DropdownMenuContent className="w-80 p-0 overflow-hidden rounded-xl border border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] bg-neon-dark" align="end">
+              <div className="px-4 py-3 bg-neon-darker/70 border-b border-neon-accent/30 flex justify-between items-center">
+                <h3 className="text-sm font-semibold text-neon-text neon-text">Notificaciones</h3>
+                <Badge className="bg-neon-medium border-neon-accent/30 text-neon-accent hover:bg-neon-medium">3 nuevas</Badge>
               </div>
-              <div className="max-h-[320px] overflow-y-auto divide-y divide-neutral-100">
+              <div className="max-h-[320px] overflow-y-auto divide-y divide-neon-accent/20">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="px-4 py-3 hover:bg-neutral-50 cursor-pointer">
+                  <div key={i} className="px-4 py-3 hover:bg-neon-medium/20 cursor-pointer transition-all duration-300">
                     <div className="flex items-start">
                       <div className="flex-shrink-0 mt-0.5">
-                        <div className="h-9 w-9 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 border border-primary-100">
+                        <div className="h-9 w-9 rounded-full bg-neon-medium/50 flex items-center justify-center text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
                           <Bell className="h-4 w-4" />
                         </div>
                       </div>
                       <div className="ml-3 flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-medium text-neutral-900">Tarea actualizada</p>
-                          <p className="text-xs text-neutral-500">2h</p>
+                          <p className="text-sm font-medium text-neon-text">Tarea actualizada</p>
+                          <p className="text-xs text-neon-text/60">2h</p>
                         </div>
-                        <p className="text-xs text-neutral-600 leading-relaxed">
+                        <p className="text-xs text-neon-text/80 leading-relaxed">
                           Se ha actualizado el estado de la tarea "Diseño de UI" a completado.
                         </p>
                       </div>
@@ -91,51 +93,51 @@ export function Header() {
                   </div>
                 ))}
               </div>
-              <div className="p-3 border-t border-neutral-100 bg-neutral-50">
-                <button className="w-full text-center text-xs font-medium text-primary-600 hover:text-primary-700 py-1">
+              <div className="p-3 border-t border-neon-accent/20 bg-neon-darker/70">
+                <button className="w-full text-center text-xs font-medium text-neon-accent hover:text-neon-accent/80 py-1 neon-text">
                   Ver todas las notificaciones
                 </button>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <button className="h-8 w-8 rounded-full bg-neutral-50 border border-neutral-200 text-neutral-500 hover:text-primary-600 hover:bg-neutral-100 focus:outline-none transition-colors flex items-center justify-center">
+          <button className="h-8 w-8 rounded-full bg-neon-medium/50 border border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80 focus:outline-none transition-all duration-300 flex items-center justify-center neon-box">
             <HelpCircle className="h-4 w-4" />
           </button>
           
-          <Separator orientation="vertical" className="h-6 mx-1 bg-neutral-200" />
+          <Separator orientation="vertical" className="h-6 mx-1 bg-neon-accent/20" />
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center space-x-2 focus:outline-none">
-                <Avatar className="h-8 w-8 border-2 border-white ring-1 ring-neutral-200">
+                <Avatar className="h-8 w-8 border border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]">
                   <AvatarImage src="/avatar.png" />
-                  <AvatarFallback className="bg-primary-100 text-primary-700 text-xs">AD</AvatarFallback>
+                  <AvatarFallback className="bg-neon-medium text-neon-accent text-xs">AD</AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block text-left">
-                  <p className="text-sm font-medium text-neutral-800">Admin Demo</p>
-                  <p className="text-xs text-neutral-500">admin@example.com</p>
+                  <p className="text-sm font-medium text-neon-text">Admin Demo</p>
+                  <p className="text-xs text-neon-text/70">admin@example.com</p>
                 </div>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 rounded-xl border border-neutral-100 shadow-lg" align="end">
-              <div className="p-3 border-b border-neutral-100">
-                <p className="text-sm font-medium text-neutral-900">Admin Demo</p>
-                <p className="text-xs text-neutral-500">admin@example.com</p>
+            <DropdownMenuContent className="w-56 rounded-xl border border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] bg-neon-dark" align="end">
+              <div className="p-3 border-b border-neon-accent/20 bg-neon-darker/70">
+                <p className="text-sm font-medium text-neon-text">Admin Demo</p>
+                <p className="text-xs text-neon-text/70">admin@example.com</p>
               </div>
               <DropdownMenuGroup>
-                <DropdownMenuItem className="focus:bg-neutral-50 focus:text-neutral-900">
-                  <User className="mr-2 h-4 w-4 text-neutral-500" />
+                <DropdownMenuItem className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors">
+                  <User className="mr-2 h-4 w-4 text-neon-text/70" />
                   <span>Mi perfil</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-neutral-50 focus:text-neutral-900">
-                  <Settings className="mr-2 h-4 w-4 text-neutral-500" />
+                <DropdownMenuItem className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors">
+                  <Settings className="mr-2 h-4 w-4 text-neon-text/70" />
                   <span>Configuración</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="focus:bg-neutral-50 focus:text-neutral-900">
-                <LogOut className="mr-2 h-4 w-4 text-neutral-500" />
+              <DropdownMenuSeparator className="bg-neon-accent/20" />
+              <DropdownMenuItem className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors">
+                <LogOut className="mr-2 h-4 w-4 text-neon-text/70" />
                 <span>Cerrar sesión</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
