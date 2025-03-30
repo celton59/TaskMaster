@@ -106,9 +106,9 @@ function UserAvatar({ name, avatar }: { name: string; avatar?: string }) {
   };
   
   const rolePulse: Record<string, string> = {
-    admin: "animate-pulse-slow [animation-delay:0.1s]",
-    manager: "animate-pulse-slow [animation-delay:0.4s]",
-    user: "animate-pulse-slow [animation-delay:0.7s]",
+    admin: "",
+    manager: "",
+    user: "",
   };
 
   // Determinar el color basado en el rol o usar un color por defecto
@@ -138,13 +138,13 @@ function UserAvatar({ name, avatar }: { name: string; avatar?: string }) {
 // Badge de estado para usuarios
 function StatusBadge({ status }: { status: "active" | "inactive" }) {
   const statusClasses = {
-    active: "bg-neon-green/10 text-neon-green border-neon-green/30 shadow-[0_0_8px_rgba(74,222,128,0.15)] animate-pulse-slow",
+    active: "bg-neon-green/10 text-neon-green border-neon-green/30 shadow-[0_0_8px_rgba(74,222,128,0.15)]",
     inactive: "bg-neon-red/10 text-neon-red border-neon-red/30 shadow-[0_0_8px_rgba(239,68,68,0.15)]",
   };
 
   const statusIcons = {
     active: (
-      <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-neon-green animate-pulse"></span>
+      <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-neon-green"></span>
     ),
     inactive: (
       <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-neon-red"></span>
@@ -492,7 +492,7 @@ function UsersList({
       <Card className="bg-neon-darker border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)]">
         <CardContent className="pt-6">
           <div className="flex justify-center items-center h-40">
-            <div className="text-neon-accent animate-pulse flex flex-col items-center">
+            <div className="text-neon-accent flex flex-col items-center">
               <Users className="h-12 w-12 mb-2" />
               <p className="text-sm text-neon-text/70">Cargando usuarios...</p>
             </div>
@@ -543,7 +543,7 @@ function UsersList({
             {[...Array(20)].map((_, i) => (
               <div 
                 key={i}
-                className="absolute text-neon-accent/30 font-mono text-xs animate-data-flow"
+                className="absolute text-neon-accent/30 font-mono text-xs"
                 style={{
                   left: `${i * 5}%`,
                   top: `${Math.random() * 100}%`,
@@ -654,8 +654,7 @@ function UsersList({
                 <tr 
                   key={user.id} 
                   className={`
-                    border-b border-neon-accent/10 hover:bg-neon-accent/5 transition-all
-                    animate-slide-right [animation-delay:${index * 0.05}s]
+                    border-b border-neon-accent/10 hover:bg-neon-accent/5 transition-all 
                     relative group
                   `}
                 >
