@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robot Fumando - SVG + CSS</title>
+  <style>
+    /* Fondo oscuro y centrado */
+    body {
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    
+    /* Estilos comunes para las partes del robot */
+    .robot-part {
+      fill: #00ffff;
+      stroke: #000;
+      stroke-width: 2;
+    }
+    
+    /* Animación para la cabeza (inclinación lateral) */
+    #head {
+      transform-origin: center bottom;
+      animation: headNod 1.5s ease-in-out infinite alternate;
+    }
+    
+    @keyframes headNod {
+      0%   { transform: rotate(15deg); }
+      50%  { transform: rotate(0deg); }
+      100% { transform: rotate(-15deg); }
+    }
+    
+    /* Animación para el brazo izquierdo */
+    #leftArm {
+      transform-origin: top right;
+      animation: leftArmSwing 1s ease-in-out infinite alternate;
+    }
+    
+    @keyframes leftArmSwing {
+      0%   { transform: rotate(30deg); }
+      100% { transform: rotate(-20deg); }
+    }
+    
+    /* Animación para el brazo derecho */
+    #rightArm {
+      transform-origin: top left;
+      animation: rightArmSwing 1s ease-in-out infinite alternate;
+    }
+    
+    @keyframes rightArmSwing {
+      0%   { transform: rotate(-30deg); }
+      100% { transform: rotate(20deg); }
+    }
+    
+    /* Animación para la pierna izquierda */
+    #leftLeg {
+      transform-origin: top center;
+      animation: leftLegSwing 1s ease-in-out infinite alternate;
+    }
+    
+    @keyframes leftLegSwing {
+      0%   { transform: rotate(10deg); }
+      100% { transform: rotate(-10deg); }
+    }
+    
+    /* Animación para la pierna derecha */
+    #rightLeg {
+      transform-origin: top center;
+      animation: rightLegSwing 1s ease-in-out infinite alternate;
+    }
+    
+    @keyframes rightLegSwing {
+      0%   { transform: rotate(-10deg); }
+      100% { transform: rotate(10deg); }
+    }
+    
+    /* Animación para el humo */
+    .smoke {
+      animation: smokeAnimation 3s ease-out infinite;
+    }
+    
+    @keyframes smokeAnimation {
+      0% {
+        transform: translate(0, 0) scale(0.5);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(0, -30px) scale(1);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg width="250" height="350" viewBox="0 0 250 350">
+    <!-- Cuerpo del robot -->
+    <rect id="body" class="robot-part" x="85" y="120" width="80" height="100" rx="10" ry="10" />
+    
+    <!-- Cabeza del robot -->
+    <rect id="head" class="robot-part" x="95" y="60" width="60" height="60" rx="10" ry="10" />
+    
+    <!-- Ojos -->
+    <circle cx="110" cy="80" r="5" fill="#000" />
+    <circle cx="140" cy="80" r="5" fill="#000" />
+    
+    <!-- Cigarrillo -->
+    <!-- Se dibuja una línea que representa el cigarrillo, ubicado cerca de la boca -->
+    <line id="cigarette" x1="145" y1="100" x2="165" y2="90" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+    
+    <!-- Humo: 3 círculos con diferentes delays para simular el ascenso del humo -->
+    <circle class="smoke" style="animation-delay: 0s" cx="167" cy="88" r="4" fill="#ccc" />
+    <circle class="smoke" style="animation-delay: 1s" cx="167" cy="88" r="3" fill="#ccc" />
+    <circle class="smoke" style="animation-delay: 2s" cx="167" cy="88" r="2" fill="#ccc" />
+    
+    <!-- Brazo izquierdo -->
+    <rect id="leftArm" class="robot-part" x="55" y="130" width="15" height="60" rx="5" ry="5" />
+    
+    <!-- Brazo derecho -->
+    <rect id="rightArm" class="robot-part" x="170" y="130" width="15" height="60" rx="5" ry="5" />
+    
+    <!-- Pierna izquierda -->
+    <rect id="leftLeg" class="robot-part" x="105" y="220" width="20" height="60" rx="5" ry="5" />
+    
+    <!-- Pierna derecha -->
+    <rect id="rightLeg" class="robot-part" x="135" y="220" width="20" height="60" rx="5" ry="5" />
+  </svg>
+</body>
+</html>
