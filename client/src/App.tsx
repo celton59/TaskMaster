@@ -12,13 +12,11 @@ import Calendar from "@/pages/calendar";
 import Users from "@/pages/users";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
-import { DynamicBackground } from "@/components/background/DynamicBackground";
 
 function Router() {
   return (
     <div className="flex h-screen w-full overflow-hidden relative">
-      {/* Fondo dinámico */}
-      <DynamicBackground />
+      {/* El fondo ahora se aplica directamente en el CSS global (index.css) */}
       
       <Sidebar />
       

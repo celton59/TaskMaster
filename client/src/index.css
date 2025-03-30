@@ -336,14 +336,19 @@
     font-family: 'Inter', sans-serif;
     background-color: var(--neon-darker);
     position: relative;
+    
+    /* Fondo de puntos neón */
     background-image: 
-      radial-gradient(rgba(0, 225, 255, 0.04) 1px, transparent 1px), 
-      radial-gradient(rgba(0, 225, 255, 0.03) 1px, transparent 1px);
+      radial-gradient(rgba(0, 225, 255, 0.2) 1px, transparent 1px), 
+      radial-gradient(rgba(0, 225, 255, 0.15) 1px, transparent 1px);
     background-size: 38px 38px;
     background-position: 0 0, 19px 19px;
+    
+    /* Degradado de fondo */
+    background: linear-gradient(to bottom, #000510 0%, #061621 100%);
   }
   
-  /* Overlay con efecto matrix */
+  /* Efecto matrix antes del contenido - aumentamos la opacidad */
   body::before {
     content: "";
     position: fixed;
@@ -352,11 +357,28 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    opacity: 0.04;
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM11 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM36.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM36.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5z' fill='%2300E1FF' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+    opacity: 0.15;  /* Incrementado para mayor visibilidad */
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM11 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM36.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM36.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5z' fill='%2300E1FF' fill-opacity='0.8' fill-rule='evenodd'/%3E%3C/svg%3E");
     background-size: 300px 300px;
     background-position: center;
-    animation: matrix-bg 180s linear infinite;
+    animation: matrix-bg 60s linear infinite;
+    z-index: -1;
+  }
+  
+  /* Efecto de grid después del contenido - más fuerte */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-image: 
+      linear-gradient(rgba(0, 225, 255, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 225, 255, 0.3) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.1;
     z-index: -1;
   }
   
