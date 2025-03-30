@@ -12,16 +12,20 @@ import Calendar from "@/pages/calendar";
 import Users from "@/pages/users";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
+import { DynamicBackground } from "@/components/background/DynamicBackground";
 
 function Router() {
   return (
-    <div className="flex h-screen w-full overflow-hidden">
+    <div className="flex h-screen w-full overflow-hidden relative">
+      {/* Fondo dinámico */}
+      <DynamicBackground />
+      
       <Sidebar />
       
-      <div className="flex flex-col flex-1 overflow-hidden bg-neon-darker">
+      <div className="flex flex-col flex-1 overflow-hidden bg-neon-darker/80 backdrop-blur-sm">
         <Header />
         
-        <main className="flex-1 overflow-auto bg-neon-dark p-3">
+        <main className="flex-1 overflow-auto bg-neon-dark/80 backdrop-blur-sm p-3">
           <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/tasks" component={Tasks} />
