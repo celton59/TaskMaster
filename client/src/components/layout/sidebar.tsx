@@ -2,7 +2,6 @@ import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { GradientAvatar } from "@/components/ui/gradient-avatar";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -188,15 +187,10 @@ export function Sidebar() {
         <div className="p-3 border-t border-neon-accent/20 mt-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <GradientAvatar
-                name="Admin Demo"
-                role="admin"
-                size="sm"
-                gradientType="conic"
-                animate={true}
-                pulse={false}
-                className="animate-holo-shift"
-              />
+              <Avatar className="h-8 w-8 border border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]">
+                <AvatarImage src="/avatar.png" />
+                <AvatarFallback className="bg-neon-medium text-neon-accent text-xs">AD</AvatarFallback>
+              </Avatar>
               <div className="ml-2">
                 <p className="text-sm font-medium text-neon-text">Admin Demo</p>
                 <p className="text-xs text-neon-text/70">admin@example.com</p>
@@ -294,15 +288,10 @@ export function Sidebar() {
             
             <div className="p-4 border-t border-neon-accent/20 bg-neon-darker/50">
               <div className="flex items-center">
-                <GradientAvatar
-                  name="Admin Demo"
-                  role="admin"
-                  size="md"
-                  gradientType="conic"
-                  animate={true}
-                  pulse={false}
-                  className="animate-holo-shift"
-                />
+                <Avatar className="h-10 w-10 border border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]">
+                  <AvatarImage src="/avatar.png" />
+                  <AvatarFallback className="bg-neon-medium text-neon-accent">AD</AvatarFallback>
+                </Avatar>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-neon-text">Admin Demo</p>
                   <p className="text-xs text-neon-text/70">Administrador</p>
