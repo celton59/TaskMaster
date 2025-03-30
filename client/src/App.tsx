@@ -9,6 +9,7 @@ import TaskDetails from "@/pages/task-details";
 import Reports from "@/pages/reports";
 import AIAssistant from "@/pages/ai-assistant";
 import Calendar from "@/pages/calendar";
+import Users from "@/pages/users";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 
@@ -28,6 +29,7 @@ function Router() {
             <Route path="/reports" component={Reports} />
             <Route path="/assistant" component={AIAssistant} />
             <Route path="/calendar" component={Calendar} />
+            <Route path="/users" component={Users} />
             <Route component={NotFound} />
           </Switch>
         </main>
