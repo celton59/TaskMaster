@@ -96,6 +96,25 @@
   box-shadow: 0 0 10px rgba(0, 225, 255, 0.5);
 }
 
+.with-task-indicator {
+  position: relative;
+  color: var(--neon-accent) !important;
+  text-shadow: 0 0 5px rgba(0, 225, 255, 0.3);
+}
+
+.with-task-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: var(--neon-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 225, 255, 0.5);
+}
+
 /* Personalizar cabecera de días */
 .rdp-head_cell {
   font-weight: 600;

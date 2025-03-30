@@ -119,9 +119,9 @@ export default function CalendarPage() {
     if (view === 'month') {
       return (
         <div className="grid grid-cols-1 md:grid-cols-7 gap-6">
-          <Card className="md:col-span-5 overflow-hidden border-0 rounded-xl shadow-lg">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 border-b">
-              <h3 className="font-semibold text-blue-900">Calendario mensual</h3>
+          <Card className="md:col-span-5 overflow-hidden border border-neon-accent/30 bg-neon-darker rounded-xl shadow-[0_0_20px_rgba(0,225,255,0.15)]">
+            <div className="border-b border-neon-accent/20 p-3 bg-neon-medium/20">
+              <h3 className="font-semibold text-neon-accent neon-text">Calendario mensual</h3>
             </div>
             <CardContent className="p-4">
               <CalendarComponent
@@ -145,42 +145,42 @@ export default function CalendarPage() {
             </CardContent>
           </Card>
 
-          <Card className="md:col-span-2 rounded-xl shadow-lg border-0 overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 pb-3">
-              <CardTitle className="text-xl flex items-center gap-2 text-white">
-                <CalendarIcon className="h-5 w-5 text-blue-100" />
+          <Card className="md:col-span-2 rounded-xl shadow-[0_0_20px_rgba(0,225,255,0.15)] border border-neon-accent/30 bg-neon-darker overflow-hidden">
+            <CardHeader className="border-b border-neon-accent/20 pb-3 bg-neon-medium/30">
+              <CardTitle className="text-xl flex items-center gap-2 text-neon-accent neon-text">
+                <CalendarIcon className="h-5 w-5 text-neon-accent" />
                 {format(date, 'd MMMM yyyy', { locale: es })}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               {tasksForSelectedDate.length === 0 ? (
-                <div className="text-center py-10 px-4 bg-white">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4">
-                    <CalendarIcon className="h-8 w-8 text-blue-400" />
+                <div className="text-center py-10 px-4 bg-neon-darker/80">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neon-medium/50 mb-4 border border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.15)]">
+                    <CalendarIcon className="h-8 w-8 text-neon-accent" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-800 mb-1">Sin tareas hoy</h3>
-                  <p className="text-sm text-gray-500 mb-4 max-w-xs mx-auto">
+                  <h3 className="text-lg font-medium text-neon-text mb-1">Sin tareas hoy</h3>
+                  <p className="text-sm text-neon-text/70 mb-4 max-w-xs mx-auto">
                     No tienes tareas programadas para este día. Añade una nueva para organizar tu jornada.
                   </p>
                   <Button 
                     onClick={() => openTaskForm()}
-                    className="bg-blue-600 hover:bg-blue-700 text-white flex mx-auto items-center gap-2"
+                    className="bg-neon-accent/20 hover:bg-neon-accent/30 border border-neon-accent/50 text-neon-accent neon-text shadow-[0_0_10px_rgba(0,225,255,0.25)] flex mx-auto items-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     Nueva tarea
                   </Button>
                 </div>
               ) : (
-                <div className="bg-white p-3">
+                <div className="bg-neon-darker/80 p-3">
                   <div className="flex items-center justify-between mb-3 px-2">
-                    <h4 className="text-sm font-medium text-gray-500">
+                    <h4 className="text-sm font-medium text-neon-text/80">
                       {tasksForSelectedDate.length} {tasksForSelectedDate.length === 1 ? 'tarea' : 'tareas'}
                     </h4>
                     <Button 
                       variant="ghost" 
                       size="sm" 
                       onClick={() => openTaskForm()}
-                      className="h-7 px-2 text-xs text-blue-700"
+                      className="h-7 px-2 text-xs text-neon-accent hover:text-neon-accent/80 hover:bg-neon-medium/20"
                     >
                       <Plus className="h-3 w-3 mr-1" />
                       Añadir
@@ -218,35 +218,36 @@ export default function CalendarPage() {
                         return (
                           <div 
                             key={task.id} 
-                            className="p-3 border border-l-4 rounded-lg hover:bg-blue-50 cursor-pointer transition-all shadow-sm hover:shadow task-card"
-                            style={{ borderLeftColor: task.categoryId ? 
-                                categories.find((c: Category) => c.id === task.categoryId)?.color || '#e5e7eb' 
-                                : '#e5e7eb' }}
+                            className="p-3 bg-neon-darker border border-neon-accent/30 rounded-lg hover:bg-neon-medium/10 cursor-pointer transition-all shadow-[0_0_8px_rgba(0,225,255,0.1)] hover:shadow-[0_0_12px_rgba(0,225,255,0.2)] task-card"
+                            style={{ borderLeftWidth: '2px', borderLeftStyle: 'solid', borderLeftColor: task.categoryId ? 
+                                categories.find((c: Category) => c.id === task.categoryId)?.color || 'rgba(0,225,255,0.5)' 
+                                : 'rgba(0,225,255,0.5)' }}
                             onClick={() => openTaskForm(task.id)}
                           >
                             <div className="flex justify-between items-start mb-2">
                               <div className="flex items-start gap-2">
-                                <div className={`h-3 w-3 rounded-full mt-1 flex-shrink-0 ${priorityColor}`}></div>
-                                <h3 className="font-medium text-gray-900 line-clamp-1">{task.title}</h3>
+                                <div className={`h-3 w-3 rounded-full mt-1 flex-shrink-0 ${priorityColor} shadow-[0_0_8px] shadow-neon-accent/30`}></div>
+                                <h3 className="font-medium text-neon-text line-clamp-1">{task.title}</h3>
                               </div>
                               {task.categoryId && (
-                                <Badge className="bg-white border text-[10px] px-2 ml-1 whitespace-nowrap" style={{ 
+                                <Badge className="bg-neon-darker/80 border text-[10px] px-2 ml-1 whitespace-nowrap shadow-[0_0_8px_rgba(0,255,255,0.15)]" style={{ 
                                   color: categories.find((c: Category) => c.id === task.categoryId)?.color,
-                                  borderColor: categories.find((c: Category) => c.id === task.categoryId)?.color 
+                                  borderColor: categories.find((c: Category) => c.id === task.categoryId)?.color,
+                                  textShadow: `0 0 8px ${categories.find((c: Category) => c.id === task.categoryId)?.color}80` 
                                 }}>
                                   {categories.find((c: Category) => c.id === task.categoryId)?.name || 'Sin categoría'}
                                 </Badge>
                               )}
                             </div>
                             {task.description && (
-                              <p className="text-sm text-gray-600 mb-2 line-clamp-1 pl-5">{task.description}</p>
+                              <p className="text-sm text-neon-text/60 mb-2 line-clamp-1 pl-5">{task.description}</p>
                             )}
                             <div className="flex items-center justify-between pl-5 mt-1">
-                              <div className="flex items-center text-xs text-gray-500">
-                                <Clock className="h-3 w-3 mr-1" />
+                              <div className="flex items-center text-xs text-neon-text/70">
+                                <Clock className="h-3 w-3 mr-1 text-neon-accent/70" />
                                 {task.deadline && format(task.deadline instanceof Date ? task.deadline : parseISO(task.deadline as unknown as string), 'HH:mm', { locale: es })}
                               </div>
-                              <Badge className={`${statusColor} text-xs`}>
+                              <Badge className="bg-neon-medium/30 text-neon-accent text-xs border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.15)]">
                                 {task.status.replace('_', ' ')}
                               </Badge>
                             </div>
@@ -263,23 +264,23 @@ export default function CalendarPage() {
       );
     } else if (view === 'week') {
       return (
-        <Card className="rounded-xl shadow-lg border-0 overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 text-white">
-            <h3 className="text-lg font-semibold">Vista Semanal</h3>
-            <p className="text-blue-100 text-sm">Planificación a futuro</p>
+        <Card className="rounded-xl shadow-[0_0_20px_rgba(0,225,255,0.15)] border border-neon-accent/30 bg-neon-darker overflow-hidden">
+          <div className="bg-neon-medium/20 border-b border-neon-accent/20 p-4">
+            <h3 className="text-lg font-semibold text-neon-accent neon-text">Vista Semanal</h3>
+            <p className="text-neon-text/70 text-sm">Planificación a futuro</p>
           </div>
-          <CardContent className="p-6 bg-white">
+          <CardContent className="p-6 bg-neon-darker/80">
             <div className="flex items-center justify-center h-[300px] flex-col">
-              <div className="bg-blue-50 p-6 rounded-xl mb-6 flex items-center justify-center w-24 h-24">
-                <ListTodo className="h-10 w-10 text-blue-400" />
+              <div className="bg-neon-medium/20 p-6 rounded-xl mb-6 flex items-center justify-center w-24 h-24 border border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.15)]">
+                <ListTodo className="h-10 w-10 text-neon-accent" />
               </div>
-              <h3 className="text-xl font-medium text-center mb-2">¡Próximamente!</h3>
-              <p className="text-gray-600 text-center max-w-md mb-6">
+              <h3 className="text-xl font-medium text-center mb-2 text-neon-text">¡Próximamente!</h3>
+              <p className="text-neon-text/70 text-center max-w-md mb-6">
                 La vista semanal estará disponible próximamente. Mientras tanto, 
                 utiliza la vista mensual para visualizar tus tareas en el calendario.
               </p>
               <Link to="/tasks">
-                <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+                <Button className="flex items-center gap-2 bg-neon-accent/20 hover:bg-neon-accent/30 border border-neon-accent/50 text-neon-accent neon-text shadow-[0_0_10px_rgba(0,225,255,0.25)]">
                   <ListTodo className="h-4 w-4" />
                   Ver todas las tareas
                 </Button>
@@ -290,34 +291,34 @@ export default function CalendarPage() {
       );
     } else {
       return (
-        <Card className="rounded-xl shadow-lg border-0 overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 text-white">
-            <h3 className="text-xl font-semibold">{format(date, 'EEEE, d MMMM yyyy', { locale: es })}</h3>
-            <p className="text-blue-100 text-sm">Detalle de tareas del día</p>
+        <Card className="rounded-xl shadow-[0_0_20px_rgba(0,225,255,0.15)] border border-neon-accent/30 bg-neon-darker overflow-hidden">
+          <div className="bg-neon-medium/20 border-b border-neon-accent/20 p-4">
+            <h3 className="text-xl font-semibold text-neon-accent neon-text">{format(date, 'EEEE, d MMMM yyyy', { locale: es })}</h3>
+            <p className="text-neon-text/70 text-sm">Detalle de tareas del día</p>
           </div>
           <CardContent className="p-0">
             {tasksForSelectedDate.length === 0 ? (
-              <div className="text-center py-16 px-6 bg-white">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 mb-4">
-                  <CalendarIcon className="h-10 w-10 text-blue-400" />
+              <div className="text-center py-16 px-6 bg-neon-darker/80">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-neon-medium/20 mb-4 border border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.15)]">
+                  <CalendarIcon className="h-10 w-10 text-neon-accent" />
                 </div>
-                <h3 className="text-xl font-medium text-gray-800 mb-2">Sin tareas programadas</h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                <h3 className="text-xl font-medium text-neon-text mb-2">Sin tareas programadas</h3>
+                <p className="text-neon-text/70 mb-6 max-w-md mx-auto">
                   No tienes tareas programadas para este día. Aprovecha para planificar tu jornada añadiendo nuevas tareas.
                 </p>
-                <Button onClick={() => openTaskForm()} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={() => openTaskForm()} className="bg-neon-accent/20 hover:bg-neon-accent/30 border border-neon-accent/50 text-neon-accent neon-text shadow-[0_0_10px_rgba(0,225,255,0.25)]">
                   <Plus className="h-4 w-4 mr-2" />
                   Añadir tarea
                 </Button>
               </div>
             ) : (
-              <div className="p-5 bg-white">
+              <div className="p-5 bg-neon-darker/80">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="bg-blue-100 h-8 w-8 rounded-md flex items-center justify-center text-blue-700">
+                    <div className="bg-neon-medium/20 h-8 w-8 rounded-md flex items-center justify-center text-neon-accent border border-neon-accent/30 shadow-[0_0_10px_rgba(0,225,255,0.15)]">
                       <ListTodo className="h-4 w-4" />
                     </div>
-                    <h4 className="font-medium">
+                    <h4 className="font-medium text-neon-text">
                       {tasksForSelectedDate.length} {tasksForSelectedDate.length === 1 ? 'tarea' : 'tareas'} para hoy
                     </h4>
                   </div>
@@ -325,7 +326,7 @@ export default function CalendarPage() {
                     onClick={() => openTaskForm()}
                     variant="outline"
                     size="sm"
-                    className="h-8 border-blue-200 text-blue-700"
+                    className="h-8 border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20"
                   >
                     <Plus className="h-3.5 w-3.5 mr-1" />
                     Añadir
@@ -361,41 +362,42 @@ export default function CalendarPage() {
                     return (
                       <div
                         key={task.id}
-                        className="p-4 border-l-4 border rounded-lg hover:bg-blue-50 cursor-pointer transition-all shadow-sm hover:shadow-md task-card"
-                        style={{ borderLeftColor: task.categoryId ? 
-                            categories.find((c: Category) => c.id === task.categoryId)?.color || '#e5e7eb' 
-                            : '#e5e7eb' }}
+                        className="p-4 bg-neon-darker border-l-2 border border-neon-accent/30 rounded-lg hover:bg-neon-medium/10 cursor-pointer transition-all shadow-[0_0_10px_rgba(0,225,255,0.1)] hover:shadow-[0_0_15px_rgba(0,225,255,0.25)] task-card"
+                        style={{ borderLeftStyle: 'solid', borderLeftColor: task.categoryId ? 
+                            categories.find((c: Category) => c.id === task.categoryId)?.color || 'rgba(0,225,255,0.5)' 
+                            : 'rgba(0,225,255,0.5)' }}
                         onClick={() => openTaskForm(task.id)}
                       >
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex items-start gap-2">
-                            <div className={`h-3 w-3 rounded-full mt-1.5 flex-shrink-0 ${priorityColor}`}></div>
-                            <h3 className="font-medium text-lg text-gray-900 line-clamp-1">{task.title}</h3>
+                            <div className={`h-3 w-3 rounded-full mt-1.5 flex-shrink-0 ${priorityColor} shadow-[0_0_8px] shadow-neon-accent/30`}></div>
+                            <h3 className="font-medium text-lg text-neon-text line-clamp-1">{task.title}</h3>
                           </div>
                           {task.categoryId && (
-                            <Badge className="bg-white border text-xs px-2 ml-1 whitespace-nowrap" style={{ 
+                            <Badge className="bg-neon-darker/80 border text-xs px-2 ml-1 whitespace-nowrap shadow-[0_0_8px_rgba(0,255,255,0.15)]" style={{ 
                               color: categories.find((c: Category) => c.id === task.categoryId)?.color,
-                              borderColor: categories.find((c: Category) => c.id === task.categoryId)?.color 
+                              borderColor: categories.find((c: Category) => c.id === task.categoryId)?.color,
+                              textShadow: `0 0 8px ${categories.find((c: Category) => c.id === task.categoryId)?.color}80` 
                             }}>
                               {categories.find((c: Category) => c.id === task.categoryId)?.name}
                             </Badge>
                           )}
                         </div>
                         {task.description && (
-                          <p className="text-gray-600 mb-3 ml-5 line-clamp-2">{task.description}</p>
+                          <p className="text-neon-text/60 mb-3 ml-5 line-clamp-2">{task.description}</p>
                         )}
                         <div className="flex items-center justify-between ml-5">
                           <div className="flex items-center gap-3">
-                            <div className="flex items-center text-xs text-gray-500">
-                              <Clock className="h-4 w-4 mr-1" />
+                            <div className="flex items-center text-xs text-neon-text/70">
+                              <Clock className="h-4 w-4 mr-1 text-neon-accent/70" />
                               {task.deadline && format(task.deadline instanceof Date ? task.deadline : parseISO(task.deadline as unknown as string), 'HH:mm', { locale: es })}
                             </div>
-                            <div className="flex items-center text-xs text-gray-500">
-                              <div className={`h-2 w-2 rounded-full ${priorityColor} mr-1`}></div>
+                            <div className="flex items-center text-xs text-neon-text/70">
+                              <div className={`h-2 w-2 rounded-full ${priorityColor} shadow-[0_0_5px] shadow-neon-accent/30 mr-1`}></div>
                               Prioridad {priorityLabel}
                             </div>
                           </div>
-                          <Badge className={`${statusColor} text-xs`}>
+                          <Badge className="bg-neon-medium/30 text-neon-accent text-xs border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.15)]">
                             {task.status.replace('_', ' ')}
                           </Badge>
                         </div>
@@ -415,15 +417,15 @@ export default function CalendarPage() {
   return (
     <div className="container py-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Calendario de Tareas</h1>
+        <h1 className="text-3xl font-bold text-neon-text neon-text">Calendario de Tareas</h1>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between gap-6 mb-6">
         {/* Panel de navegación */}
-        <div className="bg-white p-5 rounded-xl shadow-md border border-blue-100 md:w-2/3">
+        <div className="bg-neon-darker p-5 rounded-xl shadow-[0_0_20px_rgba(0,225,255,0.15)] border border-neon-accent/30 md:w-2/3">
           <div className="flex flex-col sm:flex-row justify-between gap-4 sm:items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-              <CalendarIcon className="h-6 w-6 mr-2 text-blue-600" />
+            <h2 className="text-2xl font-bold text-neon-text flex items-center neon-text">
+              <CalendarIcon className="h-6 w-6 mr-2 text-neon-accent" />
               {format(date, view === 'day' ? 'EEEE, d MMMM yyyy' : view === 'week' ? "'Semana del' d 'de' MMMM" : 'MMMM yyyy', { locale: es })}
             </h2>
             
@@ -432,16 +434,16 @@ export default function CalendarPage() {
                 variant="outline" 
                 size="sm"
                 onClick={() => setDate(new Date())}
-                className="text-xs font-medium h-9 px-4 border-blue-200 text-blue-700 hover:bg-blue-50"
+                className="text-xs font-medium h-9 px-4 border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20 shadow-[0_0_8px_rgba(0,225,255,0.15)]"
               >
                 Hoy
               </Button>
-              <div className="flex border border-blue-200 rounded-md overflow-hidden">
+              <div className="flex border border-neon-accent/30 rounded-md overflow-hidden shadow-[0_0_8px_rgba(0,225,255,0.15)]">
                 <Button 
                   variant="ghost" 
                   size="icon"
                   onClick={() => navigateDate('previous')}
-                  className="h-9 w-9 rounded-none border-r border-blue-200 hover:bg-blue-50 text-blue-700"
+                  className="h-9 w-9 rounded-none border-r border-neon-accent/30 hover:bg-neon-medium/20 text-neon-accent"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
@@ -449,7 +451,7 @@ export default function CalendarPage() {
                   variant="ghost" 
                   size="icon"
                   onClick={() => navigateDate('next')}
-                  className="h-9 w-9 rounded-none hover:bg-blue-50 text-blue-700"
+                  className="h-9 w-9 rounded-none hover:bg-neon-medium/20 text-neon-accent"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </Button>
@@ -457,13 +459,13 @@ export default function CalendarPage() {
             </div>
           </div>
           
-          <div className="rounded-lg bg-gray-50 p-1.5 border">
+          <div className="rounded-lg bg-neon-medium/10 p-1.5 border border-neon-accent/20">
             <div className="grid grid-cols-3 gap-1">
               <Button 
                 variant={view === 'month' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setView('month')}
-                className={`h-10 rounded-md font-medium ${view === 'month' ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-gray-100 text-gray-700'}`}
+                className={`h-10 rounded-md font-medium ${view === 'month' ? 'bg-neon-accent/20 hover:bg-neon-accent/30 border border-neon-accent/50 text-neon-accent neon-text shadow-[0_0_10px_rgba(0,225,255,0.25)]' : 'hover:bg-neon-medium/20 text-neon-text/70'}`}
               >
                 Mes
               </Button>
@@ -471,7 +473,7 @@ export default function CalendarPage() {
                 variant={view === 'week' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setView('week')}
-                className={`h-10 rounded-md font-medium ${view === 'week' ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-gray-100 text-gray-700'}`}
+                className={`h-10 rounded-md font-medium ${view === 'week' ? 'bg-neon-accent/20 hover:bg-neon-accent/30 border border-neon-accent/50 text-neon-accent neon-text shadow-[0_0_10px_rgba(0,225,255,0.25)]' : 'hover:bg-neon-medium/20 text-neon-text/70'}`}
               >
                 Semana
               </Button>
@@ -479,7 +481,7 @@ export default function CalendarPage() {
                 variant={view === 'day' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setView('day')}
-                className={`h-10 rounded-md font-medium ${view === 'day' ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-gray-100 text-gray-700'}`}
+                className={`h-10 rounded-md font-medium ${view === 'day' ? 'bg-neon-accent/20 hover:bg-neon-accent/30 border border-neon-accent/50 text-neon-accent neon-text shadow-[0_0_10px_rgba(0,225,255,0.25)]' : 'hover:bg-neon-medium/20 text-neon-text/70'}`}
               >
                 Día
               </Button>
@@ -488,15 +490,16 @@ export default function CalendarPage() {
         </div>
         
         {/* Panel de acción */}
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-xl shadow-md md:w-1/3 flex flex-col justify-between">
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-1">Gestiona tus tareas</h3>
-            <p className="text-blue-100 text-sm">Organiza tu día y mantente productivo</p>
+        <div className="bg-gradient-to-br from-neon-darker to-neon-darker p-5 rounded-xl shadow-[0_0_20px_rgba(0,225,255,0.15)] border border-neon-accent/30 md:w-1/3 flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,225,255,0.1)_0%,transparent_60%)]"></div>
+          <div className="relative z-10">
+            <h3 className="text-neon-accent font-semibold text-lg mb-1 neon-text">Gestiona tus tareas</h3>
+            <p className="text-neon-text/70 text-sm">Organiza tu día y mantente productivo</p>
           </div>
           <Button
             onClick={() => openTaskForm()}
             size="lg"
-            className="mt-4 gap-2 bg-white text-blue-700 hover:bg-blue-50 text-sm font-medium shadow-sm"
+            className="relative z-10 mt-4 gap-2 bg-neon-accent/20 hover:bg-neon-accent/30 border border-neon-accent/50 text-neon-accent neon-text shadow-[0_0_10px_rgba(0,225,255,0.25)] text-sm font-medium"
           >
             <Plus className="h-4 w-4" />
             Nueva tarea
