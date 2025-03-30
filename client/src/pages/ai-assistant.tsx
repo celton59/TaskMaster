@@ -99,12 +99,6 @@ export default function AIAssistant() {
     
     // Guardar en localStorage
     localStorage.setItem('aiAssistantChats', JSON.stringify(updatedChats));
-    
-    toast({
-      title: "Chat guardado",
-      description: "La conversación ha sido guardada correctamente",
-      variant: "default"
-    });
   };
   
   // Función para crear un nuevo chat
@@ -118,12 +112,6 @@ export default function AIAssistant() {
     const newChatId = new Date().getTime().toString();
     setCurrentChatId(newChatId);
     setMessages([DEFAULT_WELCOME_MESSAGE]);
-    
-    toast({
-      title: "Nuevo chat",
-      description: "Se ha iniciado una nueva conversación",
-      variant: "default"
-    });
   };
   
   // Función para cargar un chat guardado
@@ -141,12 +129,6 @@ export default function AIAssistant() {
       setCurrentChatId(chat.id);
       setMessages(processedMessages);
       setShowHistoryDialog(false);
-      
-      toast({
-        title: "Chat cargado",
-        description: "La conversación ha sido restaurada",
-        variant: "default"
-      });
     } else {
       console.error('No se encontró el chat con ID:', chatId);
     }
@@ -163,12 +145,6 @@ export default function AIAssistant() {
     
     // Actualizar localStorage
     localStorage.setItem('aiAssistantChats', JSON.stringify(updatedChats));
-    
-    toast({
-      title: "Chat eliminado",
-      description: "La conversación ha sido eliminada",
-      variant: "default"
-    });
   };
   
   const scrollToBottom = () => {
