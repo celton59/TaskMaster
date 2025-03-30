@@ -212,14 +212,16 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
           <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
               <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Rendimiento semanal</CardTitle>
               <CardDescription className="text-neon-text/70">Tareas completadas vs. creadas</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
-              <CheckCheck className="h-5 w-5" />
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+                <CheckCheck className="h-5 w-5" />
+              </div>
             </div>
           </CardHeader>
           <CardContent className="p-5">
@@ -318,7 +320,7 @@ export default function Dashboard() {
 
       {/* Overview Tabs */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-6">
-        <Card className="md:col-span-4 border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+        <Card className="md:col-span-4 neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
           <CardHeader className="pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
@@ -352,7 +354,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="md:col-span-2 border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+        <Card className="md:col-span-2 neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
           <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
               <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Tareas recientes</CardTitle>
@@ -373,7 +375,7 @@ export default function Dashboard() {
 
       {/* Additional Metrics Row */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
           <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
               <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Proyecto destacado</CardTitle>
@@ -413,7 +415,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
           <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
               <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Próximos vencimientos</CardTitle>
@@ -452,7 +454,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
           <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
               <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Rendimiento del equipo</CardTitle>

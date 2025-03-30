@@ -561,17 +561,20 @@ function UsersList({
           </div>
         </div>
         
-        {/* Efecto de holograma */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-neon-accent/0 via-neon-accent/5 to-neon-accent/0 animate-pulse-slow"></div>
+        {/* Sutil gradiente de fondo */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-neon-accent/0 via-neon-accent/5 to-neon-accent/0"></div>
         
-        {/* Línea de escaneo principal */}
-        <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-neon-accent to-transparent z-10 animate-scanning-line"></div>
+        {/* Línea superior estática */}
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-neon-accent/40 to-transparent z-10"></div>
         
-        {/* Efecto de círculos pulsantes en las esquinas */}
-        <div className="absolute top-2 left-2 w-3 h-3 rounded-full bg-neon-accent/30 animate-pulse-slow [animation-delay:0.1s]"></div>
-        <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-neon-accent/30 animate-pulse-slow [animation-delay:0.3s]"></div>
-        <div className="absolute bottom-2 left-2 w-3 h-3 rounded-full bg-neon-accent/30 animate-pulse-slow [animation-delay:0.5s]"></div>
-        <div className="absolute bottom-2 right-2 w-3 h-3 rounded-full bg-neon-accent/30 animate-pulse-slow [animation-delay:0.7s]"></div>
+        {/* Línea inferior estática */}
+        <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-neon-accent/40 to-transparent z-10"></div>
+        
+        {/* Marcadores discretos en las esquinas */}
+        <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-neon-accent/30"></div>
+        <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-neon-accent/30"></div>
+        <div className="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-neon-accent/30"></div>
+        <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-neon-accent/30"></div>
         
         {/* Líneas de tecnología futuristas en las esquinas */}
         <svg className="absolute top-0 left-0 w-16 h-16 text-neon-accent/50 z-10 pointer-events-none" viewBox="0 0 100 100">
@@ -716,11 +719,11 @@ function UsersList({
             </tbody>
           </table>
 
-          {/* Efecto de terminal de computadora en la parte inferior */}
+          {/* Barra de estado en la parte inferior */}
           <div className="py-2 px-4 border-t border-neon-accent/20 bg-neon-darker/80 text-neon-accent/60 font-mono text-xs">
             <div className="flex items-center">
-              <div className="animate-pulse-slow mr-2">&#9679;</div>
-              <div className="animate-neon-flicker">
+              <div className="mr-2">&#9679;</div>
+              <div>
                 sistema:// usuarios escaneados: {users.length} | estado: activo | seguridad: nivel-3
               </div>
             </div>
