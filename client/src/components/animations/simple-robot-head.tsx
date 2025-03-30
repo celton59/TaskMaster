@@ -72,12 +72,13 @@ export const SimpleRobotHead: React.FC<RobotHeadProps> = ({
           stroke-width: 2;
           stroke-linecap: round;
           opacity: 1;
-          animation: mouthPulse 4s infinite alternate;
+          animation: mouthChange 8s infinite ease-in-out;
         }
         
-        @keyframes mouthPulse {
-          0%, 100% { opacity: 0.7; }
-          50% { opacity: 1; }
+        @keyframes mouthChange {
+          0%, 100% { d: path('M 35,48 Q 50,55 65,48'); } /* Feliz */
+          33% { d: path('M 35,50 Q 50,50 65,50'); } /* Neutral */
+          66% { d: path('M 35,52 Q 50,45 65,52'); } /* Triste */
         }
         
         #head {
@@ -107,8 +108,11 @@ export const SimpleRobotHead: React.FC<RobotHeadProps> = ({
           <circle className="robot-eye" cx="40" cy="35" r="5" />
           <circle className="robot-eye" cx="60" cy="35" r="5" />
           
-          {/* Detalles de la cara */}
-          <rect className="robot-part" x="35" y="55" width="30" height="3" rx="1.5" ry="1.5" />
+          {/* Boca animada */}
+          <path 
+            className="robot-mouth" 
+            d="M 35,48 Q 50,55 65,48" 
+          />
         </g>
       </svg>
     </div>
