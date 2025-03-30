@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
@@ -45,7 +46,9 @@ export function Header() {
             <Menu className="h-6 w-6" />
           </button>
           <div className="md:hidden ml-2 flex items-center">
-            <span className="font-bold text-lg text-neon-accent neon-text">Aitorin</span>
+            <Link to="/" className="cursor-pointer">
+              <span className="font-bold text-lg text-neon-accent neon-text">Aitorin</span>
+            </Link>
           </div>
         </div>
         

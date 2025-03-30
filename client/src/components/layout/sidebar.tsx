@@ -86,12 +86,12 @@ export function Sidebar() {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-neon-dark border-r border-neon-accent/20 h-full shrink-0 shadow-lg overflow-hidden">
         <div className="py-4 px-4 flex items-center justify-between">
-          <div className="flex items-center">
+          <Link to="/" className="flex items-center cursor-pointer">
             <div className="h-8 w-8 rounded-lg bg-neon-accent/90 flex items-center justify-center text-neon-dark neon-box">
               <CheckCircle2 className="h-4 w-4" />
             </div>
             <h1 className="font-bold text-base ml-2 text-neon-text neon-text">Aitorin</h1>
-          </div>
+          </Link>
           <Button 
             size="icon" 
             variant="ghost" 
@@ -218,10 +218,12 @@ export function Sidebar() {
           <div className="relative flex-1 flex flex-col max-w-xs w-full bg-neon-dark border-r border-neon-accent/30 shadow-[0_0_25px_rgba(0,225,255,0.2)]">
             {/* Mobile menu content - mirror of desktop sidebar */}
             <div className="py-5 px-6 border-b border-neon-accent/20 flex items-center">
-              <div className="h-10 w-10 rounded-lg bg-neon-accent/90 flex items-center justify-center text-neon-dark neon-box">
-                <CheckCircle2 className="h-6 w-6" />
-              </div>
-              <h1 className="font-bold text-xl ml-3 text-neon-text neon-text">Aitorin</h1>
+              <Link to="/" className="flex items-center cursor-pointer" onClick={() => setIsMobileMenuOpen(false)}>
+                <div className="h-10 w-10 rounded-lg bg-neon-accent/90 flex items-center justify-center text-neon-dark neon-box">
+                  <CheckCircle2 className="h-6 w-6" />
+                </div>
+                <h1 className="font-bold text-xl ml-3 text-neon-text neon-text">Aitorin</h1>
+              </Link>
             </div>
             
             <nav className="flex-1 py-5 px-5 overflow-y-auto">
