@@ -1112,17 +1112,17 @@ export default function Reports() {
       </Card>
 
       {/* Resumen de rendimiento */}
-      <Card className="border-neutral-100 shadow-md overflow-hidden">
-        <CardHeader className="pb-3 border-b border-neutral-100 bg-neutral-50/50">
+      <Card className="bg-neon-darker border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] rounded-xl overflow-hidden">
+        <CardHeader className="pb-3 border-b border-neon-accent/20 bg-neon-medium/5">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="text-base font-medium text-neutral-800">Resumen de Rendimiento</CardTitle>
-              <CardDescription>Vista general del progreso del equipo</CardDescription>
+              <CardTitle className="text-base font-medium text-neon-text neon-text">Resumen de Rendimiento</CardTitle>
+              <CardDescription className="text-neon-text/70">Vista general del progreso del equipo</CardDescription>
             </div>
             <Button 
               variant="outline"
               size="sm" 
-              className="h-8"
+              className="h-8 border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20 shadow-[0_0_8px_rgba(0,225,255,0.15)]"
             >
               <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
               Actualizar
@@ -1131,42 +1131,51 @@ export default function Reports() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="grid grid-cols-1 md:grid-cols-3">
-            <div className="p-6 border-b md:border-b-0 md:border-r border-neutral-100">
-              <div className="text-sm font-medium text-neutral-500 mb-3">Efectividad</div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">{completionRate}%</div>
-              <div className="flex items-center mb-4">
-                <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">
-                  +12% vs. mes anterior
-                </span>
-              </div>
-              <div className="text-sm text-neutral-600">
-                Basado en la tasa de tareas completadas a tiempo respecto al total
-              </div>
-            </div>
-            
-            <div className="p-6 border-b md:border-b-0 md:border-r border-neutral-100">
-              <div className="text-sm font-medium text-neutral-500 mb-3">Tiempo Promedio</div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">3.2 <span className="text-lg font-medium">días</span></div>
-              <div className="flex items-center mb-4">
-                <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">
-                  +0.5 días vs. mes anterior
-                </span>
-              </div>
-              <div className="text-sm text-neutral-600">
-                Tiempo promedio para completar una tarea desde su creación
+            <div className="p-6 border-b md:border-b-0 md:border-r border-neon-accent/20 relative">
+              <div className="absolute top-0 bottom-0 left-0 w-1/2 bg-gradient-to-r from-neon-accent/5 to-transparent"></div>
+              <div className="relative z-10">
+                <div className="text-sm font-medium text-neon-accent mb-3">Efectividad</div>
+                <div className="text-4xl font-bold neon-text mb-2">{completionRate}%</div>
+                <div className="flex items-center mb-4">
+                  <span className="text-xs bg-neon-green/10 text-neon-green px-2 py-0.5 rounded-full font-medium border border-neon-green/30 shadow-[0_0_8px_rgba(0,255,157,0.2)]">
+                    +12% vs. mes anterior
+                  </span>
+                </div>
+                <div className="text-sm text-neon-text/70">
+                  Basado en la tasa de tareas completadas a tiempo respecto al total
+                </div>
               </div>
             </div>
             
-            <div className="p-6">
-              <div className="text-sm font-medium text-neutral-500 mb-3">Carga de Trabajo</div>
-              <div className="text-4xl font-bold text-primary-600 mb-2">{stats.pending + stats.inProgress + stats.review} <span className="text-lg font-medium">activas</span></div>
-              <div className="flex items-center mb-4">
-                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
-                  {stats.total} tareas totales
-                </span>
+            <div className="p-6 border-b md:border-b-0 md:border-r border-neon-accent/20 relative">
+              <div className="absolute top-0 bottom-0 left-0 w-1/2 bg-gradient-to-r from-neon-accent/5 to-transparent"></div>
+              <div className="relative z-10">
+                <div className="text-sm font-medium text-neon-accent mb-3">Tiempo Promedio</div>
+                <div className="text-4xl font-bold neon-text-yellow mb-2">3.2 <span className="text-lg font-medium">días</span></div>
+                <div className="flex items-center mb-4">
+                  <span className="text-xs bg-neon-yellow/10 text-neon-yellow px-2 py-0.5 rounded-full font-medium border border-neon-yellow/30 shadow-[0_0_8px_rgba(255,234,0,0.2)]">
+                    +0.5 días vs. mes anterior
+                  </span>
+                </div>
+                <div className="text-sm text-neon-text/70">
+                  Tiempo promedio para completar una tarea desde su creación
+                </div>
               </div>
-              <div className="text-sm text-neutral-600">
-                Basado en tareas pendientes, en progreso y en revisión
+            </div>
+            
+            <div className="p-6 relative">
+              <div className="absolute top-0 bottom-0 left-0 w-1/2 bg-gradient-to-r from-neon-accent/5 to-transparent"></div>
+              <div className="relative z-10">
+                <div className="text-sm font-medium text-neon-accent mb-3">Carga de Trabajo</div>
+                <div className="text-4xl font-bold neon-text-purple mb-2">{stats.pending + stats.inProgress + stats.review} <span className="text-lg font-medium">activas</span></div>
+                <div className="flex items-center mb-4">
+                  <span className="text-xs bg-neon-accent/10 text-neon-accent px-2 py-0.5 rounded-full font-medium border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+                    {stats.total} tareas totales
+                  </span>
+                </div>
+                <div className="text-sm text-neon-text/70">
+                  Basado en tareas pendientes, en progreso y en revisión
+                </div>
               </div>
             </div>
           </div>
@@ -1179,11 +1188,12 @@ export default function Reports() {
 // Función para obtener el color de la categoría
 function getCategoryColor(color: string) {
   switch (color) {
-    case "blue": return "bg-primary-500";
-    case "purple": return "bg-purple-500";
-    case "orange": return "bg-amber-500";
-    case "green": return "bg-emerald-500";
-    case "red": return "bg-rose-500";
-    default: return "bg-slate-500";
+    case "blue": return "bg-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.5)]";
+    case "purple": return "bg-neon-purple shadow-[0_0_8px_rgba(187,0,255,0.5)]";
+    case "orange": return "bg-neon-orange shadow-[0_0_8px_rgba(255,109,0,0.5)]";
+    case "green": return "bg-neon-green shadow-[0_0_8px_rgba(0,255,157,0.5)]";
+    case "red": return "bg-neon-red shadow-[0_0_8px_rgba(255,45,109,0.5)]";
+    case "yellow": return "bg-neon-yellow shadow-[0_0_8px_rgba(255,234,0,0.5)]";
+    default: return "bg-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.5)]";
   }
 }
