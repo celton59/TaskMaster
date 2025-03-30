@@ -92,7 +92,7 @@ export default function Dashboard() {
               <span className="bg-neon-purple/10 text-neon-purple p-1.5 rounded-md mr-3 border border-neon-purple/30 shadow-[0_0_8px_rgba(187,0,255,0.2)]">
                 <LayoutDashboard className="h-5 w-5" />
               </span>
-              <span className="neon-text-purple font-mono">Panel de Control</span>
+              <span className="terminal-text">Panel de Control</span>
             </h1>
             <p className="mt-2 text-sm text-neon-text/90 pl-[46px]">
               Bienvenido de nuevo, <span className="text-neon-purple font-medium">Admin Demo</span> - 
