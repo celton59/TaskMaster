@@ -57,7 +57,14 @@ export default {
           light: "#0E3A5A",
           accent: "#00E1FF",
           hover: "#00D1FF",
-          text: "#E0F8FF"
+          text: "#E0F8FF",
+          // Colores neón adicionales
+          purple: "#bb00ff",
+          pink: "#ff00e6",
+          green: "#00ff9d",
+          yellow: "#ffea00",
+          orange: "#ff6d00",
+          red: "#ff2d6d"
         },
         chart: {
           "1": "hsl(var(--chart-1))",
@@ -112,6 +119,36 @@ export default {
             borderColor: "rgba(0, 225, 255, 1)"
           }
         },
+        "neon-glow-purple": {
+          "0%, 100%": {
+            boxShadow: "0 0 5px rgba(187, 0, 255, 0.5)",
+            borderColor: "rgba(187, 0, 255, 0.8)"
+          },
+          "50%": {
+            boxShadow: "0 0 15px rgba(187, 0, 255, 0.8)",
+            borderColor: "rgba(187, 0, 255, 1)"
+          }
+        },
+        "neon-glow-pink": {
+          "0%, 100%": {
+            boxShadow: "0 0 5px rgba(255, 0, 230, 0.5)",
+            borderColor: "rgba(255, 0, 230, 0.8)"
+          },
+          "50%": {
+            boxShadow: "0 0 15px rgba(255, 0, 230, 0.8)",
+            borderColor: "rgba(255, 0, 230, 1)"
+          }
+        },
+        "neon-glow-green": {
+          "0%, 100%": {
+            boxShadow: "0 0 5px rgba(0, 255, 157, 0.5)",
+            borderColor: "rgba(0, 255, 157, 0.8)"
+          },
+          "50%": {
+            boxShadow: "0 0 15px rgba(0, 255, 157, 0.8)",
+            borderColor: "rgba(0, 255, 157, 1)"
+          }
+        },
         "fade-in": {
           "0%": {
             opacity: "0",
@@ -128,6 +165,9 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "gold-shimmer": "gold-shimmer 3s ease infinite",
         "neon-glow": "neon-glow 2s ease-in-out infinite",
+        "neon-glow-purple": "neon-glow-purple 2s ease-in-out infinite",
+        "neon-glow-pink": "neon-glow-pink 2s ease-in-out infinite",
+        "neon-glow-green": "neon-glow-green 2s ease-in-out infinite",
         "fade-in": "fade-in 0.5s ease-out forwards"
       },
     },

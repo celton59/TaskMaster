@@ -277,8 +277,8 @@ export default function Dashboard() {
           icon={FileText}
           linkText="Ver todas"
           linkHref="/tasks"
-          iconColor="text-primary-600"
-          iconBgColor="bg-primary-50"
+          iconColor="text-neon-green"
+          iconBgColor="bg-neon-dark"
           trend={{ value: "12%", isPositive: true }}
         />
         
@@ -288,8 +288,8 @@ export default function Dashboard() {
           icon={Clock}
           linkText="Ver pendientes"
           linkHref="/tasks/pending"
-          iconColor="text-amber-600"
-          iconBgColor="bg-amber-50"
+          iconColor="text-neon-purple"
+          iconBgColor="bg-neon-dark"
           trend={{ value: "4%", isPositive: false }}
         />
         
@@ -299,8 +299,8 @@ export default function Dashboard() {
           icon={CheckCheck}
           linkText="Ver completadas"
           linkHref="/tasks/completed"
-          iconColor="text-emerald-600"
-          iconBgColor="bg-emerald-50"
+          iconColor="text-neon-pink"
+          iconBgColor="bg-neon-dark"
           trend={{ value: "18%", isPositive: true }}
         />
         
@@ -310,8 +310,8 @@ export default function Dashboard() {
           icon={AlertTriangle}
           linkText="Ver en revisión"
           linkHref="/tasks/review"
-          iconColor="text-rose-600"
-          iconBgColor="bg-rose-50"
+          iconColor="text-neon-yellow"
+          iconBgColor="bg-neon-dark"
           trend={{ value: "2%", isPositive: true }}
         />
       </div>

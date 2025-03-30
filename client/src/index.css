@@ -6,12 +6,21 @@
 
 /* Variables de tema neón */
 :root {
+  /* Color neón principal */
   --neon-accent: #00E1FF;
   --neon-dark: #061621;
   --neon-darker: #020B10;
   --neon-medium: #0C2840;
   --neon-light: #0E3A5A;
   --neon-text: #E0F8FF;
+  
+  /* Colores neón adicionales para variedad */
+  --neon-purple: #bb00ff;
+  --neon-pink: #ff00e6;
+  --neon-green: #00ff9d;
+  --neon-yellow: #ffea00;
+  --neon-orange: #ff6d00;
+  --neon-red: #ff2d6d;
 }
 
 /* Estilos personalizados para el calendario - Tema neón */
@@ -172,9 +181,54 @@
     text-shadow: 0 0 5px rgba(0, 225, 255, 0.5);
   }
   
+  .neon-text-purple {
+    color: var(--neon-purple);
+    text-shadow: 0 0 5px rgba(187, 0, 255, 0.5);
+  }
+  
+  .neon-text-pink {
+    color: var(--neon-pink);
+    text-shadow: 0 0 5px rgba(255, 0, 230, 0.5);
+  }
+  
+  .neon-text-green {
+    color: var(--neon-green);
+    text-shadow: 0 0 5px rgba(0, 255, 157, 0.5);
+  }
+  
+  .neon-text-yellow {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 5px rgba(255, 234, 0, 0.5);
+  }
+  
+  .neon-text-orange {
+    color: var(--neon-orange);
+    text-shadow: 0 0 5px rgba(255, 109, 0, 0.5);
+  }
+  
+  .neon-text-red {
+    color: var(--neon-red);
+    text-shadow: 0 0 5px rgba(255, 45, 109, 0.5);
+  }
+  
   .neon-box {
     border: 1px solid var(--neon-accent);
     box-shadow: 0 0 10px rgba(0, 225, 255, 0.3), inset 0 0 10px rgba(0, 225, 255, 0.1);
+  }
+  
+  .neon-box-purple {
+    border: 1px solid var(--neon-purple);
+    box-shadow: 0 0 10px rgba(187, 0, 255, 0.3), inset 0 0 10px rgba(187, 0, 255, 0.1);
+  }
+  
+  .neon-box-pink {
+    border: 1px solid var(--neon-pink);
+    box-shadow: 0 0 10px rgba(255, 0, 230, 0.3), inset 0 0 10px rgba(255, 0, 230, 0.1);
+  }
+  
+  .neon-box-green {
+    border: 1px solid var(--neon-green);
+    box-shadow: 0 0 10px rgba(0, 255, 157, 0.3), inset 0 0 10px rgba(0, 255, 157, 0.1);
   }
   
   .neon-button {
@@ -188,5 +242,31 @@
   .neon-button:hover {
     box-shadow: 0 0 15px rgba(0, 225, 255, 0.5), inset 0 0 10px rgba(0, 225, 255, 0.2);
     text-shadow: 0 0 5px rgba(0, 225, 255, 0.7);
+  }
+  
+  .neon-button-purple {
+    background-color: transparent;
+    color: var(--neon-purple);
+    border: 1px solid var(--neon-purple);
+    box-shadow: 0 0 10px rgba(187, 0, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .neon-button-purple:hover {
+    box-shadow: 0 0 15px rgba(187, 0, 255, 0.5), inset 0 0 10px rgba(187, 0, 255, 0.2);
+    text-shadow: 0 0 5px rgba(187, 0, 255, 0.7);
+  }
+  
+  .neon-button-green {
+    background-color: transparent;
+    color: var(--neon-green);
+    border: 1px solid var(--neon-green);
+    box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .neon-button-green:hover {
+    box-shadow: 0 0 15px rgba(0, 255, 157, 0.5), inset 0 0 10px rgba(0, 255, 157, 0.2);
+    text-shadow: 0 0 5px rgba(0, 255, 157, 0.7);
   }
 }
