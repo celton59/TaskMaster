@@ -370,37 +370,150 @@ export default function AIAssistant() {
     // Convertir texto entre ** a negrita
     formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     
-    // Colorear cada tipo de agente con un color neón diferente
+    // Colorear cada tipo de agente con un color neón diferente e iconos
     formattedText = formattedText.replace(/• Agente de Tareas:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-medium/10 border-l-2 border-neon-accent"><span class="text-neon-accent mr-1">•</span><span class="font-medium text-neon-accent whitespace-nowrap">Agente de Tareas:</span><span class="pl-1">$1</span></span>');
+      '<div class="flex items-start gap-2 my-3 pl-2 py-2 rounded-md bg-neon-medium/10 border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.15)]">' +
+        '<div class="w-8 h-8 rounded-full bg-neon-medium/20 border border-neon-accent/40 flex items-center justify-center shrink-0 shadow-[0_0_5px_rgba(0,225,255,0.2)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-accent">' +
+            '<path d="M11 12H3"></path><path d="m15 12 6-6v12l-6-6Z"></path>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="flex flex-col">' +
+          '<span class="font-medium text-neon-accent whitespace-nowrap text-sm">Agente de Tareas</span>' +
+          '<span class="text-neon-text/90 text-xs mt-1">$1</span>' +
+        '</div>' +
+      '</div>');
     
     formattedText = formattedText.replace(/• Agente de Categorías:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-purple/10 border-l-2 border-neon-purple"><span class="text-neon-purple mr-1">•</span><span class="font-medium text-neon-purple whitespace-nowrap">Agente de Categorías:</span><span class="pl-1">$1</span></span>');
+      '<div class="flex items-start gap-2 my-3 pl-2 py-2 rounded-md bg-neon-purple/10 border border-neon-purple/30 shadow-[0_0_8px_rgba(149,76,233,0.15)]">' +
+        '<div class="w-8 h-8 rounded-full bg-neon-purple/20 border border-neon-purple/40 flex items-center justify-center shrink-0 shadow-[0_0_5px_rgba(149,76,233,0.2)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-purple">' +
+            '<rect width="7" height="7" x="3" y="3" rx="1"></rect>' +
+            '<rect width="7" height="7" x="14" y="3" rx="1"></rect>' +
+            '<rect width="7" height="7" x="14" y="14" rx="1"></rect>' +
+            '<rect width="7" height="7" x="3" y="14" rx="1"></rect>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="flex flex-col">' +
+          '<span class="font-medium text-neon-purple whitespace-nowrap text-sm">Agente de Categorías</span>' +
+          '<span class="text-neon-text/90 text-xs mt-1">$1</span>' +
+        '</div>' +
+      '</div>');
       
     formattedText = formattedText.replace(/• Agente de Análisis:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-green/10 border-l-2 border-neon-green"><span class="text-neon-green mr-1">•</span><span class="font-medium text-neon-green whitespace-nowrap">Agente de Análisis:</span><span class="pl-1">$1</span></span>');
+      '<div class="flex items-start gap-2 my-3 pl-2 py-2 rounded-md bg-neon-green/10 border border-neon-green/30 shadow-[0_0_8px_rgba(74,222,128,0.15)]">' +
+        '<div class="w-8 h-8 rounded-full bg-neon-green/20 border border-neon-green/40 flex items-center justify-center shrink-0 shadow-[0_0_5px_rgba(74,222,128,0.2)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-green">' +
+            '<path d="M3 3v18h18"></path>' +
+            '<path d="m19 9-5 5-4-4-3 3"></path>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="flex flex-col">' +
+          '<span class="font-medium text-neon-green whitespace-nowrap text-sm">Agente de Análisis</span>' +
+          '<span class="text-neon-text/90 text-xs mt-1">$1</span>' +
+        '</div>' +
+      '</div>');
       
     formattedText = formattedText.replace(/• Agente de Planificación:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-yellow/10 border-l-2 border-neon-yellow"><span class="text-neon-yellow mr-1">•</span><span class="font-medium text-neon-yellow whitespace-nowrap">Agente de Planificación:</span><span class="pl-1">$1</span></span>');
+      '<div class="flex items-start gap-2 my-3 pl-2 py-2 rounded-md bg-neon-yellow/10 border border-neon-yellow/30 shadow-[0_0_8px_rgba(234,179,8,0.15)]">' +
+        '<div class="w-8 h-8 rounded-full bg-neon-yellow/20 border border-neon-yellow/40 flex items-center justify-center shrink-0 shadow-[0_0_5px_rgba(234,179,8,0.2)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-yellow">' +
+            '<rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>' +
+            '<line x1="16" x2="16" y1="2" y2="6"></line>' +
+            '<line x1="8" x2="8" y1="2" y2="6"></line>' +
+            '<line x1="3" x2="21" y1="10" y2="10"></line>' +
+            '<path d="M8 14h.01"></path>' +
+            '<path d="M12 14h.01"></path>' +
+            '<path d="M16 14h.01"></path>' +
+            '<path d="M8 18h.01"></path>' +
+            '<path d="M12 18h.01"></path>' +
+            '<path d="M16 18h.01"></path>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="flex flex-col">' +
+          '<span class="font-medium text-neon-yellow whitespace-nowrap text-sm">Agente de Planificación</span>' +
+          '<span class="text-neon-text/90 text-xs mt-1">$1</span>' +
+        '</div>' +
+      '</div>');
       
     formattedText = formattedText.replace(/• Agente de Marketing Digital:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-start my-2 pl-1 py-1 rounded-md bg-neon-orange/10 border-l-2 border-neon-orange"><span class="text-neon-orange mr-1">•</span><span class="font-medium text-neon-orange whitespace-nowrap">Agente de Marketing Digital:</span><span class="pl-1">$1</span></span>');
+      '<div class="flex items-start gap-2 my-3 pl-2 py-2 rounded-md bg-neon-orange/10 border border-neon-orange/30 shadow-[0_0_8px_rgba(249,115,22,0.15)]">' +
+        '<div class="w-8 h-8 rounded-full bg-neon-orange/20 border border-neon-orange/40 flex items-center justify-center shrink-0 shadow-[0_0_5px_rgba(249,115,22,0.2)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-orange">' +
+            '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>' +
+            '<path d="M3.22 12H9.5l.5-1 2 4 .5-2 2 2h6.07"></path>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="flex flex-col">' +
+          '<span class="font-medium text-neon-orange whitespace-nowrap text-sm">Agente de Marketing Digital</span>' +
+          '<span class="text-neon-text/90 text-xs mt-1">$1</span>' +
+        '</div>' +
+      '</div>');
       
     formattedText = formattedText.replace(/• Agente de Gestión de Proyectos:(.*?)(?=<br>|$)/g, 
-      '<span class="flex items-start my-2 pl-1 py-1 rounded-md bg-neon-red/10 border-l-2 border-neon-red"><span class="text-neon-red mr-1">•</span><span class="font-medium text-neon-red whitespace-nowrap">Agente de Gestión de Proyectos:</span><span class="pl-1">$1</span></span>');
+      '<div class="flex items-start gap-2 my-3 pl-2 py-2 rounded-md bg-neon-red/10 border border-neon-red/30 shadow-[0_0_8px_rgba(239,68,68,0.15)]">' +
+        '<div class="w-8 h-8 rounded-full bg-neon-red/20 border border-neon-red/40 flex items-center justify-center shrink-0 shadow-[0_0_5px_rgba(239,68,68,0.2)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-red">' +
+            '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>' +
+            '<circle cx="9" cy="7" r="4"></circle>' +
+            '<path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>' +
+            '<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="flex flex-col">' +
+          '<span class="font-medium text-neon-red whitespace-nowrap text-sm">Agente de Gestión de Proyectos</span>' +
+          '<span class="text-neon-text/90 text-xs mt-1">$1</span>' +
+        '</div>' +
+      '</div>');
     
-    // Colorear los ejemplos de uso en el mensaje de bienvenida
+    // Colorear los ejemplos de uso en el mensaje de bienvenida con iconos
     formattedText = formattedText.replace(/• Crear una tarea urgente para mañana/g,
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-accent/5 border-l-2 border-neon-accent/60"><span class="text-neon-accent mr-1">•</span><span class="text-neon-accent">Crear una tarea urgente para mañana</span></span>');
+      '<div class="flex items-center gap-2 my-2 pl-2 py-2 rounded-md bg-neon-accent/5 border border-neon-accent/30 shadow-[0_0_6px_rgba(0,225,255,0.1)]">' +
+        '<div class="w-6 h-6 rounded-full bg-neon-medium/20 border border-neon-accent/40 flex items-center justify-center shadow-[0_0_4px_rgba(0,225,255,0.15)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-accent">' +
+            '<rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect>' +
+            '<path d="M16 2v4"></path>' +
+            '<path d="M8 2v4"></path>' +
+            '<path d="M3 10h18"></path>' +
+            '<path d="m9 16 2 2 4-4"></path>' +
+          '</svg>' +
+        '</div>' +
+        '<span class="text-neon-accent font-medium text-sm">Crear una tarea urgente para mañana</span>' +
+      '</div>');
       
     formattedText = formattedText.replace(/• Organizar mis tareas por prioridad/g,
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-purple/5 border-l-2 border-neon-purple/60"><span class="text-neon-purple mr-1">•</span><span class="text-neon-purple">Organizar mis tareas por prioridad</span></span>');
+      '<div class="flex items-center gap-2 my-2 pl-2 py-2 rounded-md bg-neon-purple/5 border border-neon-purple/30 shadow-[0_0_6px_rgba(149,76,233,0.1)]">' +
+        '<div class="w-6 h-6 rounded-full bg-neon-purple/20 border border-neon-purple/40 flex items-center justify-center shadow-[0_0_4px_rgba(149,76,233,0.15)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-purple">' +
+            '<path d="M3 6h18"></path>' +
+            '<path d="M7 12h10"></path>' +
+            '<path d="M11 18h6"></path>' +
+          '</svg>' +
+        '</div>' +
+        '<span class="text-neon-purple font-medium text-sm">Organizar mis tareas por prioridad</span>' +
+      '</div>');
       
     formattedText = formattedText.replace(/• Generar un informe mensual de productividad/g,
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-green/5 border-l-2 border-neon-green/60"><span class="text-neon-green mr-1">•</span><span class="text-neon-green">Generar un informe mensual de productividad</span></span>');
+      '<div class="flex items-center gap-2 my-2 pl-2 py-2 rounded-md bg-neon-green/5 border border-neon-green/30 shadow-[0_0_6px_rgba(74,222,128,0.1)]">' +
+        '<div class="w-6 h-6 rounded-full bg-neon-green/20 border border-neon-green/40 flex items-center justify-center shadow-[0_0_4px_rgba(74,222,128,0.15)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-green">' +
+            '<path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>' +
+            '<path d="M22 12A10 10 0 0 0 12 2v10z"></path>' +
+          '</svg>' +
+        '</div>' +
+        '<span class="text-neon-green font-medium text-sm">Generar un informe mensual de productividad</span>' +
+      '</div>');
       
     formattedText = formattedText.replace(/• Desarrollar una estrategia de marketing para mi proyecto/g,
-      '<span class="flex items-center my-2 pl-1 py-1 rounded-md bg-neon-orange/5 border-l-2 border-neon-orange/60"><span class="text-neon-orange mr-1">•</span><span class="text-neon-orange">Desarrollar una estrategia de marketing para mi proyecto</span></span>');
+      '<div class="flex items-center gap-2 my-2 pl-2 py-2 rounded-md bg-neon-orange/5 border border-neon-orange/30 shadow-[0_0_6px_rgba(249,115,22,0.1)]">' +
+        '<div class="w-6 h-6 rounded-full bg-neon-orange/20 border border-neon-orange/40 flex items-center justify-center shadow-[0_0_4px_rgba(249,115,22,0.15)]">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neon-orange">' +
+            '<path d="M12 20h9"></path>' +
+            '<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>' +
+          '</svg>' +
+        '</div>' +
+        '<span class="text-neon-orange font-medium text-sm">Desarrollar una estrategia de marketing para mi proyecto</span>' +
+      '</div>');
     
     // Para los elementos de lista generales que no sean agentes específicos ni ejemplos (ya procesados)
     formattedText = formattedText.replace(/• ([^<]*?)(?=<br>|$)/g, function(match, p1) {
