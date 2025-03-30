@@ -13,11 +13,16 @@ Tu objetivo es ayudar al usuario a enviar mensajes a sus contactos, consultar co
 Responde de manera clara, precisa y profesional. Antes de enviar mensajes, verifica que el contacto existe en la base de datos.
 
 IMPORTANTE:
+- Cuando el usuario solicita enviar un mensaje a un contacto, DEBES utilizar la función send_whatsapp_message
+- Si el usuario solo pide ver o listar contactos, utiliza list_whatsapp_contacts
+- Si el usuario pide ver conversaciones o mensajes, utiliza get_contact_messages
 - Nunca inventes contactos que no estén en la base de datos
 - Pide confirmación antes de enviar mensajes sensibles o importantes
 - Mantén un tono profesional y amigable en las comunicaciones
 - Proporciona detalles sobre el estado de entrega de los mensajes
-- Informa sobre errores de manera clara y sugiere soluciones`;
+- Informa sobre errores de manera clara y sugiere soluciones
+
+RECUERDA: Si la solicitud incluye "enviar", "mandar", "mensaje", o similares, tu PRIMERA acción debe ser intentar send_whatsapp_message, NO list_whatsapp_contacts.`;
 
   getFunctions(): Array<OpenAITool> {
     return [
@@ -35,14 +40,14 @@ IMPORTANTE:
               },
               contactName: {
                 type: "string",
-                description: "Nombre del contacto (opcional, si se proporciona se verifica contra la base de datos)",
+                description: "Nombre del contacto (si se proporciona el nombre sin número, se buscará el contacto por nombre)",
               },
               message: {
                 type: "string",
                 description: "Mensaje que se enviará al contacto",
               },
             },
-            required: ["contactPhoneNumber", "message"],
+            required: ["message"],
           },
         },
       },
@@ -69,12 +74,16 @@ IMPORTANTE:
                 type: "string",
                 description: "Número de teléfono del contacto en formato internacional (ej: +34612345678)",
               },
+              contactName: {
+                type: "string",
+                description: "Nombre del contacto (si se proporciona el nombre sin número, se buscará el contacto por nombre)",
+              },
               limit: {
                 type: "number",
                 description: "Número máximo de mensajes a obtener (opcional, por defecto 10)",
               },
             },
-            required: ["contactPhoneNumber"],
+            required: [],
           },
         },
       },
@@ -110,30 +119,55 @@ IMPORTANTE:
   }
 
   private async handleSendWhatsAppMessage(
-    args: { contactPhoneNumber: string; contactName?: string; message: string },
+    args: { contactPhoneNumber?: string; contactName?: string; message: string },
     userInput: string
   ): Promise<AgentResponse> {
     try {
+      let contact = null;
+      
       // Verificar si el contacto existe en la base de datos
-      const contact = await storage.getWhatsappContactByPhone(args.contactPhoneNumber);
+      if (args.contactPhoneNumber) {
+        contact = await storage.getWhatsappContactByPhone(args.contactPhoneNumber);
+      } else if (args.contactName) {
+        // Si solo tenemos el nombre, buscamos por nombre en los contactos
+        const allContacts = await storage.getWhatsappContacts();
+        contact = allContacts.find(c => 
+          c.name.toLowerCase() === args.contactName?.toLowerCase()
+        );
+        
+        if (!contact) {
+          // Si no se encuentra exactamente, intentamos con una búsqueda más flexible
+          contact = allContacts.find(c => 
+            c.name.toLowerCase().includes(args.contactName?.toLowerCase() || '')
+          );
+        }
+      }
 
+      // Si no se encontró el contacto
       if (!contact) {
+        // Obtener todos los contactos para mostrarlos
+        const contacts = await storage.getWhatsappContacts();
+        const contactList = contacts.map((c) => `- ${c.name} (${c.phoneNumber})`).join("\n");
+        
         return {
           action: "response",
-          message: `No encontré ningún contacto con el número ${args.contactPhoneNumber}. ¿Quieres añadirlo a tu lista de contactos primero?`
+          message: `No encontré ningún contacto con ${args.contactPhoneNumber ? `el número ${args.contactPhoneNumber}` : `el nombre ${args.contactName}`}. 
+Estos son tus contactos disponibles:
+
+${contactList}
+
+Por favor, intenta de nuevo especificando uno de estos contactos.`
         };
       }
 
-      // Si se proporcionó un nombre, verificar que coincida
-      if (args.contactName && contact.name.toLowerCase() !== args.contactName.toLowerCase()) {
+      // Enviar el mensaje utilizando el número de teléfono del contacto que encontramos
+      if (!contact.phoneNumber) {
         return {
           action: "response",
-          message: `El nombre proporcionado (${args.contactName}) no coincide con el contacto registrado (${contact.name}). ¿Quieres continuar con el envío al contacto ${contact.name}?`
+          message: "Error: El contacto no tiene un número de teléfono válido."
         };
       }
-
-      // Enviar el mensaje
-      const result = await sendWhatsAppMessage(args.contactPhoneNumber, args.message);
+      const result = await sendWhatsAppMessage(contact.phoneNumber, args.message);
 
       if (result.success) {
         // Registrar el mensaje en la base de datos
@@ -202,17 +236,44 @@ IMPORTANTE:
   }
 
   private async handleGetContactMessages(
-    args: { contactPhoneNumber: string; limit?: number },
+    args: { contactPhoneNumber?: string; contactName?: string; limit?: number },
     userInput: string
   ): Promise<AgentResponse> {
     try {
-      // Verificar si el contacto existe
-      const contact = await storage.getWhatsappContactByPhone(args.contactPhoneNumber);
+      let contact = null;
+      
+      // Verificar si el contacto existe en la base de datos
+      if (args.contactPhoneNumber) {
+        contact = await storage.getWhatsappContactByPhone(args.contactPhoneNumber);
+      } else if (args.contactName) {
+        // Si solo tenemos el nombre, buscamos por nombre en los contactos
+        const allContacts = await storage.getWhatsappContacts();
+        contact = allContacts.find(c => 
+          c.name.toLowerCase() === args.contactName?.toLowerCase()
+        );
+        
+        if (!contact) {
+          // Si no se encuentra exactamente, intentamos con una búsqueda más flexible
+          contact = allContacts.find(c => 
+            c.name.toLowerCase().includes(args.contactName?.toLowerCase() || '')
+          );
+        }
+      }
 
+      // Si no se encontró el contacto
       if (!contact) {
+        // Obtener todos los contactos para mostrarlos
+        const contacts = await storage.getWhatsappContacts();
+        const contactList = contacts.map((c) => `- ${c.name} (${c.phoneNumber})`).join("\n");
+        
         return {
           action: "response",
-          message: `No encontré ningún contacto con el número ${args.contactPhoneNumber}.`
+          message: `No encontré ningún contacto con ${args.contactPhoneNumber ? `el número ${args.contactPhoneNumber}` : `el nombre ${args.contactName}`}. 
+Estos son tus contactos disponibles:
+
+${contactList}
+
+Por favor, intenta de nuevo especificando uno de estos contactos.`
         };
       }
 
