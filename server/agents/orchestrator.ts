@@ -1,39 +1,14 @@
 import OpenAI from 'openai';
 import { storage } from '../storage';
 import { InsertTask } from '../../shared/schema';
+import { WhatsAppAgent } from './specialized/WhatsAppAgent';
 
 // Inicializar cliente de OpenAI con la clave API
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Definir tipo para las herramientas (antes funciones) que usamos con OpenAI
-type OpenAITool = {
-  type: "function";
-  function: {
-    name: string;
-    description: string;
-    parameters: {
-      type: string;
-      properties: Record<string, any>;
-      required?: string[];
-    };
-  };
-};
-
-// Interfaces para los agentes
-interface AgentRequest {
-  userInput: string;
-  context?: any;
-}
-
-interface AgentResponse {
-  action?: string;
-  response: string;
-  data?: any;
-  confidence: number;
-  metadata?: any;
-}
+// Eliminamos las interfaces duplicadas ya que ahora estamos importándolas
 
 // Orquestador principal que gestiona todos los agentes
 export class AgentOrchestrator {
@@ -58,6 +33,7 @@ export class AgentOrchestrator {
     this.registerAgent('planner', new PlannerAgent());
     this.registerAgent('marketing', new MarketingAgent());
     this.registerAgent('project', new ProjectManagerAgent());
+    this.registerAgent('whatsapp', new WhatsAppAgent());
   }
   
   registerAgent(name: string, agent: SpecializedAgent) {
@@ -323,11 +299,12 @@ Opciones disponibles:
 - planner: Para planificación, programación, fechas límite, recordatorios, organización temporal.
 - marketing: Para estrategias de marketing digital, planes de contenido, campañas, SEO, redes sociales, email marketing y análisis de métricas digitales.
 - project: Para gestión de proyectos, equipos, asignación de recursos, seguimiento de progreso, gestión de fases y ciclos de vida de proyectos.
+- whatsapp: Para comunicación por WhatsApp, envío de mensajes, notificaciones o cualquier solicitud relacionada con comunicaciones de WhatsApp.
 
 IMPORTANTE: Si la solicitud no es clara o no se ajusta a ninguna categoría específica, asigna a "task".
 
 Responde con un JSON que contenga:
-1. "agentType": El tipo de agente que debe manejar la solicitud (task, category, analytics, planner, marketing, project)
+1. "agentType": El tipo de agente que debe manejar la solicitud (task, category, analytics, planner, marketing, project, whatsapp)
 2. "confidence": Valor entre 0 y 1 que indica la confianza en esta decisión
 3. "reasoning": Breve explicación del porqué`
           },
@@ -472,6 +449,24 @@ Responde con un JSON que contenga:
               
               return titleIncludesProject || descriptionIncludesProject;
             })
+        };
+        break;
+        
+      case "whatsapp":
+        // Para el agente de WhatsApp, incluimos información sobre tareas pendientes 
+        // y próximas a vencer que podrían ser relevantes para notificaciones
+        specificContext = {
+          recentTasks: await storage.getTasks(),
+          upcomingDeadlines: (await storage.getTasks())
+            .filter(task => task.deadline && new Date(task.deadline) > new Date())
+            .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime())
+            .slice(0, 5), // Solo las 5 tareas más próximas a vencer
+          pendingTasks: (await storage.getTasks())
+            .filter(task => task.status === 'pendiente')
+            .slice(0, 10), // Solo las 10 primeras tareas pendientes
+          twilioConfigured: !!(process.env.TWILIO_ACCOUNT_SID && 
+                              process.env.TWILIO_AUTH_TOKEN && 
+                              process.env.TWILIO_PHONE_NUMBER)
         };
         break;
     }

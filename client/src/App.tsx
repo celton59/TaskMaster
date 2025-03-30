@@ -10,6 +10,7 @@ import Reports from "@/pages/reports";
 import AIAssistant from "@/pages/ai-assistant";
 import Calendar from "@/pages/calendar";
 import Users from "@/pages/users";
+import WhatsAppSettings from "@/pages/whatsapp-settings";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/hooks/use-theme";
@@ -31,6 +32,7 @@ function Router() {
             <Route path="/assistant" component={AIAssistant} />
             <Route path="/calendar" component={Calendar} />
             <Route path="/users" component={Users} />
+            <Route path="/whatsapp-settings" component={WhatsAppSettings} />
             <Route component={NotFound} />
           </Switch>
         </main>

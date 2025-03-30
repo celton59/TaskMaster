@@ -7,6 +7,8 @@ import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { createTaskFromText, processAgentMessage } from "./openai-service";
 import { processUserMessage } from "./agents/agent-service";
+import { handleWhatsAppWebhook, checkTwilioConfiguration, sendWhatsAppMessage } from "./services/whatsapp-service";
+import { orchestrator } from "./agents/orchestrator";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
@@ -303,6 +305,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Rutas de WhatsApp
+  apiRouter.get("/whatsapp/status", async (req, res) => {
+    try {
+      const status = await checkTwilioConfiguration();
+      res.json(status);
+    } catch (error) {
+      console.error("Error al verificar la configuración de Twilio:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al verificar la configuración de Twilio" 
+      });
+    }
+  });
+  
+  // Enviar mensaje de prueba por WhatsApp
+  apiRouter.post("/whatsapp/send-test", async (req, res) => {
+    try {
+      const { to, message } = req.body;
+      
+      if (!to || !message) {
+        return res.status(400).json({ 
+          status: 'error',
+          message: "Se requiere un número de teléfono y un mensaje" 
+        });
+      }
+      
+      // Validar formato del número de teléfono (E.164)
+      const phoneRegex = /^\+[1-9]\d{1,14}$/;
+      if (!phoneRegex.test(to)) {
+        return res.status(400).json({ 
+          status: 'error',
+          message: "El número debe estar en formato E.164 (ej: +34600000000)" 
+        });
+      }
+      
+      await sendWhatsAppMessage(to, message);
+      
+      res.json({ 
+        status: 'success',
+        message: "Mensaje enviado correctamente" 
+      });
+    } catch (error: any) {
+      console.error("Error al enviar mensaje de WhatsApp:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: `Error al enviar mensaje: ${error.message || 'Error desconocido'}` 
+      });
+    }
+  });
+
+  // Webhook para Twilio WhatsApp
+  app.post("/webhooks/whatsapp", express.urlencoded({ extended: false }), async (req, res) => {
+    try {
+      await handleWhatsAppWebhook(req, res, orchestrator);
+    } catch (error) {
+      console.error("Error al procesar webhook de WhatsApp:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al procesar webhook de WhatsApp" 
+      });
+    }
+  });
+
   app.use("/api", apiRouter);
 
   const httpServer = createServer(app);
