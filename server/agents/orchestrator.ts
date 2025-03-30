@@ -315,6 +315,14 @@ Opciones disponibles:
 - project: Para gestión de proyectos, equipos, asignación de recursos, seguimiento de progreso, gestión de fases y ciclos de vida de proyectos.
 - whatsapp: Para comunicación por WhatsApp, envío de mensajes, notificaciones o cualquier solicitud relacionada con comunicaciones de WhatsApp.
 
+PATRONES DE RECONOCIMIENTO PARA WHATSAPP (MUY IMPORTANTE):
+Si detectas cualquiera de estos patrones, SIEMPRE debes asignar "whatsapp" como agentType con confianza alta (>0.8):
+1. "dile a [nombre]", "envía a [nombre]", "mensaje a [nombre]", "avisa a [nombre]", "pregúntale a [nombre]"
+2. "whatsapp a [nombre]", "mensaje de whatsapp a [nombre]", "escríbele a [nombre]"
+3. "al contacto [nombre]", "para el contacto [nombre]"
+4. Cualquier mención de "contactos de whatsapp", "mensajes de whatsapp", "conversaciones de whatsapp"
+5. Si se solicita enviar, transmitir o comunicar algo a una persona específica
+
 IMPORTANTE: Si la solicitud no es clara o no se ajusta a ninguna categoría específica, asigna a "task".
 
 Responde con un JSON que contenga:
