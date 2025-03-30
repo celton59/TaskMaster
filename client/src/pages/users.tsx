@@ -99,18 +99,33 @@ function UserAvatar({ name, avatar }: { name: string; avatar?: string }) {
     user: "bg-neon-green/20 border-neon-green text-neon-green",
   };
 
-  // Determinar el color basado en el rol o usar un color por defecto
-  const getColorClass = (userName: string) => {
-    // Simulando asignación de rol basada en el nombre para este ejemplo
-    if (userName.toLowerCase().includes("admin")) return roleColors.admin;
-    if (userName.toLowerCase().includes("maría") || userName.toLowerCase().includes("carlos")) return roleColors.manager;
-    return roleColors.user;
+  const roleGlow: Record<string, string> = {
+    admin: "shadow-[0_0_10px_rgba(149,76,233,0.3)]",
+    manager: "shadow-[0_0_10px_rgba(0,225,255,0.3)]",
+    user: "shadow-[0_0_10px_rgba(74,222,128,0.3)]",
+  };
+  
+  const rolePulse: Record<string, string> = {
+    admin: "animate-pulse-slow [animation-delay:0.1s]",
+    manager: "animate-pulse-slow [animation-delay:0.4s]",
+    user: "animate-pulse-slow [animation-delay:0.7s]",
   };
 
-  const colorClass = getColorClass(name);
+  // Determinar el color basado en el rol o usar un color por defecto
+  const getUserRole = (userName: string): "admin" | "manager" | "user" => {
+    // Simulando asignación de rol basada en el nombre para este ejemplo
+    if (userName.toLowerCase().includes("admin")) return "admin";
+    if (userName.toLowerCase().includes("maría") || userName.toLowerCase().includes("carlos")) return "manager";
+    return "user";
+  };
+
+  const userRole = getUserRole(name);
+  const colorClass = roleColors[userRole];
+  const glowClass = roleGlow[userRole];
+  const pulseClass = rolePulse[userRole];
 
   return (
-    <div className={`flex items-center justify-center w-10 h-10 rounded-full border ${colorClass} shadow-[0_0_10px_rgba(0,225,255,0.15)]`}>
+    <div className={`flex items-center justify-center w-10 h-10 rounded-full border ${colorClass} ${glowClass} ${pulseClass} transition-all duration-300 hover:scale-110`}>
       {avatar ? (
         <img src={avatar} alt={name} className="w-full h-full rounded-full object-cover" />
       ) : (
@@ -123,8 +138,17 @@ function UserAvatar({ name, avatar }: { name: string; avatar?: string }) {
 // Badge de estado para usuarios
 function StatusBadge({ status }: { status: "active" | "inactive" }) {
   const statusClasses = {
-    active: "bg-neon-green/10 text-neon-green border-neon-green/30 shadow-[0_0_8px_rgba(74,222,128,0.15)]",
+    active: "bg-neon-green/10 text-neon-green border-neon-green/30 shadow-[0_0_8px_rgba(74,222,128,0.15)] animate-pulse-slow",
     inactive: "bg-neon-red/10 text-neon-red border-neon-red/30 shadow-[0_0_8px_rgba(239,68,68,0.15)]",
+  };
+
+  const statusIcons = {
+    active: (
+      <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-neon-green animate-pulse"></span>
+    ),
+    inactive: (
+      <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-neon-red"></span>
+    )
   };
 
   const statusText = {
@@ -133,7 +157,8 @@ function StatusBadge({ status }: { status: "active" | "inactive" }) {
   };
 
   return (
-    <span className={`px-2 py-1 rounded-full text-xs border ${statusClasses[status]}`}>
+    <span className={`px-2 py-1 rounded-full text-xs border flex items-center justify-center ${statusClasses[status]} transition-all duration-300 hover:scale-105`}>
+      {statusIcons[status]}
       {statusText[status]}
     </span>
   );
@@ -147,14 +172,39 @@ function RoleBadge({ role }: { role: "admin" | "manager" | "user" }) {
     user: "bg-neon-green/10 text-neon-green border-neon-green/30 shadow-[0_0_8px_rgba(74,222,128,0.15)]",
   };
 
+  const roleGlowEffect = {
+    admin: "hover:shadow-[0_0_12px_rgba(149,76,233,0.3)]",
+    manager: "hover:shadow-[0_0_12px_rgba(0,225,255,0.3)]",
+    user: "hover:shadow-[0_0_12px_rgba(74,222,128,0.3)]",
+  };
+
   const roleText = {
     admin: "Administrador",
     manager: "Gerente",
     user: "Usuario",
   };
 
+  const roleIcons = {
+    admin: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+    manager: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+    user: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    )
+  };
+
   return (
-    <span className={`px-2 py-1 rounded-full text-xs border ${roleClasses[role]}`}>
+    <span className={`px-2 py-1 rounded-full text-xs border flex items-center ${roleClasses[role]} ${roleGlowEffect[role]} transition-all duration-300 hover:scale-105`}>
+      {roleIcons[role]}
       {roleText[role]}
     </span>
   );
@@ -483,71 +533,174 @@ function UsersList({
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
+      <CardContent className="p-0 relative overflow-hidden bg-neon-darker">
+        {/* Efecto Matrix-like de fondo */}
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gMTAgMCBMIDAgMCAwIDEwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGUxZmYiIHN0cm9rZS13aWR0aD0iMC41Ii8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIiAvPjwvc3ZnPg==')]"></div>
+          
+          {/* Líneas de texto que ascienden, estilo Matrix */}
+          <div className="absolute top-0 left-0 w-full h-full">
+            {[...Array(20)].map((_, i) => (
+              <div 
+                key={i}
+                className="absolute text-neon-accent/30 font-mono text-xs animate-data-flow"
+                style={{
+                  left: `${i * 5}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDuration: `${3 + Math.random() * 4}s`,
+                  animationDelay: `${Math.random() * 2}s`
+                }}
+              >
+                {[...Array(Math.floor(Math.random() * 10 + 5))].map((_, j) => (
+                  <div key={j} className="my-1">
+                    {Math.random().toString(36).substr(2, Math.floor(Math.random() * 10) + 2)}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Efecto de holograma */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-neon-accent/0 via-neon-accent/5 to-neon-accent/0 animate-pulse-slow"></div>
+        
+        {/* Línea de escaneo principal */}
+        <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-neon-accent to-transparent z-10 animate-scanning-line"></div>
+        
+        {/* Efecto de círculos pulsantes en las esquinas */}
+        <div className="absolute top-2 left-2 w-3 h-3 rounded-full bg-neon-accent/30 animate-pulse-slow [animation-delay:0.1s]"></div>
+        <div className="absolute top-2 right-2 w-3 h-3 rounded-full bg-neon-accent/30 animate-pulse-slow [animation-delay:0.3s]"></div>
+        <div className="absolute bottom-2 left-2 w-3 h-3 rounded-full bg-neon-accent/30 animate-pulse-slow [animation-delay:0.5s]"></div>
+        <div className="absolute bottom-2 right-2 w-3 h-3 rounded-full bg-neon-accent/30 animate-pulse-slow [animation-delay:0.7s]"></div>
+        
+        {/* Líneas de tecnología futuristas en las esquinas */}
+        <svg className="absolute top-0 left-0 w-16 h-16 text-neon-accent/50 z-10 pointer-events-none" viewBox="0 0 100 100">
+          <path d="M0,0 L40,0 L40,5" fill="none" stroke="currentColor" strokeWidth="1" />
+          <path d="M0,0 L0,40 L5,40" fill="none" stroke="currentColor" strokeWidth="1" />
+        </svg>
+        
+        <svg className="absolute top-0 right-0 w-16 h-16 text-neon-accent/50 z-10 pointer-events-none" viewBox="0 0 100 100">
+          <path d="M100,0 L60,0 L60,5" fill="none" stroke="currentColor" strokeWidth="1" />
+          <path d="M100,0 L100,40 L95,40" fill="none" stroke="currentColor" strokeWidth="1" />
+        </svg>
+        
+        <svg className="absolute bottom-0 left-0 w-16 h-16 text-neon-accent/50 z-10 pointer-events-none" viewBox="0 0 100 100">
+          <path d="M0,100 L40,100 L40,95" fill="none" stroke="currentColor" strokeWidth="1" />
+          <path d="M0,100 L0,60 L5,60" fill="none" stroke="currentColor" strokeWidth="1" />
+        </svg>
+        
+        <svg className="absolute bottom-0 right-0 w-16 h-16 text-neon-accent/50 z-10 pointer-events-none" viewBox="0 0 100 100">
+          <path d="M100,100 L60,100 L60,95" fill="none" stroke="currentColor" strokeWidth="1" />
+          <path d="M100,100 L100,60 L95,60" fill="none" stroke="currentColor" strokeWidth="1" />
+        </svg>
+
+        <div className="overflow-x-auto z-20 relative">
+          <table className="w-full border-collapse relative">
             <thead>
-              <tr className="bg-neon-medium/10 border-b border-neon-accent/20">
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text/70">Usuario</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text/70">
+              <tr className="bg-gradient-to-r from-neon-medium/30 to-neon-medium/10 border-b border-neon-accent/30">
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
+                  <span className="inline-flex items-center">
+                    <span className="inline-block w-2 h-2 bg-neon-accent rounded-full animate-pulse-slow mr-2"></span>
+                    Usuario
+                  </span>
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
                   <button 
                     onClick={() => toggleSort("name")}
-                    className="flex items-center text-neon-text/70 hover:text-neon-accent"
+                    className="flex items-center text-neon-text hover:text-neon-accent group transition-all duration-300"
                   >
+                    <span className="inline-block w-2 h-2 bg-neon-pink rounded-full animate-pulse-slow [animation-delay:0.4s] mr-2"></span>
                     Nombre
-                    {sortBy === "name" && (
-                      <ArrowUpDown className={`ml-1 h-4 w-4 text-neon-accent ${sortOrder === "asc" ? "rotate-180" : ""}`} />
+                    {sortBy === "name" ? (
+                      <div className="ml-2 w-5 h-5 flex items-center justify-center bg-neon-accent/10 rounded-full border border-neon-accent/50 overflow-hidden group-hover:border-neon-accent transition-all duration-300">
+                        <ArrowUpDown className={`h-3 w-3 text-neon-accent transition-transform duration-500 ${sortOrder === "asc" ? "rotate-180" : ""}`} />
+                      </div>
+                    ) : (
+                      <div className="ml-2 w-5 h-5 flex items-center justify-center bg-transparent rounded-full border border-transparent overflow-hidden opacity-0 group-hover:opacity-100 group-hover:border-neon-accent/30 group-hover:bg-neon-accent/5 transition-all duration-300">
+                        <ArrowUpDown className="h-3 w-3 text-neon-accent/50" />
+                      </div>
                     )}
                   </button>
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text/70">Rol</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text/70">
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
+                  <span className="inline-flex items-center">
+                    <span className="inline-block w-2 h-2 bg-neon-purple rounded-full animate-pulse-slow [animation-delay:0.2s] mr-2"></span>
+                    Rol
+                  </span>
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
                   <button 
                     onClick={() => toggleSort("lastActive")}
-                    className="flex items-center text-neon-text/70 hover:text-neon-accent"
+                    className="flex items-center text-neon-text hover:text-neon-accent group transition-all duration-300"
                   >
+                    <span className="inline-block w-2 h-2 bg-neon-green rounded-full animate-pulse-slow [animation-delay:0.6s] mr-2"></span>
                     Última actividad
-                    {sortBy === "lastActive" && (
-                      <ArrowUpDown className={`ml-1 h-4 w-4 text-neon-accent ${sortOrder === "asc" ? "rotate-180" : ""}`} />
+                    {sortBy === "lastActive" ? (
+                      <div className="ml-2 w-5 h-5 flex items-center justify-center bg-neon-accent/10 rounded-full border border-neon-accent/50 overflow-hidden group-hover:border-neon-accent transition-all duration-300">
+                        <ArrowUpDown className={`h-3 w-3 text-neon-accent transition-transform duration-500 ${sortOrder === "asc" ? "rotate-180" : ""}`} />
+                      </div>
+                    ) : (
+                      <div className="ml-2 w-5 h-5 flex items-center justify-center bg-transparent rounded-full border border-transparent overflow-hidden opacity-0 group-hover:opacity-100 group-hover:border-neon-accent/30 group-hover:bg-neon-accent/5 transition-all duration-300">
+                        <ArrowUpDown className="h-3 w-3 text-neon-accent/50" />
+                      </div>
                     )}
                   </button>
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text/70">Estado</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-neon-text/70">Acciones</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
+                  <span className="inline-flex items-center">
+                    <span className="inline-block w-2 h-2 bg-neon-orange rounded-full animate-pulse-slow [animation-delay:0.8s] mr-2"></span>
+                    Estado
+                  </span>
+                </th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-neon-text font-['VT323',monospace] tracking-wider">
+                  <span className="inline-flex items-center justify-end">
+                    <span className="inline-block w-2 h-2 bg-neon-yellow rounded-full animate-pulse-slow [animation-delay:1s] mr-2"></span>
+                    Acciones
+                  </span>
+                </th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {users.map((user, index) => (
                 <tr 
                   key={user.id} 
-                  className="border-b border-neon-accent/10 hover:bg-neon-medium/5 transition-colors"
+                  className={`
+                    border-b border-neon-accent/10 hover:bg-neon-accent/5 transition-all
+                    animate-slide-right [animation-delay:${index * 0.05}s]
+                    relative group
+                  `}
                 >
                   <td className="px-4 py-4 text-sm">
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 relative z-20">
                       <UserAvatar name={user.name} avatar={user.avatar} />
-                      <div>
+                      <div className="transition-all duration-300 group-hover:translate-x-1">
                         <p className="text-neon-text font-medium">{user.username}</p>
                         <p className="text-neon-text/70 text-xs">{user.email}</p>
                       </div>
                     </div>
+                    
+                    {/* Línea de resaltado futurista al hacer hover */}
+                    <div className="absolute left-0 top-0 h-full w-1 bg-neon-accent/0 group-hover:bg-neon-accent/30 transition-all duration-300"></div>
                   </td>
-                  <td className="px-4 py-4 text-sm text-neon-text">{user.name}</td>
+                  <td className="px-4 py-4 text-sm text-neon-text group-hover:text-neon-accent/90 transition-colors duration-300">
+                    {user.name}
+                  </td>
                   <td className="px-4 py-4 text-sm">
                     <RoleBadge role={user.role} />
                   </td>
-                  <td className="px-4 py-4 text-sm text-neon-text/70">
+                  <td className="px-4 py-4 text-sm text-neon-text/70 group-hover:text-neon-text transition-colors duration-300">
                     {formatDate(user.lastActive)}
                   </td>
                   <td className="px-4 py-4 text-sm">
                     <StatusBadge status={user.status} />
                   </td>
                   <td className="px-4 py-4 text-sm text-right">
-                    <div className="flex justify-end space-x-2">
+                    <div className="flex justify-end space-x-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleUserAction('edit', user.id, user.name)}
-                        className="h-8 border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20 shadow-[0_0_8px_rgba(0,225,255,0.15)]"
+                        className="h-8 border-neon-accent/30 text-neon-accent hover:bg-neon-medium/20 hover:border-neon-accent hover:shadow-[0_0_12px_rgba(0,225,255,0.3)] transition-all duration-300"
                       >
                         <UserCog className="h-4 w-4" />
                       </Button>
@@ -556,18 +709,24 @@ function UsersList({
                           variant="outline"
                           size="sm"
                           onClick={() => handleUserAction('deactivate', user.id, user.name)}
-                          className="h-8 border-neon-red/30 text-neon-red hover:bg-neon-red/10 shadow-[0_0_8px_rgba(255,45,109,0.15)]"
+                          className="h-8 border-neon-red/30 text-neon-red hover:bg-neon-red/10 hover:border-neon-red hover:shadow-[0_0_12px_rgba(255,45,109,0.3)] transition-all duration-300"
                         >
-                          Desactivar
+                          <span className="relative">
+                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-neon-red rounded-full animate-pulse"></span>
+                            Desactivar
+                          </span>
                         </Button>
                       ) : (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleUserAction('activate', user.id, user.name)}
-                          className="h-8 border-neon-green/30 text-neon-green hover:bg-neon-green/10 shadow-[0_0_8px_rgba(74,222,128,0.15)]"
+                          className="h-8 border-neon-green/30 text-neon-green hover:bg-neon-green/10 hover:border-neon-green hover:shadow-[0_0_12px_rgba(74,222,128,0.3)] transition-all duration-300"
                         >
-                          Activar
+                          <span className="relative">
+                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-neon-green rounded-full animate-pulse"></span>
+                            Activar
+                          </span>
                         </Button>
                       )}
                     </div>
@@ -576,6 +735,16 @@ function UsersList({
               ))}
             </tbody>
           </table>
+
+          {/* Efecto de terminal de computadora en la parte inferior */}
+          <div className="py-2 px-4 border-t border-neon-accent/20 bg-neon-darker/80 text-neon-accent/60 font-mono text-xs">
+            <div className="flex items-center">
+              <div className="animate-pulse-slow mr-2">&#9679;</div>
+              <div className="animate-neon-flicker">
+                sistema:// usuarios escaneados: {users.length} | estado: activo | seguridad: nivel-3
+              </div>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

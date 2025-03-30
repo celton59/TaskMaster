@@ -149,6 +149,56 @@ export default {
             borderColor: "rgba(0, 255, 157, 1)"
           }
         },
+        "neon-flicker": {
+          "0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100%": {
+            opacity: "1",
+            filter: "brightness(1)"
+          },
+          "20%, 21.999%, 63%, 63.999%, 65%, 69.999%": {
+            opacity: "0.6",
+            filter: "brightness(0.8)"
+          }
+        },
+        "pulse-slow": {
+          "0%, 100%": {
+            opacity: "1"
+          },
+          "50%": {
+            opacity: "0.7"
+          }
+        },
+        "scanning-line": {
+          "0%": {
+            transform: "translateY(-100%)"
+          },
+          "100%": {
+            transform: "translateY(500%)"
+          }
+        },
+        "rotate-slow": {
+          "0%": {
+            transform: "rotate(0deg)"
+          },
+          "100%": {
+            transform: "rotate(360deg)"
+          }
+        },
+        "data-flow": {
+          "0%": {
+            transform: "translateX(-100%)"
+          },
+          "100%": {
+            transform: "translateX(100%)"
+          }
+        },
+        "float": {
+          "0%, 100%": {
+            transform: "translateY(0)"
+          },
+          "50%": {
+            transform: "translateY(-10px)"
+          }
+        },
         "fade-in": {
           "0%": {
             opacity: "0",
@@ -157,6 +207,26 @@ export default {
           "100%": {
             opacity: "1",
             transform: "translateY(0)"
+          }
+        },
+        "scale-up": {
+          "0%": {
+            opacity: "0",
+            transform: "scale(0.95)"
+          },
+          "100%": {
+            opacity: "1",
+            transform: "scale(1)"
+          }
+        },
+        "slide-right": {
+          "0%": {
+            transform: "translateX(-20px)",
+            opacity: "0"
+          },
+          "100%": {
+            transform: "translateX(0)",
+            opacity: "1"
           }
         }
       },
@@ -168,7 +238,15 @@ export default {
         "neon-glow-purple": "neon-glow-purple 2s ease-in-out infinite",
         "neon-glow-pink": "neon-glow-pink 2s ease-in-out infinite",
         "neon-glow-green": "neon-glow-green 2s ease-in-out infinite",
-        "fade-in": "fade-in 0.5s ease-out forwards"
+        "neon-flicker": "neon-flicker 5s linear infinite",
+        "pulse-slow": "pulse-slow 3s ease-in-out infinite",
+        "scanning-line": "scanning-line 3s linear infinite",
+        "rotate-slow": "rotate-slow 8s linear infinite",
+        "data-flow": "data-flow 3s linear infinite",
+        "float": "float 5s ease-in-out infinite",
+        "fade-in": "fade-in 0.5s ease-out forwards",
+        "scale-up": "scale-up 0.4s ease-out forwards",
+        "slide-right": "slide-right 0.4s ease-out forwards"
       },
     },
   },
