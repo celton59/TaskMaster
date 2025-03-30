@@ -122,21 +122,21 @@ export default function Dashboard() {
 
       {/* Task Status Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card className="neon-card overflow-hidden border border-neon-green/30 bg-neon-dark shadow-[0_0_10px_rgba(0,255,157,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-green/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-green neon-text-green font-mono">Distribución de tareas</CardTitle>
+              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Distribución de tareas</CardTitle>
               <CardDescription className="text-neon-text/70">Resumen por estado</CardDescription>
             </div>
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-green/20 text-neon-green border border-neon-green/30 shadow-[0_0_8px_rgba(0,255,157,0.2)]">
+              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
                 <BarChart4 className="h-5 w-5" />
               </div>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigate("/tasks")}
-                className="h-8 border-neon-green/50 hover:bg-neon-green/10 text-neon-text hover:text-neon-green rounded-md neon-button-green"
+                className="h-8 border-neon-accent/50 hover:bg-neon-accent/10 text-neon-text hover:text-neon-accent rounded-md neon-button"
               >
                 Ver tareas
                 <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
@@ -212,13 +212,13 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="border border-neon-pink/30 bg-neon-dark shadow-[0_0_15px_rgba(255,0,230,0.15)] overflow-hidden rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-pink/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-pink neon-text-pink font-mono">Rendimiento semanal</CardTitle>
+              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Rendimiento semanal</CardTitle>
               <CardDescription className="text-neon-text/70">Tareas completadas vs. creadas</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-pink/20 text-neon-pink border border-neon-pink/30 shadow-[0_0_8px_rgba(255,0,230,0.2)]">
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
               <CheckCheck className="h-5 w-5" />
             </div>
           </CardHeader>
@@ -227,9 +227,9 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <div className="text-sm font-medium text-neon-text/90">Eficiencia</div>
-                  <div className="text-2xl font-bold text-neon-pink font-mono neon-text-pink">83%</div>
+                  <div className="text-2xl font-bold text-neon-accent font-mono neon-text">83%</div>
                 </div>
-                <div className="flex items-center text-neon-green font-medium text-sm">
+                <div className="flex items-center text-emerald-400 font-medium text-sm">
                   <ArrowUpRight className="h-4 w-4 mr-1" />
                   <span>+12% vs. semana anterior</span>
                 </div>
@@ -243,9 +243,9 @@ export default function Dashboard() {
                 </div>
                 <div className="grid grid-cols-7 gap-1 h-16">
                   {chartData.map((day, i) => (
-                    <div key={i} className="bg-neon-medium/30 rounded-md relative overflow-hidden border border-neon-pink/20">
+                    <div key={i} className="bg-neon-medium/30 rounded-md relative overflow-hidden border border-neon-accent/20">
                       <div 
-                        className="absolute bottom-0 w-full bg-neon-pink/80 shadow-[0_0_8px_rgba(255,0,230,0.4)]"
+                        className="absolute bottom-0 w-full bg-neon-accent/80 shadow-[0_0_8px_rgba(0,225,255,0.4)]"
                         style={{ 
                           height: `${(day.completed / Math.max(...chartData.map(d => Math.max(d.created, d.completed)))) * 100}%`,
                         }}
@@ -255,11 +255,11 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between text-xs text-neon-text/80">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-neon-pink/80 rounded-sm mr-2 shadow-[0_0_4px_rgba(255,0,230,0.4)]"></div>
+                    <div className="w-3 h-3 bg-neon-accent/80 rounded-sm mr-2 shadow-[0_0_4px_rgba(0,225,255,0.4)]"></div>
                     <span>Completadas ({chartData.reduce((sum, day) => sum + day.completed, 0)})</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-3 h-3 border border-dashed border-neon-pink/60 rounded-sm mr-2"></div>
+                    <div className="w-3 h-3 border border-dashed border-neon-accent/60 rounded-sm mr-2"></div>
                     <span>Creadas ({chartData.reduce((sum, day) => sum + day.created, 0)})</span>
                   </div>
                 </div>
