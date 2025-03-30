@@ -43,19 +43,19 @@
 /* Tema claro */
 .light-theme {
   --neon-accent: #0078D4;
-  --neon-dark: #f0f5fa;
-  --neon-darker: #ffffff;
-  --neon-medium: #e1ecf7;
-  --neon-light: #d0e0f0;
-  --neon-text: #1A3A5A;
+  --neon-dark: #0e2a47;
+  --neon-darker: #051a30;
+  --neon-medium: #1a3a5a;
+  --neon-light: #264d75;
+  --neon-text: #E0F0FF;
   
   /* Versiones menos intensas de los colores neón para tema claro */
-  --neon-purple: #9933CC;
-  --neon-pink: #CC33AA;
-  --neon-green: #00AA77;
-  --neon-yellow: #CCAA00;
-  --neon-orange: #CC5500;
-  --neon-red: #CC3355;
+  --neon-purple: #bb00ff;
+  --neon-pink: #ff00e6;
+  --neon-green: #00ff9d;
+  --neon-yellow: #ffea00;
+  --neon-orange: #ff6d00;
+  --neon-red: #ff2d6d;
 }
 
 /* Estilos personalizados para el calendario - Tema neón */
@@ -278,8 +278,9 @@
 }
 
 .light-theme .task-card {
-  border: 1px solid rgba(0, 120, 212, 0.3);
-  background: linear-gradient(135deg, rgba(224, 240, 255, 0.8) 0%, rgba(240, 245, 250, 0.8) 100%);
+  border: 1px solid rgba(0, 120, 212, 0.5);
+  background: linear-gradient(135deg, rgba(5, 26, 48, 0.9) 0%, rgba(14, 42, 71, 0.9) 100%);
+  box-shadow: 0 0 15px rgba(0, 120, 212, 0.15);
   backdrop-filter: blur(5px);
 }
 
@@ -290,8 +291,9 @@
 }
 
 .light-theme .task-card:hover {
-  box-shadow: 0 0 15px rgba(0, 120, 212, 0.3);
+  box-shadow: 0 0 20px rgba(0, 120, 212, 0.5), inset 0 0 10px rgba(0, 120, 212, 0.2);
   border-color: var(--neon-accent);
+  transform: translateY(-3px);
 }
 
 /* Clases de utilidad para el tema neón */
@@ -335,9 +337,10 @@
     to bottom,
     transparent,
     transparent 50%,
-    rgba(0, 120, 212, 0.1) 50%,
+    rgba(0, 225, 255, 0.2) 50%,
     transparent 51%
   );
+  animation: scanner-line 5s linear infinite;
 }
 
 /* Estilos para menús desplegables con tema claro */
@@ -605,6 +608,39 @@
   .neon-button-green:hover {
     box-shadow: 0 0 15px rgba(0, 255, 157, 0.5), inset 0 0 10px rgba(0, 255, 157, 0.2);
     text-shadow: 0 0 5px rgba(0, 255, 157, 0.7);
+  }
+  
+  .light-theme .neon-button {
+    border: 1px solid var(--neon-accent);
+    box-shadow: 0 0 10px rgba(0, 120, 212, 0.4);
+  }
+  
+  .light-theme .neon-button:hover {
+    box-shadow: 0 0 20px rgba(0, 120, 212, 0.6), inset 0 0 10px rgba(0, 120, 212, 0.3);
+    text-shadow: 0 0 5px rgba(0, 120, 212, 0.7);
+    transform: translateY(-1px);
+  }
+  
+  .light-theme .neon-button-purple {
+    border: 1px solid var(--neon-purple);
+    box-shadow: 0 0 10px rgba(187, 0, 255, 0.4);
+  }
+  
+  .light-theme .neon-button-purple:hover {
+    box-shadow: 0 0 20px rgba(187, 0, 255, 0.6), inset 0 0 10px rgba(187, 0, 255, 0.3);
+    text-shadow: 0 0 5px rgba(187, 0, 255, 0.7);
+    transform: translateY(-1px);
+  }
+  
+  .light-theme .neon-button-green {
+    border: 1px solid var(--neon-green);
+    box-shadow: 0 0 10px rgba(0, 255, 157, 0.4);
+  }
+  
+  .light-theme .neon-button-green:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.6), inset 0 0 10px rgba(0, 255, 157, 0.3);
+    text-shadow: 0 0 5px rgba(0, 255, 157, 0.7);
+    transform: translateY(-1px);
   }
   
   /* Estilos para la barra de progreso */
