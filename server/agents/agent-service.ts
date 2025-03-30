@@ -27,6 +27,16 @@ export async function processUserMessage(message: string): Promise<AgentApiRespo
       message: orchestratorResponse.message,
     };
     
+    // Si hay parámetros, copiarlos a la respuesta
+    if (orchestratorResponse.parameters) {
+      apiResponse.parameters = orchestratorResponse.parameters;
+    }
+    
+    // Si hay datos, copiarlos también (compatibilidad con implementación anterior)
+    if (orchestratorResponse.data) {
+      apiResponse.data = orchestratorResponse.data;
+    }
+    
     // Añadir datos específicos según la acción
     if (orchestratorResponse.action) {
       // Acciones relacionadas con tareas
@@ -66,6 +76,25 @@ export async function processUserMessage(message: string): Promise<AgentApiRespo
         
         // Invalidar las consultas de tareas en el cliente
         console.log('Tarea actualizada con nueva fecha límite:', orchestratorResponse.data);
+      }
+      
+      // Acciones relacionadas con WhatsApp
+      if (orchestratorResponse.action === 'whatsapp_message_sent' && orchestratorResponse.parameters) {
+        apiResponse.whatsapp = {
+          sent: true,
+          to: orchestratorResponse.parameters.contactName,
+          phoneNumber: orchestratorResponse.parameters.contactPhone,
+          message: orchestratorResponse.parameters.message
+        };
+      } else if (orchestratorResponse.action === 'whatsapp_contacts_listed' && orchestratorResponse.parameters) {
+        apiResponse.whatsapp = {
+          contacts: orchestratorResponse.parameters.contacts
+        };
+      } else if (orchestratorResponse.action === 'whatsapp_messages_retrieved' && orchestratorResponse.parameters) {
+        apiResponse.whatsapp = {
+          contact: orchestratorResponse.parameters.contact,
+          messages: orchestratorResponse.parameters.messages
+        };
       }
       
       // Si hay datos pero no se han añadido específicamente

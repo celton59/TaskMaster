@@ -46,6 +46,7 @@ export class AgentOrchestrator {
     action?: string;
     message: string;
     data?: any;
+    parameters?: any;
     agentUsed?: string;
   }> {
     try {
@@ -121,7 +122,7 @@ export class AgentOrchestrator {
             }
           }
           
-          const result = await agent.process({ userInput, context });
+          const result = await agent.process({ input: userInput, userInput, context });
           
           // Registrar en el historial
           this.conversationHistory.push({
@@ -144,7 +145,7 @@ export class AgentOrchestrator {
       // 5. Procesamiento normal si no se detectó referencia a tarea reciente
       // Obtener contexto relevante para el agente, incluyendo historial de conversación
       const context = await this.getContextForAgent(agentType);
-      const result = await agent.process({ userInput, context });
+      const result = await agent.process({ input: userInput, userInput, context });
       
       // 6. Registrar en el historial
       this.conversationHistory.push({
@@ -491,7 +492,7 @@ Responde con un JSON que contenga:
       Array.from(this.agents.entries()).map(async ([name, agent]) => {
         try {
           const context = await this.getContextForAgent(name);
-          const response = await agent.process({ userInput, context });
+          const response = await agent.process({ input: userInput, userInput, context });
           return {
             agentName: name,
             response,

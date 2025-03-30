@@ -3,6 +3,7 @@
  */
 export interface AgentRequest {
   input: string;
+  userInput?: string; // Campo para mantener compatibilidad con el código existente
   userId?: number;
   context?: any;
 }
@@ -13,8 +14,11 @@ export interface AgentRequest {
 export interface AgentResponse {
   action: string;
   message: string;
+  response?: string; // Campo de compatibilidad, debe ser igual a message
+  data?: any;        // Campo de compatibilidad, debe ser igual a parameters
   parameters?: any;
   thought?: string;
+  confidence?: number; // Para respuestas que incluyen confianza
 }
 
 /**
