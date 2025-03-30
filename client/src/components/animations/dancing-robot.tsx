@@ -31,15 +31,6 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           justify-content: center;
           position: relative;
           filter: drop-shadow(0 0 8px ${glowColor});
-          animation: walkForward 5s linear infinite;
-        }
-        
-        @keyframes walkForward {
-          0% { transform: translateX(-5px); }
-          25% { transform: translateX(0); }
-          50% { transform: translateX(5px); }
-          75% { transform: translateX(0); }
-          100% { transform: translateX(-5px); }
         }
         
         .robot-part {
@@ -96,106 +87,152 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           animation: effectPulse 3s infinite alternate;
         }
         
+        #robot {
+          animation: robotWalk 2s ease-in-out infinite;
+        }
+        
+        @keyframes robotWalk {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-3px); }
+        }
+        
         #head {
           transform-origin: center bottom;
-          animation: headWalk 1s ease-in-out infinite;
+          animation: headBob 2s ease-in-out infinite;
         }
         
-        @keyframes headWalk {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-2px); }
-        }
-        
-        #torso {
-          animation: torsoWalk 1s ease-in-out infinite;
-        }
-        
-        @keyframes torsoWalk {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          25% { transform: translateY(-1px) rotate(1deg); }
-          75% { transform: translateY(-1px) rotate(-1deg); }
-        }
-
-        #leftArm {
-          transform-origin: top center;
-          animation: walkingArmLeft 1s ease-in-out infinite;
-        }
-        
-        @keyframes walkingArmLeft {
-          0%, 100% { transform: rotate(5deg); }
-          50% { transform: rotate(-15deg); }
-        }
-        
-        #rightArm {
-          transform-origin: top center;
-          animation: walkingArmRight 1s ease-in-out infinite;
-        }
-        
-        @keyframes walkingArmRight {
-          0%, 100% { transform: rotate(-15deg); }
-          50% { transform: rotate(5deg); }
-        }
-        
-        #leftUpperLeg {
-          transform-origin: top center;
-          animation: upperLegLeft 1s ease-in-out infinite;
-        }
-        
-        @keyframes upperLegLeft {
-          0%, 100% { transform: rotate(-15deg); }
-          50% { transform: rotate(15deg); }
-        }
-        
-        #leftLowerLeg {
-          transform-origin: top center;
-          animation: lowerLegLeft 1s ease-in-out infinite;
-        }
-        
-        @keyframes lowerLegLeft {
-          0%, 100% { transform: rotate(10deg); }
-          50% { transform: rotate(-5deg); }
-        }
-        
-        #rightUpperLeg {
-          transform-origin: top center;
-          animation: upperLegRight 1s ease-in-out infinite;
-        }
-        
-        @keyframes upperLegRight {
-          0%, 100% { transform: rotate(15deg); }
-          50% { transform: rotate(-15deg); }
-        }
-        
-        #rightLowerLeg {
-          transform-origin: top center;
-          animation: lowerLegRight 1s ease-in-out infinite;
-        }
-        
-        @keyframes lowerLegRight {
-          0%, 100% { transform: rotate(-5deg); }
-          50% { transform: rotate(10deg); }
-        }
-
-        #leftFoot {
-          transform-origin: center left;
-          animation: footLeft 1s ease-in-out infinite;
-        }
-        
-        @keyframes footLeft {
+        @keyframes headBob {
           0%, 100% { transform: rotate(0deg); }
-          25% { transform: rotate(-10deg); }
-          75% { transform: rotate(5deg); }
+          25% { transform: rotate(2deg); }
+          75% { transform: rotate(-2deg); }
         }
         
-        #rightFoot {
-          transform-origin: center left;
-          animation: footRight 1s ease-in-out infinite;
+        #leftArmGroup {
+          animation: leftArmMove 2s ease-in-out infinite;
         }
         
-        @keyframes footRight {
-          0%, 100% { transform: rotate(5deg); }
-          25% { transform: rotate(0deg); }
+        @keyframes leftArmMove {
+          0% { transform: rotate(20deg); }
+          50% { transform: rotate(-15deg); }
+          100% { transform: rotate(20deg); }
+        }
+        
+        #leftElbow {
+          transform-origin: center;
+          animation: leftElbowBend 2s ease-in-out infinite;
+        }
+        
+        @keyframes leftElbowBend {
+          0% { transform: rotate(-10deg); }
+          50% { transform: rotate(15deg); }
+          100% { transform: rotate(-10deg); }
+        }
+        
+        #rightArmGroup {
+          animation: rightArmMove 2s ease-in-out infinite;
+        }
+        
+        @keyframes rightArmMove {
+          0% { transform: rotate(-15deg); }
+          50% { transform: rotate(20deg); }
+          100% { transform: rotate(-15deg); }
+        }
+        
+        #rightElbow {
+          transform-origin: center;
+          animation: rightElbowBend 2s ease-in-out infinite;
+        }
+        
+        @keyframes rightElbowBend {
+          0% { transform: rotate(15deg); }
+          50% { transform: rotate(-10deg); }
+          100% { transform: rotate(15deg); }
+        }
+        
+        #hips {
+          animation: hipRotate 2s ease-in-out infinite;
+        }
+        
+        @keyframes hipRotate {
+          0%, 100% { transform: rotate(0deg); }
+          25% { transform: rotate(-3deg); }
+          75% { transform: rotate(3deg); }
+        }
+        
+        #leftLegGroup {
+          animation: leftLegStride 2s ease-in-out infinite;
+        }
+        
+        @keyframes leftLegStride {
+          0% { transform: rotate(25deg); }
+          25% { transform: rotate(15deg); }
+          50% { transform: rotate(-20deg); }
           75% { transform: rotate(-10deg); }
+          100% { transform: rotate(25deg); }
+        }
+        
+        #leftKnee {
+          transform-origin: center;
+          animation: leftKneeBend 2s ease-in-out infinite;
+        }
+        
+        @keyframes leftKneeBend {
+          0% { transform: rotate(-25deg); }
+          25% { transform: rotate(-40deg); }
+          50% { transform: rotate(-5deg); }
+          75% { transform: rotate(0deg); }
+          100% { transform: rotate(-25deg); }
+        }
+        
+        #leftAnkle {
+          transform-origin: center;
+          animation: leftAnkleFlex 2s ease-in-out infinite;
+        }
+        
+        @keyframes leftAnkleFlex {
+          0% { transform: rotate(0deg); }
+          25% { transform: rotate(5deg); }
+          50% { transform: rotate(15deg); }
+          75% { transform: rotate(0deg); }
+          100% { transform: rotate(0deg); }
+        }
+        
+        #rightLegGroup {
+          animation: rightLegStride 2s ease-in-out infinite;
+        }
+        
+        @keyframes rightLegStride {
+          0% { transform: rotate(-20deg); }
+          25% { transform: rotate(-10deg); }
+          50% { transform: rotate(25deg); }
+          75% { transform: rotate(15deg); }
+          100% { transform: rotate(-20deg); }
+        }
+        
+        #rightKnee {
+          transform-origin: center;
+          animation: rightKneeBend 2s ease-in-out infinite;
+        }
+        
+        @keyframes rightKneeBend {
+          0% { transform: rotate(-5deg); }
+          25% { transform: rotate(0deg); }
+          50% { transform: rotate(-25deg); }
+          75% { transform: rotate(-40deg); }
+          100% { transform: rotate(-5deg); }
+        }
+        
+        #rightAnkle {
+          transform-origin: center;
+          animation: rightAnkleFlex 2s ease-in-out infinite;
+        }
+        
+        @keyframes rightAnkleFlex {
+          0% { transform: rotate(15deg); }
+          25% { transform: rotate(0deg); }
+          50% { transform: rotate(0deg); }
+          75% { transform: rotate(5deg); }
+          100% { transform: rotate(15deg); }
         }
 
         @keyframes eyeGlow {
@@ -254,7 +291,6 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
       `}} />
 
       <svg width={width} height={height} viewBox="0 0 200 350">
-        {/* Efectos de fondo */}
         <defs>
           <radialGradient id="headGlow" cx="0.5" cy="0.5" r="0.5" fx="0.5" fy="0.5">
             <stop offset="0%" stopColor={robotColor} stopOpacity="0.2" />
@@ -267,148 +303,137 @@ export const DancingRobot: React.FC<DancingRobotProps> = ({
           </filter>
         </defs>
 
-        {/* Cabeza del robot */}
-        <g id="head">
-          <ellipse className="robot-glow" cx="100" cy="40" rx="30" ry="25" />
-          <rect className="robot-part" x="75" y="15" width="50" height="50" rx="12" ry="12" />
-          
-          {/* Ojos */}
-          <circle className="robot-eye" cx="90" cy="35" r="5" />
-          <circle className="robot-eye" cx="110" cy="35" r="5" />
-          
-          {/* Boca pequeña */}
-          <rect className="robot-detail" x="90" y="50" width="20" height="2" rx="1" />
-          
-          {/* Cigarrillo */}
-          <line 
-            className="cigarette" 
-            x1="120" y1="50" 
-            x2="135" y2="45" 
-            stroke="white" 
-            strokeWidth="2" 
-          />
-          
-          {/* Punta del cigarrillo */}
-          <circle className="cigarette-tip" cx="120" cy="50" r="2" />
-          
-          {/* Humo */}
-          <circle className="smoke smoke-1" cx="137" cy="43" r="3" />
-          <circle className="smoke smoke-2" cx="137" cy="43" r="2.5" />
-          <circle className="smoke smoke-3" cx="137" cy="43" r="2" />
-        </g>
-        
-        {/* Cuello */}
-        <rect className="robot-part" x="95" y="65" width="10" height="10" rx="2" ry="2" />
-        <circle className="robot-joint" cx="100" cy="65" r="4" />
-        
-        {/* Torso */}
-        <g id="torso">
-          <ellipse className="robot-glow" cx="100" cy="100" rx="35" ry="30" />
-          <rect className="robot-part" x="75" y="75" width="50" height="60" rx="10" ry="10" />
-          
-          {/* Panel de control en el pecho */}
-          <rect className="robot-panel" x="85" y="85" width="30" height="20" rx="4" />
-          <circle className="robot-joint" cx="95" cy="95" r="3" />
-          <circle className="robot-joint" cx="105" cy="95" r="3" />
-          
-          {/* Líneas de detalle */}
-          <line className="robot-detail" x1="85" y1="115" x2="115" y2="115" />
-          <line className="robot-detail" x1="85" y1="125" x2="115" y2="125" />
-        </g>
-        
-        {/* Articulaciones de cadera */}
-        <circle className="robot-joint" cx="85" cy="135" r="5" />
-        <circle className="robot-joint" cx="115" cy="135" r="5" />
-        
-        {/* Brazo izquierdo */}
-        <g id="leftArm">
-          <ellipse className="robot-glow" cx="55" cy="100" rx="10" ry="25" />
-          
-          {/* Parte superior del brazo */}
-          <rect className="robot-part" x="50" y="75" width="10" height="30" rx="5" ry="5" />
-          <circle className="robot-joint" cx="55" cy="75" r="3" />
-          
-          {/* Codo */}
-          <circle className="robot-joint" cx="55" cy="105" r="3" />
-          
-          {/* Antebrazo */}
-          <rect className="robot-part" x="50" y="105" width="10" height="30" rx="5" ry="5" />
-          
-          {/* Muñeca */}
-          <circle className="robot-joint" cx="55" cy="135" r="3" />
-          
-          {/* Mano */}
-          <rect className="robot-part" x="50" y="135" width="10" height="8" rx="3" ry="3" />
-        </g>
-        
-        {/* Brazo derecho */}
-        <g id="rightArm">
-          <ellipse className="robot-glow" cx="145" cy="100" rx="10" ry="25" />
-          
-          {/* Parte superior del brazo */}
-          <rect className="robot-part" x="140" y="75" width="10" height="30" rx="5" ry="5" />
-          <circle className="robot-joint" cx="145" cy="75" r="3" />
-          
-          {/* Codo */}
-          <circle className="robot-joint" cx="145" cy="105" r="3" />
-          
-          {/* Antebrazo */}
-          <rect className="robot-part" x="140" y="105" width="10" height="30" rx="5" ry="5" />
-          
-          {/* Muñeca */}
-          <circle className="robot-joint" cx="145" cy="135" r="3" />
-          
-          {/* Mano */}
-          <rect className="robot-part" x="140" y="135" width="10" height="8" rx="3" ry="3" />
-        </g>
-        
-        {/* Pierna izquierda */}
-        <g>
-          {/* Muslo */}
-          <g id="leftUpperLeg">
-            <ellipse className="robot-glow" cx="85" cy="160" rx="10" ry="20" />
-            <rect className="robot-part" x="80" y="135" width="10" height="40" rx="5" ry="5" />
+        <g id="robot">
+          {/* Cabeza */}
+          <g id="head">
+            <ellipse className="robot-glow" cx="100" cy="40" rx="30" ry="25" />
+            <rect className="robot-part" x="75" y="15" width="50" height="50" rx="12" ry="12" />
             
-            {/* Rodilla */}
-            <circle className="robot-joint" cx="85" cy="175" r="4" />
+            {/* Ojos */}
+            <circle className="robot-eye" cx="90" cy="35" r="5" />
+            <circle className="robot-eye" cx="110" cy="35" r="5" />
             
-            {/* Pantorrilla */}
-            <g id="leftLowerLeg">
-              <ellipse className="robot-glow" cx="85" cy="200" rx="8" ry="20" />
-              <rect className="robot-part" x="80" y="175" width="10" height="40" rx="5" ry="5" />
+            {/* Boca pequeña */}
+            <rect className="robot-detail" x="90" y="50" width="20" height="2" rx="1" />
+            
+            {/* Cigarrillo */}
+            <line 
+              className="cigarette" 
+              x1="120" y1="50" 
+              x2="135" y2="45" 
+              stroke="white" 
+              strokeWidth="2" 
+            />
+            
+            {/* Punta del cigarrillo */}
+            <circle className="cigarette-tip" cx="120" cy="50" r="2" />
+            
+            {/* Humo */}
+            <circle className="smoke smoke-1" cx="137" cy="43" r="3" />
+            <circle className="smoke smoke-2" cx="137" cy="43" r="2.5" />
+            <circle className="smoke smoke-3" cx="137" cy="43" r="2" />
+          </g>
+          
+          {/* Cuello */}
+          <rect className="robot-part" x="95" y="65" width="10" height="10" rx="2" ry="2" />
+          <circle className="robot-joint" cx="100" cy="65" r="4" />
+          
+          {/* Torso */}
+          <g id="torso">
+            <ellipse className="robot-glow" cx="100" cy="100" rx="35" ry="30" />
+            <rect className="robot-part" x="75" y="75" width="50" height="60" rx="10" ry="10" />
+            
+            {/* Panel de control en el pecho */}
+            <rect className="robot-panel" x="85" y="85" width="30" height="20" rx="4" />
+            <circle className="robot-joint" cx="95" cy="95" r="3" />
+            <circle className="robot-joint" cx="105" cy="95" r="3" />
+            
+            {/* Líneas de detalle */}
+            <line className="robot-detail" x1="85" y1="115" x2="115" y2="115" />
+            <line className="robot-detail" x1="85" y1="125" x2="115" y2="125" />
+          </g>
+          
+          {/* Cadera y pelvis */}
+          <g id="hips">
+            <circle className="robot-joint" cx="85" cy="135" r="5" />
+            <circle className="robot-joint" cx="115" cy="135" r="5" />
+            <rect className="robot-panel" x="85" y="130" width="30" height="10" rx="3" ry="3" />
+          </g>
+          
+          {/* Brazo izquierdo */}
+          <g id="leftArmGroup">
+            <ellipse className="robot-glow" cx="55" cy="100" rx="10" ry="25" />
+            
+            {/* Hombro y parte superior del brazo */}
+            <circle className="robot-joint" cx="75" cy="80" r="5" /> 
+            <rect className="robot-part" x="45" y="80" width="30" height="10" rx="5" ry="5" />
+            
+            {/* Grupo de codo y antebrazo */}
+            <g id="leftElbow">
+              <circle className="robot-joint" cx="45" cy="90" r="4" />
+              <rect className="robot-part" x="40" y="90" width="10" height="40" rx="5" ry="5" />
               
-              {/* Tobillo */}
-              <circle className="robot-joint" cx="85" cy="215" r="3" />
+              {/* Muñeca y mano */}
+              <circle className="robot-joint" cx="45" cy="130" r="3" />
+              <rect className="robot-part" x="35" y="130" width="18" height="8" rx="4" ry="4" />
+            </g>
+          </g>
+          
+          {/* Brazo derecho */}
+          <g id="rightArmGroup">
+            <ellipse className="robot-glow" cx="145" cy="100" rx="10" ry="25" />
+            
+            {/* Hombro y parte superior del brazo */}
+            <circle className="robot-joint" cx="125" cy="80" r="5" />
+            <rect className="robot-part" x="125" y="80" width="30" height="10" rx="5" ry="5" />
+            
+            {/* Grupo de codo y antebrazo */}
+            <g id="rightElbow">
+              <circle className="robot-joint" cx="155" cy="90" r="4" />
+              <rect className="robot-part" x="150" y="90" width="10" height="40" rx="5" ry="5" />
               
-              {/* Pie */}
-              <g id="leftFoot">
-                <rect className="robot-part" x="75" y="215" width="20" height="7" rx="3" ry="3" />
+              {/* Muñeca y mano */}
+              <circle className="robot-joint" cx="155" cy="130" r="3" />
+              <rect className="robot-part" x="147" y="130" width="18" height="8" rx="4" ry="4" />
+            </g>
+          </g>
+          
+          {/* Pierna izquierda */}
+          <g id="leftLegGroup">
+            <ellipse className="robot-glow" cx="85" cy="160" rx="10" ry="30" />
+            
+            {/* Muslo */}
+            <rect className="robot-part" x="80" y="140" width="10" height="40" rx="5" ry="5" />
+            
+            {/* Rodilla y grupo de pantorrilla */}
+            <g id="leftKnee">
+              <circle className="robot-joint" cx="85" cy="180" r="5" />
+              <rect className="robot-part" x="80" y="180" width="10" height="45" rx="5" ry="5" />
+              
+              {/* Tobillo y pie */}
+              <g id="leftAnkle">
+                <circle className="robot-joint" cx="85" cy="225" r="4" />
+                <rect className="robot-part" x="70" y="225" width="25" height="8" rx="4" ry="4" />
               </g>
             </g>
           </g>
-        </g>
-        
-        {/* Pierna derecha */}
-        <g>
-          {/* Muslo */}
-          <g id="rightUpperLeg">
-            <ellipse className="robot-glow" cx="115" cy="160" rx="10" ry="20" />
-            <rect className="robot-part" x="110" y="135" width="10" height="40" rx="5" ry="5" />
+          
+          {/* Pierna derecha */}
+          <g id="rightLegGroup">
+            <ellipse className="robot-glow" cx="115" cy="160" rx="10" ry="30" />
             
-            {/* Rodilla */}
-            <circle className="robot-joint" cx="115" cy="175" r="4" />
+            {/* Muslo */}
+            <rect className="robot-part" x="110" y="140" width="10" height="40" rx="5" ry="5" />
             
-            {/* Pantorrilla */}
-            <g id="rightLowerLeg">
-              <ellipse className="robot-glow" cx="115" cy="200" rx="8" ry="20" />
-              <rect className="robot-part" x="110" y="175" width="10" height="40" rx="5" ry="5" />
+            {/* Rodilla y grupo de pantorrilla */}
+            <g id="rightKnee">
+              <circle className="robot-joint" cx="115" cy="180" r="5" />
+              <rect className="robot-part" x="110" y="180" width="10" height="45" rx="5" ry="5" />
               
-              {/* Tobillo */}
-              <circle className="robot-joint" cx="115" cy="215" r="3" />
-              
-              {/* Pie */}
-              <g id="rightFoot">
-                <rect className="robot-part" x="105" y="215" width="20" height="7" rx="3" ry="3" />
+              {/* Tobillo y pie */}
+              <g id="rightAnkle">
+                <circle className="robot-joint" cx="115" cy="225" r="4" />
+                <rect className="robot-part" x="105" y="225" width="25" height="8" rx="4" ry="4" />
               </g>
             </g>
           </g>
