@@ -96,8 +96,9 @@ export default function Dashboard() {
                 </span>
                 <span className="terminal-text">Panel de Control</span>
               </h1>
-              <div className="ml-6">
-                <DancingRobot width={80} height={120} color="var(--neon-purple)" />
+              <div className="ml-6 relative">
+                <DancingRobot width={90} height={130} color="var(--neon-purple)" className="transform -translate-y-1" />
+                <div className="absolute bottom-0 w-full h-3 bg-gradient-to-t from-neon-darker to-transparent"></div>
               </div>
             </div>
             <p className="mt-2 text-sm text-neon-text/90 pl-[46px]">
