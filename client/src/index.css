@@ -303,29 +303,6 @@
   text-fill-color: transparent;
 }
 
-/* Animaciones adicionales para el fondo */
-@keyframes pulse-0 { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-50%, -50%) scale(1.3); } }
-@keyframes pulse-1 { 0% { transform: translate(-50%, -50%) scale(1.2); } 100% { transform: translate(-50%, -50%) scale(0.8); } }
-@keyframes pulse-2 { 0% { transform: translate(-50%, -50%) scale(0.9); } 100% { transform: translate(-50%, -50%) scale(1.4); } }
-@keyframes pulse-3 { 0% { transform: translate(-50%, -50%) scale(1.1); } 100% { transform: translate(-50%, -50%) scale(0.9); } }
-@keyframes pulse-4 { 0% { transform: translate(-50%, -50%) scale(0.8); } 100% { transform: translate(-50%, -50%) scale(1.2); } }
-@keyframes pulse-5 { 0% { transform: translate(-50%, -50%) scale(1); } 100% { transform: translate(-50%, -50%) scale(1.5); } }
-@keyframes pulse-6 { 0% { transform: translate(-50%, -50%) scale(1.3); } 100% { transform: translate(-50%, -50%) scale(0.7); } }
-@keyframes pulse-7 { 0% { transform: translate(-50%, -50%) scale(0.7); } 100% { transform: translate(-50%, -50%) scale(1.1); } }
-@keyframes pulse-8 { 0% { transform: translate(-50%, -50%) scale(1.2); } 100% { transform: translate(-50%, -50%) scale(0.9); } }
-@keyframes pulse-9 { 0% { transform: translate(-50%, -50%) scale(0.9); } 100% { transform: translate(-50%, -50%) scale(1.3); } }
-
-@keyframes twinkle-0 { 0% { opacity: 0.3; } 100% { opacity: 0.8; } }
-@keyframes twinkle-1 { 0% { opacity: 0.5; } 100% { opacity: 0.2; } }
-@keyframes twinkle-2 { 0% { opacity: 0.2; } 100% { opacity: 0.7; } }
-@keyframes twinkle-3 { 0% { opacity: 0.6; } 100% { opacity: 0.3; } }
-@keyframes twinkle-4 { 0% { opacity: 0.4; } 100% { opacity: 0.8; } }
-
-@keyframes slide-horizontal {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
 @layer base {
   * {
     @apply border-border;
@@ -336,19 +313,14 @@
     font-family: 'Inter', sans-serif;
     background-color: var(--neon-darker);
     position: relative;
-    
-    /* Fondo de puntos neón */
     background-image: 
-      radial-gradient(rgba(0, 225, 255, 0.2) 1px, transparent 1px), 
-      radial-gradient(rgba(0, 225, 255, 0.15) 1px, transparent 1px);
+      radial-gradient(rgba(0, 225, 255, 0.04) 1px, transparent 1px), 
+      radial-gradient(rgba(0, 225, 255, 0.03) 1px, transparent 1px);
     background-size: 38px 38px;
     background-position: 0 0, 19px 19px;
-    
-    /* Degradado de fondo */
-    background: linear-gradient(to bottom, #000510 0%, #061621 100%);
   }
   
-  /* Efecto matrix antes del contenido - aumentamos la opacidad */
+  /* Overlay con efecto matrix */
   body::before {
     content: "";
     position: fixed;
@@ -357,28 +329,11 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-    opacity: 0.15;  /* Incrementado para mayor visibilidad */
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM11 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM36.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM36.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5z' fill='%2300E1FF' fill-opacity='0.8' fill-rule='evenodd'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM11 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM36.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM36.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5z' fill='%2300E1FF' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
     background-size: 300px 300px;
     background-position: center;
-    animation: matrix-bg 60s linear infinite;
-    z-index: -1;
-  }
-  
-  /* Efecto de grid después del contenido - más fuerte */
-  body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background-image: 
-      linear-gradient(rgba(0, 225, 255, 0.3) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 225, 255, 0.3) 1px, transparent 1px);
-    background-size: 50px 50px;
-    opacity: 0.1;
+    animation: matrix-bg 180s linear infinite;
     z-index: -1;
   }
   
