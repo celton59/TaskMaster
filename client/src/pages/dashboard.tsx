@@ -8,7 +8,7 @@ import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RobotHead } from "@/components/animations/robot-head";
+import { SimpleRobotHead } from "@/components/animations/simple-robot-head";
 import { 
   FileText, 
   Clock, 
@@ -97,7 +97,7 @@ export default function Dashboard() {
                 <span className="terminal-text">Panel de Control</span>
               </h1>
               <div className="ml-2 relative flex items-center">
-                <RobotHead width={70} height={70} color="var(--neon-purple)" className="ml-3 transform translate-y-1" />
+                <SimpleRobotHead width={70} height={70} color="var(--neon-purple)" className="ml-3 transform translate-y-1" />
               </div>
             </div>
             <p className="mt-2 text-sm text-neon-text/90 pl-[46px]">
