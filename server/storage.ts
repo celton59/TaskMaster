@@ -2,7 +2,9 @@ import {
   users, type User, type InsertUser,
   tasks, type Task, type InsertTask,
   categories, type Category, type InsertCategory,
-  TaskStatus 
+  whatsappContacts, type WhatsappContact, type InsertWhatsappContact,
+  whatsappMessages, type WhatsappMessage, type InsertWhatsappMessage,
+  TaskStatus, MessageDirection, MessageStatus
 } from "@shared/schema";
 
 export interface IStorage {
@@ -33,23 +35,45 @@ export interface IStorage {
     review: number;
     completed: number;
   }>;
+  
+  // WhatsApp contact methods
+  getWhatsappContacts(): Promise<WhatsappContact[]>;
+  getWhatsappContact(id: number): Promise<WhatsappContact | undefined>;
+  getWhatsappContactByPhone(phoneNumber: string): Promise<WhatsappContact | undefined>;
+  createWhatsappContact(contact: InsertWhatsappContact): Promise<WhatsappContact>;
+  updateWhatsappContact(id: number, contact: Partial<InsertWhatsappContact>): Promise<WhatsappContact | undefined>;
+  deleteWhatsappContact(id: number): Promise<boolean>;
+  
+  // WhatsApp message methods
+  getWhatsappMessages(contactId?: number): Promise<WhatsappMessage[]>;
+  getWhatsappMessage(id: number): Promise<WhatsappMessage | undefined>;
+  createWhatsappMessage(message: InsertWhatsappMessage): Promise<WhatsappMessage>;
+  updateWhatsappMessageStatus(id: number, status: string): Promise<WhatsappMessage | undefined>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private tasks: Map<number, Task>;
   private categories: Map<number, Category>;
+  private whatsappContacts: Map<number, WhatsappContact>;
+  private whatsappMessages: Map<number, WhatsappMessage>;
   private userCurrentId: number;
   private taskCurrentId: number;
   private categoryCurrentId: number;
+  private whatsappContactCurrentId: number;
+  private whatsappMessageCurrentId: number;
 
   constructor() {
     this.users = new Map();
     this.tasks = new Map();
     this.categories = new Map();
+    this.whatsappContacts = new Map();
+    this.whatsappMessages = new Map();
     this.userCurrentId = 1;
     this.taskCurrentId = 1;
     this.categoryCurrentId = 1;
+    this.whatsappContactCurrentId = 1;
+    this.whatsappMessageCurrentId = 1;
     
     // Adding default categories
     this.createCategory({ name: "Trabajo", color: "blue" });
@@ -117,7 +141,13 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userCurrentId++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      email: insertUser.email || null,
+      name: insertUser.name || null,
+      avatar: insertUser.avatar || null
+    };
     this.users.set(id, user);
     return user;
   }
@@ -181,7 +211,13 @@ export class MemStorage implements IStorage {
     const newTask: Task = { 
       ...task, 
       id,
-      createdAt: now 
+      createdAt: now,
+      status: task.status || TaskStatus.PENDING,
+      description: task.description || null,
+      priority: task.priority || null,
+      categoryId: task.categoryId || null,
+      deadline: task.deadline || null,
+      assignedTo: task.assignedTo || null
     };
     this.tasks.set(id, newTask);
     return newTask;
@@ -220,6 +256,98 @@ export class MemStorage implements IStorage {
       completed: tasks.filter(task => task.status === TaskStatus.COMPLETED).length
     };
   }
+  
+  // WhatsApp contact methods
+  async getWhatsappContacts(): Promise<WhatsappContact[]> {
+    return Array.from(this.whatsappContacts.values());
+  }
+  
+  async getWhatsappContact(id: number): Promise<WhatsappContact | undefined> {
+    return this.whatsappContacts.get(id);
+  }
+  
+  async getWhatsappContactByPhone(phoneNumber: string): Promise<WhatsappContact | undefined> {
+    return Array.from(this.whatsappContacts.values()).find(
+      (contact) => contact.phoneNumber === phoneNumber
+    );
+  }
+  
+  async createWhatsappContact(contact: InsertWhatsappContact): Promise<WhatsappContact> {
+    const id = this.whatsappContactCurrentId++;
+    const now = new Date();
+    const newContact: WhatsappContact = {
+      ...contact,
+      id,
+      createdAt: now,
+      updatedAt: now,
+      lastMessageAt: null,
+      active: contact.active !== undefined ? contact.active : true,
+      notes: contact.notes || null
+    };
+    this.whatsappContacts.set(id, newContact);
+    return newContact;
+  }
+  
+  async updateWhatsappContact(
+    id: number,
+    contact: Partial<InsertWhatsappContact>
+  ): Promise<WhatsappContact | undefined> {
+    const existing = this.whatsappContacts.get(id);
+    if (!existing) return undefined;
+    
+    const updated = { 
+      ...existing, 
+      ...contact,
+      updatedAt: new Date()
+    };
+    this.whatsappContacts.set(id, updated);
+    return updated;
+  }
+  
+  async deleteWhatsappContact(id: number): Promise<boolean> {
+    return this.whatsappContacts.delete(id);
+  }
+  
+  // WhatsApp message methods
+  async getWhatsappMessages(contactId?: number): Promise<WhatsappMessage[]> {
+    const messages = Array.from(this.whatsappMessages.values());
+    if (contactId) {
+      return messages.filter(message => message.contactId === contactId);
+    }
+    return messages;
+  }
+  
+  async getWhatsappMessage(id: number): Promise<WhatsappMessage | undefined> {
+    return this.whatsappMessages.get(id);
+  }
+  
+  async createWhatsappMessage(message: InsertWhatsappMessage): Promise<WhatsappMessage> {
+    const id = this.whatsappMessageCurrentId++;
+    const now = new Date();
+    const newMessage: WhatsappMessage = {
+      ...message,
+      id,
+      sentAt: now,
+      updatedAt: null,
+      status: message.status || MessageStatus.SENT,
+      metadata: message.metadata || null
+    };
+    this.whatsappMessages.set(id, newMessage);
+    return newMessage;
+  }
+  
+  async updateWhatsappMessageStatus(id: number, status: string): Promise<WhatsappMessage | undefined> {
+    const existing = this.whatsappMessages.get(id);
+    if (!existing) return undefined;
+    
+    const updated = { 
+      ...existing, 
+      status,
+      updatedAt: new Date()
+    };
+    this.whatsappMessages.set(id, updated);
+    return updated;
+  }
 }
 
 import { drizzle } from 'drizzle-orm/neon-http';
@@ -233,7 +361,12 @@ export class PostgresStorage implements IStorage {
   constructor() {
     // Configurar la conexión a PostgreSQL usando variables de entorno
     const sql = neon(process.env.DATABASE_URL!);
-    this.db = drizzle(sql, { schema: { users, tasks, categories } });
+    this.db = drizzle(sql, { 
+      schema: { 
+        users, tasks, categories, 
+        whatsappContacts, whatsappMessages 
+      } 
+    });
     console.log("Conexión a base de datos PostgreSQL establecida");
   }
   
@@ -334,6 +467,65 @@ export class PostgresStorage implements IStorage {
       review,
       completed
     };
+  }
+  
+  // WhatsApp contact methods
+  async getWhatsappContacts(): Promise<WhatsappContact[]> {
+    return await this.db.select().from(whatsappContacts);
+  }
+  
+  async getWhatsappContact(id: number): Promise<WhatsappContact | undefined> {
+    const result = await this.db.select().from(whatsappContacts).where(eq(whatsappContacts.id, id));
+    return result[0];
+  }
+  
+  async getWhatsappContactByPhone(phoneNumber: string): Promise<WhatsappContact | undefined> {
+    const result = await this.db.select().from(whatsappContacts).where(eq(whatsappContacts.phoneNumber, phoneNumber));
+    return result[0];
+  }
+  
+  async createWhatsappContact(contact: InsertWhatsappContact): Promise<WhatsappContact> {
+    const result = await this.db.insert(whatsappContacts).values(contact).returning();
+    return result[0];
+  }
+  
+  async updateWhatsappContact(id: number, contact: Partial<InsertWhatsappContact>): Promise<WhatsappContact | undefined> {
+    const result = await this.db.update(whatsappContacts)
+      .set(contact)
+      .where(eq(whatsappContacts.id, id))
+      .returning();
+    return result[0];
+  }
+  
+  async deleteWhatsappContact(id: number): Promise<boolean> {
+    const result = await this.db.delete(whatsappContacts).where(eq(whatsappContacts.id, id)).returning();
+    return result.length > 0;
+  }
+  
+  // WhatsApp message methods
+  async getWhatsappMessages(contactId?: number): Promise<WhatsappMessage[]> {
+    if (contactId) {
+      return await this.db.select().from(whatsappMessages).where(eq(whatsappMessages.contactId, contactId));
+    }
+    return await this.db.select().from(whatsappMessages);
+  }
+  
+  async getWhatsappMessage(id: number): Promise<WhatsappMessage | undefined> {
+    const result = await this.db.select().from(whatsappMessages).where(eq(whatsappMessages.id, id));
+    return result[0];
+  }
+  
+  async createWhatsappMessage(message: InsertWhatsappMessage): Promise<WhatsappMessage> {
+    const result = await this.db.insert(whatsappMessages).values(message).returning();
+    return result[0];
+  }
+  
+  async updateWhatsappMessageStatus(id: number, status: string): Promise<WhatsappMessage | undefined> {
+    const result = await this.db.update(whatsappMessages)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(whatsappMessages.id, id))
+      .returning();
+    return result[0];
   }
 }
 
