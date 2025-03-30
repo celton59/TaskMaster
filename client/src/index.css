@@ -6,7 +6,7 @@
 
 /* Variables de tema neón */
 :root {
-  /* Color neón principal */
+  /* Color neón principal - valores predeterminados para tema oscuro */
   --neon-accent: #00E1FF;
   --neon-dark: #061621;
   --neon-darker: #020B10;
@@ -21,6 +21,41 @@
   --neon-yellow: #ffea00;
   --neon-orange: #ff6d00;
   --neon-red: #ff2d6d;
+}
+
+/* Tema oscuro - valores predeterminados */
+.dark-theme {
+  --neon-accent: #00E1FF;
+  --neon-dark: #061621;
+  --neon-darker: #020B10;
+  --neon-medium: #0C2840;
+  --neon-light: #0E3A5A;
+  --neon-text: #E0F8FF;
+  
+  --neon-purple: #bb00ff;
+  --neon-pink: #ff00e6;
+  --neon-green: #00ff9d;
+  --neon-yellow: #ffea00;
+  --neon-orange: #ff6d00;
+  --neon-red: #ff2d6d;
+}
+
+/* Tema claro */
+.light-theme {
+  --neon-accent: #0078D4;
+  --neon-dark: #f0f5fa;
+  --neon-darker: #ffffff;
+  --neon-medium: #e1ecf7;
+  --neon-light: #d0e0f0;
+  --neon-text: #1A3A5A;
+  
+  /* Versiones menos intensas de los colores neón para tema claro */
+  --neon-purple: #9933CC;
+  --neon-pink: #CC33AA;
+  --neon-green: #00AA77;
+  --neon-yellow: #CCAA00;
+  --neon-orange: #CC5500;
+  --neon-red: #CC3355;
 }
 
 /* Estilos personalizados para el calendario - Tema neón */
@@ -242,9 +277,20 @@
   background: linear-gradient(135deg, rgba(6, 22, 33, 0.7) 0%, rgba(12, 40, 64, 0.7) 100%);
 }
 
+.light-theme .task-card {
+  border: 1px solid rgba(0, 120, 212, 0.3);
+  background: linear-gradient(135deg, rgba(224, 240, 255, 0.8) 0%, rgba(240, 245, 250, 0.8) 100%);
+  backdrop-filter: blur(5px);
+}
+
 .task-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 0 15px rgba(0, 225, 255, 0.3);
+  border-color: var(--neon-accent);
+}
+
+.light-theme .task-card:hover {
+  box-shadow: 0 0 15px rgba(0, 120, 212, 0.3);
   border-color: var(--neon-accent);
 }
 
@@ -255,6 +301,12 @@
   box-shadow: 0 0 20px rgba(0, 225, 255, 0.2);
   position: relative;
   overflow: hidden;
+}
+
+.light-theme .neon-card {
+  background: linear-gradient(135deg, var(--neon-dark) 0%, var(--neon-medium) 100%);
+  border: 1px solid var(--neon-accent);
+  box-shadow: 0 0 20px rgba(0, 120, 212, 0.15);
 }
 
 /* Efecto de escáner en tarjetas */
@@ -276,6 +328,42 @@
   animation: scanner-line 7s linear infinite;
   pointer-events: none;
   z-index: 1;
+}
+
+.light-theme .neon-card::before {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    transparent 50%,
+    rgba(0, 120, 212, 0.1) 50%,
+    transparent 51%
+  );
+}
+
+/* Estilos para menús desplegables con tema claro */
+.light-theme .bg-neon-dark,
+.light-theme [class*="bg-neon-dark"] {
+  background-color: var(--neon-dark) !important;
+}
+
+.light-theme .bg-neon-darker,
+.light-theme [class*="bg-neon-darker"] {
+  background-color: var(--neon-darker) !important;
+}
+
+.light-theme .bg-neon-medium,
+.light-theme [class*="bg-neon-medium"] {
+  background-color: var(--neon-medium) !important;
+}
+
+.light-theme .text-neon-text,
+.light-theme [class*="text-neon-text"] {
+  color: var(--neon-text) !important;
+}
+
+.light-theme .text-neon-accent,
+.light-theme [class*="text-neon-accent"] {
+  color: var(--neon-accent) !important;
 }
 
 @keyframes scanner-line {
@@ -314,10 +402,11 @@
     background-color: var(--neon-darker);
     position: relative;
     background-image: 
-      radial-gradient(rgba(0, 225, 255, 0.04) 1px, transparent 1px), 
-      radial-gradient(rgba(0, 225, 255, 0.03) 1px, transparent 1px);
+      radial-gradient(rgba(0, 120, 212, 0.04) 1px, transparent 1px), 
+      radial-gradient(rgba(0, 120, 212, 0.03) 1px, transparent 1px);
     background-size: 38px 38px;
     background-position: 0 0, 19px 19px;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   
   /* Overlay con efecto matrix */
@@ -335,6 +424,24 @@
     background-position: center;
     animation: matrix-bg 180s linear infinite;
     z-index: -1;
+    transition: opacity 0.3s ease;
+  }
+
+  .dark-theme body {
+    background-image: 
+      radial-gradient(rgba(0, 225, 255, 0.04) 1px, transparent 1px), 
+      radial-gradient(rgba(0, 225, 255, 0.03) 1px, transparent 1px);
+  }
+
+  .light-theme body {
+    background-image: 
+      radial-gradient(rgba(0, 120, 212, 0.04) 1px, transparent 1px), 
+      radial-gradient(rgba(0, 120, 212, 0.03) 1px, transparent 1px);
+  }
+
+  .light-theme body::before {
+    opacity: 0.02;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM11 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 88c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM91 18c0 1.105-.895 2-2 2s-2-.895-2-2 .895-2 2-2 2 .895 2 2zM36.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM36.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 5c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5zM64.5 99c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5-1.5.672-1.5 1.5.672 1.5 1.5 1.5z' fill='%230078D4' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
   }
   
   @keyframes matrix-bg {

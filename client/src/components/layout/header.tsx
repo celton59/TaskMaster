@@ -8,7 +8,9 @@ import {
   HelpCircle,
   User,
   Settings,
-  LogOut
+  LogOut,
+  Moon,
+  Sun
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -21,16 +23,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { useTheme } from "@/hooks/use-theme";
 
 export function Header() {
   const [searchTerm, setSearchTerm] = useState("");
+  const { theme, toggleTheme } = useTheme();
+  
   const toggleMobileMenu = () => {
     const event = new CustomEvent('toggle-mobile-menu');
     window.dispatchEvent(event);
   };
   
   return (
-    <header className="bg-neon-darker border-b border-neon-accent/20 shadow-md z-20 sticky top-0">
+    <header className="border-b border-neon-accent/20 shadow-md z-20 sticky top-0" style={{ backgroundColor: 'var(--neon-darker)' }}>
       <div className="px-5 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center">
           <button 
@@ -103,6 +108,14 @@ export function Header() {
           
           <button className="h-8 w-8 rounded-full bg-neon-medium/50 border border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80 focus:outline-none transition-all duration-300 flex items-center justify-center neon-box">
             <HelpCircle className="h-4 w-4" />
+          </button>
+          
+          <button 
+            onClick={toggleTheme}
+            className="h-8 w-8 rounded-full bg-neon-medium/50 border border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80 focus:outline-none transition-all duration-300 flex items-center justify-center neon-box"
+            title={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           
           <Separator orientation="vertical" className="h-6 mx-1 bg-neon-accent/20" />
