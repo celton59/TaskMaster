@@ -1,137 +1,159 @@
 import twilio from 'twilio';
-import { AgentOrchestrator } from '../agents/orchestrator';
-import { Request, Response } from 'express';
 
-// Verifica que las variables de entorno estén configuradas
-if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
-  console.error('Error: Se requieren las credenciales de Twilio (TWILIO_ACCOUNT_SID y TWILIO_AUTH_TOKEN)');
+// Configuración de Twilio
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+
+/**
+ * Verifica si Twilio está correctamente configurado
+ * @returns Objeto con el estado de la configuración
+ */
+export async function checkTwilioConfig(): Promise<{
+  configured: boolean;
+  phoneConfigured: boolean;
+  phoneNumber?: string;
+  error?: string;
+}> {
+  try {
+    // Verificar que todas las variables de entorno necesarias están configuradas
+    if (!accountSid || !authToken) {
+      return {
+        configured: false,
+        phoneConfigured: false,
+        error: "Faltan credenciales de Twilio (SID o Token)",
+      };
+    }
+
+    if (!twilioPhoneNumber) {
+      return {
+        configured: true,
+        phoneConfigured: false,
+        error: "Falta número de WhatsApp",
+      };
+    }
+
+    // Intentar crear una instancia de Twilio para verificar las credenciales
+    const client = twilio(accountSid, authToken);
+    
+    // Si todo está bien, devolver el estado positivo
+    return {
+      configured: true,
+      phoneConfigured: true,
+      phoneNumber: twilioPhoneNumber,
+    };
+  } catch (error) {
+    console.error("Error verificando configuración de Twilio:", error);
+    return {
+      configured: false,
+      phoneConfigured: false,
+      error: error instanceof Error ? error.message : "Error desconocido",
+    };
+  }
 }
-
-// Inicializa el cliente de Twilio
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
 
 /**
  * Envía un mensaje de WhatsApp a través de Twilio
- * @param to Número de teléfono de destino (con formato E.164, ej: +34600000000)
- * @param message Mensaje a enviar
+ * @param to Número de teléfono de destino (formato E.164)
+ * @param message Contenido del mensaje
+ * @returns Objeto con el resultado del envío
  */
-export async function sendWhatsAppMessage(to: string, message: string): Promise<void> {
-  try {
-    // Verifica que el número de teléfono de Twilio esté configurado
-    if (!process.env.TWILIO_PHONE_NUMBER) {
-      throw new Error('No se ha configurado TWILIO_PHONE_NUMBER');
-    }
-
-    // Envía el mensaje usando el API de Twilio para WhatsApp
-    const fromNumber = process.env.TWILIO_PHONE_NUMBER;
-    
-    await twilioClient.messages.create({
-      body: message,
-      from: `whatsapp:${fromNumber}`,
-      to: `whatsapp:${to}`
-    });
-
-    console.log(`Mensaje enviado a ${to}`);
-  } catch (error) {
-    console.error('Error al enviar mensaje de WhatsApp:', error);
-    throw error;
-  }
-}
-
-/**
- * Maneja los webhooks entrantes de Twilio para WhatsApp
- * @param req Request HTTP
- * @param res Response HTTP
- * @param orchestrator Orquestador de agentes
- */
-export async function handleWhatsAppWebhook(req: Request, res: Response, orchestrator: AgentOrchestrator): Promise<void> {
-  try {
-    const twimlResponse = new twilio.twiml.MessagingResponse();
-    
-    // Obtiene el mensaje y el número de teléfono del remitente
-    const incomingMessage = req.body.Body;
-    const from = req.body.From.replace('whatsapp:', '');
-    
-    console.log(`Mensaje recibido de ${from}: ${incomingMessage}`);
-    
-    if (!incomingMessage) {
-      twimlResponse.message('No se recibió ningún mensaje.');
-      res.writeHead(200, { 'Content-Type': 'text/xml' });
-      res.end(twimlResponse.toString());
-      return;
-    }
-
-    // Procesa el mensaje con el orquestador de agentes
-    const response = await orchestrator.process(incomingMessage);
-    
-    // Envía la respuesta generada por el agente
-    twimlResponse.message(response.message);
-    
-    res.writeHead(200, { 'Content-Type': 'text/xml' });
-    res.end(twimlResponse.toString());
-  } catch (error) {
-    console.error('Error al procesar webhook de WhatsApp:', error);
-    res.status(500).json({ error: 'Error al procesar la solicitud' });
-  }
-}
-
-/**
- * Verifica el estado de la configuración de Twilio
- */
-export async function checkTwilioConfiguration(): Promise<{ 
-  status: 'success' | 'error',
-  message: string,
-  configured?: boolean,
-  phoneConfigured?: boolean,
-  phoneNumber?: string
+export async function sendWhatsAppMessage(to: string, message: string): Promise<{
+  success: boolean;
+  messageId?: string;
+  error?: string;
 }> {
   try {
-    const hasTwilioCredentials = !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN);
-    const hasPhoneNumber = !!process.env.TWILIO_PHONE_NUMBER;
-    
-    if (!hasTwilioCredentials || !hasPhoneNumber) {
+    // Verificar que Twilio está configurado
+    const config = await checkTwilioConfig();
+    if (!config.configured || !config.phoneConfigured) {
       return {
-        status: 'success',
-        message: 'Faltan algunas credenciales de Twilio',
-        configured: hasTwilioCredentials,
-        phoneConfigured: hasPhoneNumber,
-        phoneNumber: hasPhoneNumber ? process.env.TWILIO_PHONE_NUMBER : undefined
+        success: false,
+        error: "Twilio no está correctamente configurado",
       };
     }
 
-    try {
-      // Intenta obtener la información de la cuenta para verificar las credenciales
-      // En este punto ya sabemos que TWILIO_ACCOUNT_SID existe gracias a la verificación anterior
-      const accountSid = process.env.TWILIO_ACCOUNT_SID || '';
-      const account = await twilioClient.api.accounts(accountSid).fetch();
-      
+    // Crear cliente Twilio
+    const client = twilio(accountSid!, authToken!);
+
+    // Formatear número de destino para WhatsApp
+    const formattedTo = to.startsWith("whatsapp:") ? to : `whatsapp:${to}`;
+    const formattedFrom = twilioPhoneNumber!.startsWith("whatsapp:") ? twilioPhoneNumber! : `whatsapp:${twilioPhoneNumber!}`;
+
+    // Enviar mensaje
+    const twilioMessage = await client.messages.create({
+      body: message,
+      from: formattedFrom,
+      to: formattedTo,
+    });
+
+    return {
+      success: true,
+      messageId: twilioMessage.sid,
+    };
+  } catch (error) {
+    console.error("Error enviando mensaje de WhatsApp:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error desconocido",
+    };
+  }
+}
+
+/**
+ * Envía un mensaje de prueba para verificar la configuración
+ * @param to Número de teléfono de destino
+ * @param message Mensaje de prueba
+ * @returns Resultado del envío
+ */
+export async function sendTestWhatsAppMessage(to: string, message: string): Promise<{
+  success: boolean;
+  messageId?: string;
+  error?: string;
+}> {
+  return await sendWhatsAppMessage(to, message);
+}
+
+/**
+ * Procesa un webhook entrante de Twilio para mensajes de WhatsApp
+ * @param body Datos del webhook
+ * @returns Objeto con el resultado del procesamiento
+ */
+export async function processIncomingWebhook(body: any): Promise<{
+  success: boolean;
+  messageId?: string;
+  from?: string;
+  body?: string;
+  error?: string;
+}> {
+  try {
+    // Verificar que el webhook contiene la información necesaria
+    if (!body.From || !body.Body) {
       return {
-        status: 'success',
-        message: `Configuración de Twilio verificada. Cuenta: ${account.friendlyName}`,
-        configured: true,
-        phoneConfigured: true,
-        phoneNumber: process.env.TWILIO_PHONE_NUMBER
-      };
-    } catch (credentialError: any) {
-      // Las credenciales no son válidas
-      return {
-        status: 'error',
-        message: `Error de autenticación de Twilio: ${credentialError.message || 'Error desconocido'}`,
-        configured: false,
-        phoneConfigured: hasPhoneNumber,
-        phoneNumber: hasPhoneNumber ? process.env.TWILIO_PHONE_NUMBER : undefined
+        success: false,
+        error: "Webhook incompleto: faltan campos requeridos",
       };
     }
-  } catch (error: any) {
-    console.error('Error al verificar la configuración de Twilio:', error);
+
+    // Extraer información del mensaje
+    const from = body.From.replace("whatsapp:", "");
+    const messageBody = body.Body;
+    const messageId = body.MessageSid || body.SmsSid;
+
+    // Aquí puedes agregar lógica adicional para guardar el mensaje en la base de datos
+    // o realizar otras acciones con el mensaje entrante
+
     return {
-      status: 'error',
-      message: `Error al verificar la configuración de Twilio: ${error.message || 'Error desconocido'}`,
-      configured: false,
-      phoneConfigured: false
+      success: true,
+      messageId,
+      from,
+      body: messageBody,
+    };
+  } catch (error) {
+    console.error("Error procesando webhook de WhatsApp:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error desconocido",
     };
   }
 }

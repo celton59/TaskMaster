@@ -7,7 +7,7 @@ import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { createTaskFromText, processAgentMessage } from "./openai-service";
 import { processUserMessage } from "./agents/agent-service";
-import { handleWhatsAppWebhook, checkTwilioConfiguration, sendWhatsAppMessage } from "./services/whatsapp-service";
+import { processIncomingWebhook, checkTwilioConfig, sendWhatsAppMessage } from "./services/whatsapp-service";
 import { orchestrator } from "./agents/orchestrator";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -308,7 +308,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Rutas de WhatsApp
   apiRouter.get("/whatsapp/status", async (req, res) => {
     try {
-      const status = await checkTwilioConfiguration();
+      const status = await checkTwilioConfig();
       res.json(status);
     } catch (error) {
       console.error("Error al verificar la configuración de Twilio:", error);
@@ -388,10 +388,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name,
         phoneNumber,
         notes: notes || null,
-        active: true,
-        createdAt: new Date(),
-        updatedAt: null,
-        lastMessageAt: null
+        active: true
       });
       
       res.status(201).json({ 
@@ -438,7 +435,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
       if (notes !== undefined) updateData.notes = notes;
       if (active !== undefined) updateData.active = active;
-      updateData.updatedAt = new Date();
+
       
       const updatedContact = await storage.updateWhatsappContact(id, updateData);
       
@@ -524,7 +521,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Webhook para Twilio WhatsApp
   app.post("/webhooks/whatsapp", express.urlencoded({ extended: false }), async (req, res) => {
     try {
-      await handleWhatsAppWebhook(req, res, orchestrator);
+      const result = await processIncomingWebhook(req.body);
+      if (result.success) {
+        // Enviar respuesta TwiML para confirmar recepción
+        res.set('Content-Type', 'text/xml');
+        res.send('<Response></Response>');
+      } else {
+        console.error("Error en el webhook:", result.error);
+        res.status(400).json({ 
+          status: 'error',
+          message: result.error || "Error al procesar webhook" 
+        });
+      }
     } catch (error) {
       console.error("Error al procesar webhook de WhatsApp:", error);
       res.status(500).json({ 
