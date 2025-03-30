@@ -245,7 +245,7 @@ export default function Dashboard() {
                   {chartData.map((day, i) => (
                     <div key={i} className="bg-neon-medium/30 rounded-md relative overflow-hidden border border-neon-accent/20">
                       <div 
-                        className="absolute bottom-0 w-full bg-neon-pink/80 shadow-[0_0_8px_rgba(255,0,230,0.4)]"
+                        className="absolute bottom-0 w-full bg-neon-pink/80 shadow-[0_0_8px_rgba(0,225,255,0.4)]"
                         style={{ 
                           height: `${(day.completed / Math.max(...chartData.map(d => Math.max(d.created, d.completed)))) * 100}%`,
                         }}
