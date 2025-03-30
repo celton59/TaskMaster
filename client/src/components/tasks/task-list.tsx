@@ -248,16 +248,16 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
   
   // Get deadline icon
   const getDeadlineIcon = (deadline: Date | string | null) => {
-    if (!deadline) return <Clock size={14} className="text-neutral-400" />;
+    if (!deadline) return <Clock size={14} className="text-neon-text/40" />;
     
     const status = getDeadlineStatus(deadline);
     
     if (status === "overdue") {
-      return <AlertTriangle size={14} className="text-rose-500" />;
+      return <AlertTriangle size={14} className="text-rose-300 animate-pulse" />;
     } else if (status === "soon") {
-      return <AlertTriangle size={14} className="text-amber-500" />;
+      return <Clock4 size={14} className="text-amber-300" />;
     } else {
-      return <Calendar size={14} className="text-blue-500" />;
+      return <Calendar size={14} className="text-neon-accent/80" />;
     }
   };
   
@@ -525,15 +525,15 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
 
   if (isLoading) {
     return (
-      <Card className="border-neutral-100 shadow-sm">
-        <CardHeader className="pb-4">
-          <CardTitle>Lista de tareas</CardTitle>
-          <CardDescription>Cargando tareas...</CardDescription>
+      <Card className="border-neon-accent/20 bg-neon-darker shadow-[0_0_15px_rgba(0,225,255,0.1)]">
+        <CardHeader className="pb-4 border-b border-neon-accent/20">
+          <CardTitle className="text-neon-accent neon-text">Lista de tareas</CardTitle>
+          <CardDescription className="text-neon-text/70">Cargando tareas...</CardDescription>
         </CardHeader>
         <CardContent className="pb-6">
           <div className="animate-pulse space-y-4">
             {Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className="h-12 bg-neutral-100 rounded-md" />
+              <div key={index} className="h-12 bg-neon-medium/10 rounded-md border border-neon-accent/10" />
             ))}
           </div>
         </CardContent>
@@ -542,12 +542,12 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
   }
 
   return (
-    <Card className="border-neutral-100 shadow-sm">
-      <CardHeader className="pb-4">
+    <Card className="border-neon-accent/20 bg-neon-darker shadow-[0_0_15px_rgba(0,225,255,0.1)]">
+      <CardHeader className="pb-4 border-b border-neon-accent/20">
         <div className="flex flex-col md:flex-row justify-between gap-4">
           <div>
-            <CardTitle>Lista de tareas</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-neon-accent neon-text">Lista de tareas</CardTitle>
+            <CardDescription className="text-neon-text/70">
               {filteredTasks.length} 
               {filteredTasks.length === 1 ? ' tarea encontrada' : ' tareas encontradas'}
             </CardDescription>
@@ -561,10 +561,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                 value={filters.status || 'all'}
                 onValueChange={(value) => setFilters({ ...filters, status: value === 'all' ? null : value })}
               >
-                <SelectTrigger className="w-[140px] h-9 text-sm">
+                <SelectTrigger className="w-[140px] h-9 text-sm bg-neon-darker border-neon-accent/40 text-neon-text hover:border-neon-accent/60 focus:border-neon-accent/80 shadow-[0_0_5px_rgba(0,225,255,0.1)]">
                   <SelectValue placeholder="Estado" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-neon-darker border-neon-accent/40 text-neon-text">
                   <SelectItem value="all">Todos los estados</SelectItem>
                   <SelectItem value="pending">Pendiente</SelectItem>
                   <SelectItem value="in_progress">En progreso</SelectItem>
@@ -578,10 +578,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                 value={filters.priority || 'all'}
                 onValueChange={(value) => setFilters({ ...filters, priority: value === 'all' ? null : value })}
               >
-                <SelectTrigger className="w-[140px] h-9 text-sm">
+                <SelectTrigger className="w-[140px] h-9 text-sm bg-neon-darker border-neon-accent/40 text-neon-text hover:border-neon-accent/60 focus:border-neon-accent/80 shadow-[0_0_5px_rgba(0,225,255,0.1)]">
                   <SelectValue placeholder="Prioridad" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-neon-darker border-neon-accent/40 text-neon-text">
                   <SelectItem value="all">Todas las prioridades</SelectItem>
                   <SelectItem value="high">Alta</SelectItem>
                   <SelectItem value="medium">Media</SelectItem>
@@ -597,10 +597,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                   category: value === 'all' ? null : parseInt(value, 10)
                 })}
               >
-                <SelectTrigger className="w-[140px] h-9 text-sm">
+                <SelectTrigger className="w-[140px] h-9 text-sm bg-neon-darker border-neon-accent/40 text-neon-text hover:border-neon-accent/60 focus:border-neon-accent/80 shadow-[0_0_5px_rgba(0,225,255,0.1)]">
                   <SelectValue placeholder="Categoría" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-neon-darker border-neon-accent/40 text-neon-text">
                   <SelectItem value="all">Todas las categorías</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
@@ -614,7 +614,7 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
               {(filters.status || filters.priority || filters.category !== null) && (
                 <Button 
                   variant="outline" 
-                  className="h-9 px-2" 
+                  className="h-9 px-2 border-neon-accent/40 text-neon-accent bg-transparent hover:text-neon-accent hover:bg-neon-medium/20 hover:border-neon-accent/60 shadow-[0_0_5px_rgba(0,225,255,0.1)] hover:shadow-[0_0_8px_rgba(0,225,255,0.2)] transition-all" 
                   onClick={resetFilters}
                 >
                   <FilterX className="h-4 w-4 mr-1" />
@@ -627,14 +627,14 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
         
         {/* Acciones para tareas seleccionadas */}
         {selectedTasks.length > 0 && (
-          <div className="mt-2 flex items-center gap-2 bg-primary-50 p-2 rounded-md">
-            <span className="text-sm text-primary-700 font-medium">{selectedTasks.length} tareas seleccionadas</span>
+          <div className="mt-4 flex items-center gap-2 bg-neon-medium/10 border border-neon-accent/20 p-3 rounded-md shadow-[0_0_10px_rgba(0,225,255,0.1)]">
+            <span className="text-sm text-neon-accent font-medium neon-text">{selectedTasks.length} tareas seleccionadas</span>
             <div className="ml-auto flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={markAsCompleted}
-                className="h-8 text-xs gap-1 border-primary-200 text-primary-700 hover:text-primary-800 hover:bg-primary-100"
+                className="h-8 text-xs gap-1 border-neon-accent/40 text-neon-accent bg-transparent hover:text-neon-accent hover:bg-neon-medium/20 hover:border-neon-accent/60 shadow-[0_0_5px_rgba(0,225,255,0.1)] hover:shadow-[0_0_8px_rgba(0,225,255,0.2)] transition-all"
               >
                 <CheckCircle className="h-3.5 w-3.5" />
                 Completar
@@ -643,7 +643,7 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                 variant="outline"
                 size="sm"
                 onClick={deleteSelected}
-                className="h-8 text-xs gap-1 border-rose-200 text-rose-700 hover:text-rose-800 hover:bg-rose-100"
+                className="h-8 text-xs gap-1 border-rose-500/40 text-rose-400 bg-transparent hover:text-rose-300 hover:bg-rose-500/10 hover:border-rose-500/60 shadow-[0_0_5px_rgba(244,63,94,0.1)] hover:shadow-[0_0_8px_rgba(244,63,94,0.2)] transition-all"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Eliminar
@@ -654,70 +654,70 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
       </CardHeader>
       
       <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
+        <div className="overflow-x-auto border-t border-neon-accent/20">
+          <Table className="border-collapse">
             <TableHeader>
-              <TableRow className="hover:bg-neutral-50">
-                <TableHead className="w-[40px] px-3">
+              <TableRow className="hover:bg-neon-medium/5 border-b border-neon-accent/20">
+                <TableHead className="w-[40px] px-3 text-neon-text bg-neon-darker">
                   <Checkbox 
                     checked={selectedTasks.length === paginatedTasks.length && paginatedTasks.length > 0} 
                     onCheckedChange={toggleSelectAll} 
                   />
                 </TableHead>
                 
-                <TableHead className="cursor-pointer" onClick={() => toggleSort('title')}>
+                <TableHead className="cursor-pointer text-neon-text bg-neon-darker font-medium text-xs uppercase tracking-wider hover:text-neon-accent transition-colors" onClick={() => toggleSort('title')}>
                   <div className="flex items-center space-x-1">
                     <span>Tarea</span>
                     {sortField === 'title' && (
-                      <ChevronDown className={`h-4 w-4 transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform text-neon-accent ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
                     )}
                   </div>
                 </TableHead>
                 
-                <TableHead className="cursor-pointer" onClick={() => toggleSort('status')}>
+                <TableHead className="cursor-pointer text-neon-text bg-neon-darker font-medium text-xs uppercase tracking-wider hover:text-neon-accent transition-colors" onClick={() => toggleSort('status')}>
                   <div className="flex items-center space-x-1">
                     <span>Estado</span>
                     {sortField === 'status' && (
-                      <ChevronDown className={`h-4 w-4 transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform text-neon-accent ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
                     )}
                   </div>
                 </TableHead>
                 
-                <TableHead className="cursor-pointer" onClick={() => toggleSort('priority')}>
+                <TableHead className="cursor-pointer text-neon-text bg-neon-darker font-medium text-xs uppercase tracking-wider hover:text-neon-accent transition-colors" onClick={() => toggleSort('priority')}>
                   <div className="flex items-center space-x-1">
                     <span>Prioridad</span>
                     {sortField === 'priority' && (
-                      <ChevronDown className={`h-4 w-4 transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform text-neon-accent ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
                     )}
                   </div>
                 </TableHead>
                 
-                <TableHead className="cursor-pointer" onClick={() => toggleSort('category')}>
+                <TableHead className="cursor-pointer text-neon-text bg-neon-darker font-medium text-xs uppercase tracking-wider hover:text-neon-accent transition-colors" onClick={() => toggleSort('category')}>
                   <div className="flex items-center space-x-1">
                     <span>Categoría</span>
                     {sortField === 'category' && (
-                      <ChevronDown className={`h-4 w-4 transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform text-neon-accent ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
                     )}
                   </div>
                 </TableHead>
                 
-                <TableHead className="cursor-pointer" onClick={() => toggleSort('deadline')}>
+                <TableHead className="cursor-pointer text-neon-text bg-neon-darker font-medium text-xs uppercase tracking-wider hover:text-neon-accent transition-colors" onClick={() => toggleSort('deadline')}>
                   <div className="flex items-center space-x-1">
                     <span>Fecha límite</span>
                     {sortField === 'deadline' && (
-                      <ChevronDown className={`h-4 w-4 transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`h-4 w-4 transition-transform text-neon-accent ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
                     )}
                   </div>
                 </TableHead>
                 
-                <TableHead className="w-[60px]"></TableHead>
+                <TableHead className="w-[60px] text-neon-text bg-neon-darker"></TableHead>
               </TableRow>
             </TableHeader>
             
             <TableBody>
               {paginatedTasks.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-10 text-neutral-500">
+                  <TableCell colSpan={7} className="text-center py-10 text-neon-text/60 bg-neon-darker/50">
                     No se encontraron tareas con los filtros aplicados
                   </TableCell>
                 </TableRow>
@@ -726,10 +726,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                   <TableRow 
                     key={task.id} 
                     className={cn(
-                      "hover:bg-neutral-50 transition-colors",
-                      task.status === "completed" ? "bg-emerald-50/30" : "",
-                      getDeadlineStatus(task.deadline) === "overdue" && task.status !== "completed" ? "bg-rose-50/30" : "",
-                      getDeadlineStatus(task.deadline) === "soon" && task.status !== "completed" ? "bg-amber-50/30" : ""
+                      "hover:bg-neon-medium/5 border-b border-neon-accent/10 transition-colors text-neon-text",
+                      task.status === "completed" ? "bg-emerald-500/5" : "",
+                      getDeadlineStatus(task.deadline) === "overdue" && task.status !== "completed" ? "bg-rose-500/5" : "",
+                      getDeadlineStatus(task.deadline) === "soon" && task.status !== "completed" ? "bg-amber-500/5" : ""
                     )}
                   >
                     <TableCell className="px-3">
@@ -754,7 +754,7 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                           <span className="font-medium">{task.title}</span>
                         </div>
                         {task.description && (
-                          <span className="text-xs text-neutral-500 line-clamp-1 ml-3">{task.description}</span>
+                          <span className="text-xs text-neon-text/50 line-clamp-1 ml-3">{task.description}</span>
                         )}
                       </div>
                     </TableCell>
@@ -788,12 +788,19 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="flex items-center">
-                                <Calendar className="h-3.5 w-3.5 mr-1.5 text-neutral-400" />
-                                <span className="text-sm">{formatDate(task.deadline)}</span>
+                              <div className={cn(
+                                "flex items-center py-1 px-2 rounded-md border transition-all duration-300",
+                                getDeadlineStatus(task.deadline) === "overdue" 
+                                  ? "border-rose-500/30 bg-rose-500/5 text-rose-300 shadow-[0_0_6px_rgba(244,63,94,0.1)]" 
+                                  : getDeadlineStatus(task.deadline) === "soon" 
+                                  ? "border-amber-500/30 bg-amber-500/5 text-amber-300 shadow-[0_0_6px_rgba(245,158,11,0.1)]" 
+                                  : "border-neon-accent/20 bg-neon-medium/5 text-neon-text/90"
+                              )}>
+                                {getDeadlineIcon(task.deadline)}
+                                <span className="text-sm ml-1.5">{formatDate(task.deadline)}</span>
                               </div>
                             </TooltipTrigger>
-                            <TooltipContent>
+                            <TooltipContent className="bg-neon-darker border-neon-accent/30 text-neon-text">
                               {new Date(task.deadline).toLocaleDateString('es-ES', {
                                 year: 'numeric',
                                 month: 'long',
@@ -803,7 +810,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                           </Tooltip>
                         </TooltipProvider>
                       ) : (
-                        <span className="text-neutral-400 text-sm">Sin fecha</span>
+                        <span className="text-neon-text/40 text-sm flex items-center">
+                          <Clock className="h-3.5 w-3.5 mr-1.5 opacity-40" />
+                          Sin fecha
+                        </span>
                       )}
                     </TableCell>
                     
@@ -867,14 +877,17 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
         
         {/* Paginación */}
         {totalPages > 1 && (
-          <div className="py-4 px-6">
+          <div className="py-4 px-6 border-t border-neon-accent/20">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious 
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     aria-disabled={currentPage === 1}
-                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    className={cn(
+                      "border-neon-accent/30 text-neon-text bg-neon-darker hover:border-neon-accent/60 hover:text-neon-accent/90 transition-all duration-300 shadow-[0_0_4px_rgba(0,225,255,0.05)]",
+                      currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                    )}
                   />
                 </PaginationItem>
                 
@@ -883,7 +896,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                     <PaginationLink
                       onClick={() => setCurrentPage(i + 1)}
                       isActive={currentPage === i + 1}
-                      className="cursor-pointer"
+                      className={cn(
+                        "cursor-pointer border-neon-accent/30 hover:border-neon-accent/60 bg-neon-darker transition-all duration-300",
+                        currentPage === i + 1 ? "bg-neon-medium/20 text-neon-accent border-neon-accent/50 shadow-[0_0_6px_rgba(0,225,255,0.2)]" : "text-neon-text"
+                      )}
                     >
                       {i + 1}
                     </PaginationLink>
@@ -894,7 +910,10 @@ export function TaskList({ tasks, categories, isLoading, onEdit }: TaskListProps
                   <PaginationNext 
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     aria-disabled={currentPage === totalPages}
-                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    className={cn(
+                      "border-neon-accent/30 text-neon-text bg-neon-darker hover:border-neon-accent/60 hover:text-neon-accent/90 transition-all duration-300 shadow-[0_0_4px_rgba(0,225,255,0.05)]",
+                      currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                    )}
                   />
                 </PaginationItem>
               </PaginationContent>
