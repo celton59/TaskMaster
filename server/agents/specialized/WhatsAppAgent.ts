@@ -156,7 +156,7 @@ EJEMPLOS:
         : hoy.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', year: 'numeric' });
       
       // Formato de mensaje de clima
-      const climaMsg = `Información del tiempo para ${ubicacion}, ${dia} ${fechaFormateada}:\n` +
+      const mensaje = `Información del tiempo para ${ubicacion}, ${dia} ${fechaFormateada}:\n` +
         `🌡️ Temperatura: ${temperatura}°C\n` +
         `☀️ Condiciones: ${condiciones}\n` +
         `🌧️ Probabilidad de lluvia: ${probabilidadLluvia}%\n` +
@@ -170,13 +170,13 @@ EJEMPLOS:
       
       if (contact) {
         // Enviar mensaje directamente
-        const result = await sendWhatsAppMessage(contact.phoneNumber, climaMsg);
+        const result = await sendWhatsAppMessage(contact.phoneNumber, mensaje);
         
         if (result.success) {
           // Registrar el mensaje en la base de datos
           await storage.createWhatsappMessage({
             contactId: contact.id,
-            messageContent: climaMsg,
+            messageContent: mensaje,
             direction: MessageDirection.OUTGOING,
             status: "sent",
             metadata: { sentVia: "agent" },
@@ -188,7 +188,7 @@ EJEMPLOS:
             parameters: {
               contactName: contact.name,
               contactPhone: contact.phoneNumber,
-              message: climaMsg,
+              message: mensaje,
             }
           };
         } else {
@@ -200,9 +200,8 @@ EJEMPLOS:
       }
     }
     
-    // Caso aún más general: solo "envia a [contacto], [mensaje sobre clima/tiempo]" sin palabras clave como "investiga"
-    if (userInput.match(/envia\s+a\s+(\w+)[\s,]+el\s+tiempo/i) || 
-        userInput.match(/tiempo.*?(?:en|para|de)\s+([A-Za-záéíóúüñÁÉÍÓÚÜÑ\s]+?)(?:\s+y|\s+,|\s+a|\s+hoy|\s+mañana|$)/i)) {
+    // Caso general para cualquier tipo de mensaje a un contacto
+    if (userInput.match(/(?:envia|envía|manda|mandale|mandále|dile)\s+(?:un\s+(?:mensaje|whatsapp)\s+)?(?:a|para)\s+(\w+)/i)) {
       
       // Extraer la ubicación para el reporte del clima
       let ubicacion = "Valencia"; // Por defecto si no se especifica
@@ -212,49 +211,80 @@ EJEMPLOS:
       }
       
       // Identificar el contacto
-      const contactMatch = userInput.match(/(?:envia|envía|manda|dile)\s+a\s+(\w+)/i);
+      const contactMatch = userInput.match(/(?:envia|envía|manda|mandale|mandále|dile)\s+(?:un\s+(?:mensaje|whatsapp)\s+)?(?:a|para)\s+(\w+)/i);
       const contactName = contactMatch ? contactMatch[1] : "aitorin"; // Default si no hay coincidencia
       
-      // Crear mensaje de clima
-      const esMañana = userInput.includes("mañana") || userInput.includes("proximos dias") || userInput.includes("próximos días");
-      const dia = esMañana ? "mañana" : "hoy";
-      const temperatura = Math.floor(Math.random() * 10) + 20; // Temperatura entre 20-30°C
-      const condiciones = ["soleado", "parcialmente nublado", "mayormente despejado", "con algunas nubes"][Math.floor(Math.random() * 4)];
-      const probabilidadLluvia = Math.floor(Math.random() * 20); // 0-20% probabilidad
-      const viento = Math.floor(Math.random() * 15) + 5; // 5-20 km/h
+      // Extraer el contenido del mensaje después del nombre del contacto o después de ":"
+      let mensaje = "";
       
-      // Obtener la fecha correcta para mañana
-      const hoy = new Date();
-      const manana = new Date(hoy);
-      manana.setDate(hoy.getDate() + 1);
+      // Buscar patrones como "dile a esther: [mensaje]" o "dile a esther [mensaje]"
+      const dosPuntos = userInput.indexOf(":");
+      if (dosPuntos !== -1) {
+        // Si hay ":" extraemos el mensaje después de los dos puntos
+        mensaje = userInput.substring(dosPuntos + 1).trim();
+      } else {
+        // Si no hay ":", extraemos el mensaje después del nombre del contacto
+        const contactNameIndex = userInput.toLowerCase().indexOf(contactName.toLowerCase());
+        if (contactNameIndex !== -1) {
+          // Buscamos el texto después del nombre del contacto y algún posible separador (espacio, coma, etc.)
+          const despuesDelNombre = userInput.substring(contactNameIndex + contactName.length).trim();
+          if (despuesDelNombre.startsWith(",") || despuesDelNombre.startsWith(":") || despuesDelNombre.startsWith(" que ") || despuesDelNombre.startsWith(" q ")) {
+            mensaje = despuesDelNombre.substring(despuesDelNombre.match(/^[,:]\s*|^\s*(?:que|q)\s+/i)?.length || 1).trim();
+          } else {
+            mensaje = despuesDelNombre;
+          }
+        }
+      }
       
-      // Formatear la fecha correctamente
-      const fechaFormateada = esMañana 
-        ? manana.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', year: 'numeric' }) 
-        : hoy.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', year: 'numeric' });
-      
-      // Formato de mensaje de clima
-      const climaMsg = `Información del tiempo para ${ubicacion}, ${dia} ${fechaFormateada}:\n` +
-        `🌡️ Temperatura: ${temperatura}°C\n` +
-        `☀️ Condiciones: ${condiciones}\n` +
-        `🌧️ Probabilidad de lluvia: ${probabilidadLluvia}%\n` +
-        `💨 Viento: ${viento} km/h\n\n` +
-        `En general, ${dia} será un día ${temperatura > 25 ? 'cálido' : 'agradable'} y ${condiciones} en ${ubicacion}.` +
-        `${probabilidadLluvia > 10 ? ' Lleva un paraguas por si acaso.' : ' Perfecto para actividades al aire libre.'}`;
+      // Si el contenido está relacionado con el clima, generar un mensaje especial
+      if (userInput.includes("tiempo") || userInput.includes("clima") || userInput.includes("temperatura")) {
+        // Extraer la ubicación para el reporte del clima (si no hay, usar "Valencia" por defecto)
+        let ubicacion = "Valencia"; 
+        const enMatch = userInput.match(/(?:en|para|de)\s+([A-Za-záéíóúüñÁÉÍÓÚÜÑ\s]+?)(?:\s+y|\s+,|\s+a|\s+hoy|\s+mañana|$)/i);
+        if (enMatch && enMatch[1]) {
+          ubicacion = enMatch[1].trim();
+        }
+        
+        const esMañana = userInput.includes("mañana") || userInput.includes("proximos dias") || userInput.includes("próximos días");
+        const dia = esMañana ? "mañana" : "hoy";
+        const temperatura = Math.floor(Math.random() * 10) + 20; // Temperatura entre 20-30°C
+        const condiciones = ["soleado", "parcialmente nublado", "mayormente despejado", "con algunas nubes"][Math.floor(Math.random() * 4)];
+        const probabilidadLluvia = Math.floor(Math.random() * 20); // 0-20% probabilidad
+        const viento = Math.floor(Math.random() * 15) + 5; // 5-20 km/h
+        
+        // Obtener la fecha correcta para mañana
+        const hoy = new Date();
+        const manana = new Date(hoy);
+        manana.setDate(hoy.getDate() + 1);
+        
+        // Formatear la fecha correctamente
+        const fechaFormateada = esMañana 
+          ? manana.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', year: 'numeric' }) 
+          : hoy.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric', year: 'numeric' });
+        
+        // Formato de mensaje de clima
+        mensaje = `Información del tiempo para ${ubicacion}, ${dia} ${fechaFormateada}:\n` +
+          `🌡️ Temperatura: ${temperatura}°C\n` +
+          `☀️ Condiciones: ${condiciones}\n` +
+          `🌧️ Probabilidad de lluvia: ${probabilidadLluvia}%\n` +
+          `💨 Viento: ${viento} km/h\n\n` +
+          `En general, ${dia} será un día ${temperatura > 25 ? 'cálido' : 'agradable'} y ${condiciones} en ${ubicacion}.` +
+          `${probabilidadLluvia > 10 ? ' Lleva un paraguas por si acaso.' : ' Perfecto para actividades al aire libre.'}`;
+      }
       
       // Buscar contacto en la base de datos
       const allContacts = await storage.getWhatsappContacts();
       const contact = allContacts.find(c => c.name.toLowerCase().includes(contactName.toLowerCase()));
       
-      if (contact) {
+      if (contact && mensaje) {
         // Enviar mensaje directamente
-        const result = await sendWhatsAppMessage(contact.phoneNumber, climaMsg);
+        const result = await sendWhatsAppMessage(contact.phoneNumber, mensaje);
         
         if (result.success) {
           // Registrar el mensaje en la base de datos
           await storage.createWhatsappMessage({
             contactId: contact.id,
-            messageContent: climaMsg,
+            messageContent: mensaje,
             direction: MessageDirection.OUTGOING,
             status: "sent",
             metadata: { sentVia: "agent" },
@@ -266,7 +296,7 @@ EJEMPLOS:
             parameters: {
               contactName: contact.name,
               contactPhone: contact.phoneNumber,
-              message: climaMsg,
+              message: mensaje,
             }
           };
         } else {
