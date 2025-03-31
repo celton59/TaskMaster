@@ -8,7 +8,7 @@ import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RobotAnimation } from "@/components/ui/robot-animation";
+// Removed robot animation import
 
 import { 
   FileText, 
@@ -522,7 +522,9 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="p-5 flex flex-col md:flex-row items-center gap-6">
             <div className="md:w-1/3 flex justify-center">
-              <RobotAnimation />
+              <div className="w-32 h-32 rounded-full bg-neon-accent/20 flex items-center justify-center border border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.3)]">
+                <Users className="w-16 h-16 text-neon-accent" />
+              </div>
             </div>
             <div className="md:w-2/3 space-y-4">
               <h3 className="text-xl font-medium text-neon-accent">Conoce a NeoBot</h3>
