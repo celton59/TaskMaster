@@ -8,6 +8,7 @@ import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RobotAnimation } from "@/components/ui/robot-animation";
 
 import { 
   FileText, 
@@ -509,6 +510,76 @@ export default function Dashboard() {
       </div>
 
 
+      
+      {/* Robot Animation Card */}
+      <div className="grid grid-cols-1 gap-6 mt-8">
+        <Card className="neon-card border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)] overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+            <div className="space-y-0.5">
+              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Asistente Robótico</CardTitle>
+              <CardDescription className="text-neon-text/70">Tu compañero de productividad</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="p-5 flex flex-col md:flex-row items-center gap-6">
+            <div className="md:w-1/3 flex justify-center">
+              <RobotAnimation />
+            </div>
+            <div className="md:w-2/3 space-y-4">
+              <h3 className="text-xl font-medium text-neon-accent">Conoce a NeoBot</h3>
+              <p className="text-neon-text/80">
+                Tu asistente robótico está aquí para ayudarte a gestionar tus tareas y mantenerte productivo. 
+                Puede gestionar tus mensajes de WhatsApp, organizar tu agenda y mucho más.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                <div className="flex items-start space-x-3">
+                  <div className="h-8 w-8 rounded-md flex items-center justify-center bg-neon-purple/20 text-neon-purple border border-neon-purple/30">
+                    <Mail className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-neon-text">Mensajería</h4>
+                    <p className="text-xs text-neon-text/70">Gestiona tus conversaciones de WhatsApp</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="h-8 w-8 rounded-md flex items-center justify-center bg-neon-green/20 text-neon-green border border-neon-green/30">
+                    <CalendarDays className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-neon-text">Planificación</h4>
+                    <p className="text-xs text-neon-text/70">Organiza tu agenda y fechas límite</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="h-8 w-8 rounded-md flex items-center justify-center bg-neon-yellow/20 text-neon-yellow border border-neon-yellow/30">
+                    <CheckCheck className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-neon-text">Tareas</h4>
+                    <p className="text-xs text-neon-text/70">Crea y gestiona tus tareas fácilmente</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="h-8 w-8 rounded-md flex items-center justify-center bg-neon-pink/20 text-neon-pink border border-neon-pink/30">
+                    <BarChart4 className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-neon-text">Estadísticas</h4>
+                    <p className="text-xs text-neon-text/70">Analiza tu productividad</p>
+                  </div>
+                </div>
+              </div>
+              <div className="pt-2">
+                <Button 
+                  onClick={() => navigate("/ai-assistant")}
+                  className="bg-neon-accent hover:bg-neon-accent/90 text-neon-darker font-medium shadow-[0_0_10px_rgba(0,225,255,0.3)]"
+                >
+                  Hablar con el asistente
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
       
       {/* Task Form Modal */}
       <TaskForm 

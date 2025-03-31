@@ -1,0 +1,202 @@
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+
+export function RobotAnimation() {
+  const robotRef = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    if (!robotRef.current) return;
+
+    // --- Definir Orígenes de Transformación ---
+    // Es crucial para que las rotaciones ocurran en las articulaciones correctas
+    gsap.set("#cabeza", { transformOrigin: "50% 100%" }); // Base del cuello
+    gsap.set("#brazo_derecho, #brazo_izquierdo", { transformOrigin: "50% 0%" }); // Hombros
+    gsap.set("#antebrazo_der, #antebrazo_izq", { transformOrigin: "50% 0%" }); // Codos
+    gsap.set("#pierna_derecha, #pierna_izquierda", { transformOrigin: "50% 0%" }); // Caderas
+    gsap.set("#pierna_inf_der, #pierna_inf_izq", { transformOrigin: "50% 0%" }); // Rodillas
+    gsap.set("#humo", { transformOrigin: "center center", scale: 0 }); // Humo empieza escalado a 0
+
+    // --- Crear la Timeline Principal ---
+    const tl = gsap.timeline({
+      repeat: -1, // Repetir infinitamente
+      defaults: { ease: "power1.inOut" } // Easing por defecto para las animaciones
+    });
+
+    const stepDuration = 0.7; // Duración de medio ciclo de caminar (un paso)
+
+    // --- Animación del Ciclo de Caminar (Un ciclo completo = 2 pasos) ---
+
+    // Paso 1: Pierna Derecha Adelante, Izquierda Atrás
+    tl.to("#robot", { y: "+=3", duration: stepDuration / 2, yoyo: true, repeat: 1 }, 0) // Bobbing down and up
+      .to("#pierna_derecha", { rotation: 20, duration: stepDuration }, 0)
+      .to("#pierna_inf_der", { rotation: 5, duration: stepDuration }, 0) // Rodilla estirada
+      .to("#pierna_izquierda", { rotation: -20, duration: stepDuration }, 0)
+      .to("#pierna_inf_izq", { rotation: 25, duration: stepDuration }, 0) // Rodilla doblada
+      .to("#brazo_derecho", { rotation: -25, duration: stepDuration }, 0) // Brazo opuesto
+      .to("#antebrazo_der", { rotation: 10, duration: stepDuration }, 0)
+      .to("#brazo_izquierdo", { rotation: 25, duration: stepDuration }, 0)
+      .to("#antebrazo_izq", { rotation: 5, duration: stepDuration }, 0)
+      .to("#cabeza", { rotation: 1, duration: stepDuration / 2, yoyo: true, repeat: 1 }, 0); // Sutil balanceo cabeza
+
+    // Paso 2: Pierna Izquierda Adelante, Derecha Atrás
+    tl.to("#robot", { y: "+=3", duration: stepDuration / 2, yoyo: true, repeat: 1 }, stepDuration) // Bobbing
+      .to("#pierna_derecha", { rotation: -20, duration: stepDuration }, stepDuration)
+      .to("#pierna_inf_der", { rotation: 25, duration: stepDuration }, stepDuration) // Rodilla doblada
+      .to("#pierna_izquierda", { rotation: 20, duration: stepDuration }, stepDuration)
+      .to("#pierna_inf_izq", { rotation: 5, duration: stepDuration }, stepDuration) // Rodilla estirada
+      .to("#brazo_derecho", { rotation: 25, duration: stepDuration }, stepDuration)
+      .to("#antebrazo_der", { rotation: 5, duration: stepDuration }, stepDuration)
+      .to("#brazo_izquierdo", { rotation: -25, duration: stepDuration }, stepDuration)
+      .to("#antebrazo_izq", { rotation: 10, duration: stepDuration }, stepDuration)
+      .to("#cabeza", { rotation: -1, duration: stepDuration / 2, yoyo: true, repeat: 1 }, stepDuration);
+
+    // --- Animación de Fumar (Integrada en la timeline) ---
+    // Sobrescribiremos la animación normal del brazo derecho en un punto
+    const smokeStartTime = stepDuration * 2.5; // Empezar a fumar después de poco más de un ciclo completo
+    const smokeDuration = stepDuration * 1.5; // Duración de la acción de fumar
+
+    tl.addLabel("startSmoking", smokeStartTime)
+      // Mover brazo a la boca
+      .to("#brazo_derecho", {
+        rotation: -75,
+        duration: smokeDuration * 0.4,
+        ease: "power2.out"
+      }, "startSmoking")
+      .to("#antebrazo_der", {
+        rotation: 85,
+        duration: smokeDuration * 0.4,
+        ease: "power2.out"
+      }, "startSmoking") // "<" significa al mismo tiempo que la anterior
+
+      // Pausa en la boca y animación del humo
+      .addLabel("puff", "+=0.2") // Pequeña pausa después de llegar a la boca
+      .to("#humo", {
+        opacity: 0.7,
+        scale: 1,
+        duration: smokeDuration * 0.1
+      }, "puff")
+      .to("#humo", {
+        y: "-=20", // Mover hacia arriba
+        x: "+=10", // Mover ligeramente a la derecha
+        scale: 2.5,
+        opacity: 0,
+        duration: smokeDuration * 0.6,
+        ease: "sine.in" // El humo se desvanece lentamente al principio
+      }, ">") // ">" significa justo después de la animación anterior (mostrar humo)
+      .set("#humo", { // Resetear humo para la próxima vez
+        opacity: 0,
+        scale: 0,
+        x: 0, // Resetear posición relativa x
+        y: 0 // Resetear posición relativa y
+      })
+
+      // Bajar el brazo (volver a una posición de caminar) - esto necesita ajustarse para que coincida con el ciclo
+      .to("#brazo_derecho", {
+        rotation: 10, // Vuelve a una posición intermedia del ciclo
+        duration: smokeDuration * 0.3,
+        ease: "power1.in"
+      }, "puff+=0.1") // Empezar a bajar poco después de la calada
+      .to("#antebrazo_der", {
+        rotation: 5, // Codo más estirado
+        duration: smokeDuration * 0.3,
+        ease: "power1.in"
+      }, "<"); // Al mismo tiempo
+
+    return () => {
+      // Limpieza al desmontar el componente
+      tl.kill();
+    };
+  }, []);
+
+  return (
+    <div className="robot-container">
+      <svg ref={robotRef} viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        <g id="robot" transform="translate(50, 75)">
+          <rect id="torso" x="-15" y="-45" width="30" height="60" rx="3" ry="3" className="robot-part robot-body" />
+
+          <g id="cabeza" transform="translate(0, -55)">
+            <rect x="-10" y="-10" width="20" height="20" rx="2" ry="2" className="robot-part robot-joints" />
+            <circle cx="5" cy="0" r="2.5" fill="#17a5e0" /> {/* Ojo color neon azul */}
+          </g>
+
+          <g id="brazo_derecho" transform="translate(25, -40)">
+            <rect id="brazo_sup_der" x="-4" y="0" width="8" height="35" rx="2" ry="2" className="robot-part robot-limbs" />
+            <g id="antebrazo_der" transform="translate(0, 35)">
+              <rect x="-3" y="0" width="6" height="30" rx="2" ry="2" className="robot-part robot-joints" />
+              <g id="mano_der" transform="translate(0, 30)">
+                <rect x="-4" y="0" width="8" height="8" rx="1" ry="1" className="robot-part robot-limbs" />
+                <rect id="cigarrillo" x="4" y="2" width="2" height="10" fill="white" stroke="#444" strokeWidth="0.5" />
+                <circle cx="5" cy="12" r="1" fill="#ff3e00" /> {/* Punta del cigarrillo más brillante */}
+              </g>
+            </g>
+          </g>
+
+          <g id="brazo_izquierdo" transform="translate(-25, -40)">
+            <rect id="brazo_sup_izq" x="-4" y="0" width="8" height="35" rx="2" ry="2" className="robot-part robot-limbs" />
+            <g id="antebrazo_izq" transform="translate(0, 35)">
+              <rect x="-3" y="0" width="6" height="30" rx="2" ry="2" className="robot-part robot-joints" />
+              <g id="mano_izq" transform="translate(0, 30)">
+                <rect x="-4" y="0" width="8" height="8" rx="1" ry="1" className="robot-part robot-limbs" />
+              </g>
+            </g>
+          </g>
+
+          <g id="pierna_derecha" transform="translate(10, 15)">
+            <rect id="muslo_der" x="-5" y="0" width="10" height="40" rx="2" ry="2" className="robot-part robot-limbs" />
+            <g id="pierna_inf_der" transform="translate(0, 40)">
+              <rect x="-4" y="0" width="8" height="35" rx="2" ry="2" className="robot-part robot-joints" />
+              <g id="pie_der" transform="translate(0, 35)">
+                <rect x="-7" y="0" width="14" height="8" rx="2" ry="2" className="robot-part robot-limbs" />
+              </g>
+            </g>
+          </g>
+
+          <g id="pierna_izquierda" transform="translate(-10, 15)">
+            <rect id="muslo_izq" x="-5" y="0" width="10" height="40" rx="2" ry="2" className="robot-part robot-limbs" />
+            <g id="pierna_inf_izq" transform="translate(0, 40)">
+              <rect x="-4" y="0" width="8" height="35" rx="2" ry="2" className="robot-part robot-joints" />
+              <g id="pie_izq" transform="translate(0, 35)">
+                <rect x="-7" y="0" width="14" height="8" rx="2" ry="2" className="robot-part robot-limbs" />
+              </g>
+            </g>
+          </g>
+
+          <g id="humo" transform="translate(20, -88)">
+            <circle cx="0" cy="0" r="5" fill="rgba(210, 210, 210, 0.7)" />
+          </g>
+        </g>
+      </svg>
+
+      <style>
+        {`
+          .robot-container {
+            width: 250px;
+            height: 350px;
+            overflow: visible;
+          }
+          
+          /* Estilos base del robot */
+          .robot-part {
+            stroke: #222;
+            stroke-width: 1.5;
+          }
+          .robot-body { 
+            fill: #20aed4; 
+            filter: drop-shadow(0 0 5px #20aed4);
+          }
+          .robot-limbs { 
+            fill: #117c99;
+          }
+          .robot-joints { 
+            fill: #0c5970; 
+          }
+
+          /* Ocultar el humo inicialmente */
+          #humo {
+            opacity: 0;
+          }
+        `}
+      </style>
+    </div>
+  );
+}
