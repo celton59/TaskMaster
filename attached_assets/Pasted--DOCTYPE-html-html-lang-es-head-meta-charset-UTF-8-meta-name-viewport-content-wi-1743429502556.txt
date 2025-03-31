@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Caminando (GSAP - Estilo Humano Mejorado)</title>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #cccccc; /* Fondo neutro */
+  }
+  svg {
+    width: 400px; /* Vista un poco más grande */
+    height: 500px;
+    border: 1px solid #999;
+    overflow: visible;
+  }
+  .robot-part { stroke: #111; stroke-width: 1.5; }
+  .robot-body { fill: #8a8a8a; }
+  .robot-limbs { fill: #7a7a7a; }
+  .robot-joints { fill: #9a9a9a; }
+  #humo { opacity: 0; }
+</style>
+</head>
+<body>
+
+<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+    <g id="robot" transform="translate(50, 75)">
+        <rect id="torso" x="-15" y="-45" width="30" height="60" rx="3" ry="3" class="robot-part robot-body"/>
+        <g id="cabeza" transform="translate(0, -55)">
+            <rect x="-10" y="-10" width="20" height="20" rx="2" ry="2" class="robot-part robot-joints"/>
+            <circle cx="5" cy="0" r="2.5" fill="#111"/>
+        </g>
+        <g id="brazo_derecho" transform="translate(25, -40)">
+            <rect id="brazo_sup_der" x="-4" y="0" width="8" height="35" rx="2" ry="2" class="robot-part robot-limbs"/>
+            <g id="antebrazo_der" transform="translate(0, 35)">
+                <rect x="-3" y="0" width="6" height="30" rx="2" ry="2" class="robot-part robot-joints"/>
+                <g id="mano_der" transform="translate(0, 30)">
+                    <rect x="-4" y="0" width="8" height="8" rx="1" ry="1" class="robot-part robot-limbs"/>
+                    <rect id="cigarrillo" x="4" y="2" width="2" height="10" fill="white" stroke="#444" stroke-width="0.5"/>
+                    <circle cx="5" cy="12" r="1" fill="orangered"/>
+                </g>
+            </g>
+        </g>
+        <g id="brazo_izquierdo" transform="translate(-25, -40)">
+             <rect id="brazo_sup_izq" x="-4" y="0" width="8" height="35" rx="2" ry="2" class="robot-part robot-limbs"/>
+             <g id="antebrazo_izq" transform="translate(0, 35)">
+                 <rect x="-3" y="0" width="6" height="30" rx="2" ry="2" class="robot-part robot-joints"/>
+                 <g id="mano_izq" transform="translate(0, 30)">
+                     <rect x="-4" y="0" width="8" height="8" rx="1" ry="1" class="robot-part robot-limbs"/>
+                 </g>
+             </g>
+         </g>
+         <g id="pierna_derecha" transform="translate(10, 15)">
+             <rect id="muslo_der" x="-5" y="0" width="10" height="40" rx="2" ry="2" class="robot-part robot-limbs"/>
+             <g id="pierna_inf_der" transform="translate(0, 40)">
+                 <rect x="-4" y="0" width="8" height="35" rx="2" ry="2" class="robot-part robot-joints"/>
+                 <g id="pie_der" transform="translate(0, 35)">
+                     <rect x="-7" y="0" width="14" height="8" rx="2" ry="2" class="robot-part robot-limbs"/>
+                 </g>
+             </g>
+         </g>
+         <g id="pierna_izquierda" transform="translate(-10, 15)">
+             <rect id="muslo_izq" x="-5" y="0" width="10" height="40" rx="2" ry="2" class="robot-part robot-limbs"/>
+             <g id="pierna_inf_izq" transform="translate(0, 40)">
+                 <rect x="-4" y="0" width="8" height="35" rx="2" ry="2" class="robot-part robot-joints"/>
+                 <g id="pie_izq" transform="translate(0, 35)">
+                     <rect x="-7" y="0" width="14" height="8" rx="2" ry="2" class="robot-part robot-limbs"/>
+                 </g>
+             </g>
+         </g>
+         <g id="humo" transform="translate(20, -88)">
+             <circle cx="0" cy="0" r="5" fill="rgba(210, 210, 210, 0.7)" />
+         </g>
+     </g>
+</svg>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // --- Orígenes de Transformación ---
+    gsap.set("#robot", { transformOrigin: "center bottom" }); // Origen para el balanceo lateral
+    gsap.set("#cabeza", { transformOrigin: "50% 100%" });
+    gsap.set("#torso", { transformOrigin: "center 80%" }); // Origen para rotación del torso (bajo)
+    gsap.set("#brazo_derecho, #brazo_izquierdo", { transformOrigin: "50% 0%" });
+    gsap.set("#antebrazo_der, #antebrazo_izq", { transformOrigin: "50% 0%" });
+    gsap.set("#pierna_derecha, #pierna_izquierda", { transformOrigin: "50% 0%" });
+    gsap.set("#pierna_inf_der, #pierna_inf_izq", { transformOrigin: "50% 0%" });
+    gsap.set("#pie_der, #pie_izq", { transformOrigin: "50% 0%" }); // Origen para flexión tobillo
+    gsap.set("#humo", { transformOrigin: "center center", scale: 0, opacity: 0 });
+
+    // --- Timeline Principal ---
+    const tl = gsap.timeline({
+        repeat: -1,
+        defaults: { ease: "power2.inOut" } // Easing más suave por defecto
+    });
+
+    const stepDuration = 0.75; // Duración de medio ciclo (un paso), un poco más lento
+    const walkCycleDuration = stepDuration * 2;
+
+    // --- Animación del Ciclo de Caminar Mejorado ---
+
+    // Paso 1: Pierna Derecha Adelante, Izquierda Atrás (Apoyo Izquierdo)
+    tl.to("#robot", { // Bobbing vertical + Shift lateral
+            y: "+=3",
+            x: "+=2", // Shift hacia el lado de apoyo (izquierdo)
+            duration: stepDuration / 2,
+            yoyo: true, repeat: 1
+        }, 0)
+      .to("#torso", { // Rotación torso opuesta a pierna adelantada
+            rotation: -5,
+            duration: stepDuration,
+            ease: "sine.inOut" // Un ease diferente para el torso
+        }, 0)
+      .to("#cabeza", { // Contrarresta ligeramente rotación torso
+            rotation: 3,
+            y: "-=0.5", // Sube un poco la cabeza
+            duration: stepDuration / 2,
+            yoyo: true, repeat: 1,
+            ease: "sine.inOut"
+        }, 0)
+      // Piernas y brazos
+      .to("#pierna_derecha", { rotation: 22, duration: stepDuration }, 0)
+      .to("#pierna_inf_der", { rotation: 8, duration: stepDuration }, 0) // Rodilla más estirada
+      .to("#pie_der", { rotation: -10, duration: stepDuration }, 0) // Tobillo flexionado
+      .to("#pierna_izquierda", { rotation: -22, duration: stepDuration }, 0)
+      .to("#pierna_inf_izq", { rotation: 30, duration: stepDuration }, 0) // Rodilla más doblada
+      .to("#pie_izq", { rotation: 15, duration: stepDuration }, 0) // Tobillo extendido (punta)
+      .to("#brazo_derecho", { rotation: -28, duration: stepDuration }, 0) // Swing de brazos
+      .to("#antebrazo_der", { rotation: 15, duration: stepDuration }, 0)
+      .to("#brazo_izquierdo", { rotation: 28, duration: stepDuration }, 0)
+      .to("#antebrazo_izq", { rotation: 8, duration: stepDuration }, 0);
+
+    // Paso 2: Pierna Izquierda Adelante, Derecha Atrás (Apoyo Derecho)
+    tl.to("#robot", {
+            y: "+=3",
+            x: "-=2", // Shift hacia el lado de apoyo (derecho)
+            duration: stepDuration / 2,
+            yoyo: true, repeat: 1
+        }, stepDuration)
+      .to("#torso", {
+            rotation: 5, // Rota en dirección opuesta
+            duration: stepDuration,
+            ease: "sine.inOut"
+        }, stepDuration)
+       .to("#cabeza", {
+            rotation: -3,
+             y: "-=0.5",
+            duration: stepDuration / 2,
+            yoyo: true, repeat: 1,
+            ease: "sine.inOut"
+        }, stepDuration)
+      // Piernas y brazos (movimiento inverso al paso 1)
+      .to("#pierna_derecha", { rotation: -22, duration: stepDuration }, stepDuration)
+      .to("#pierna_inf_der", { rotation: 30, duration: stepDuration }, stepDuration)
+      .to("#pie_der", { rotation: 15, duration: stepDuration }, stepDuration)
+      .to("#pierna_izquierda", { rotation: 22, duration: stepDuration }, stepDuration)
+      .to("#pierna_inf_izq", { rotation: 8, duration: stepDuration }, stepDuration)
+      .to("#pie_izq", { rotation: -10, duration: stepDuration }, stepDuration)
+      .to("#brazo_derecho", { rotation: 28, duration: stepDuration }, stepDuration)
+      .to("#antebrazo_der", { rotation: 8, duration: stepDuration }, stepDuration)
+      .to("#brazo_izquierdo", { rotation: -28, duration: stepDuration }, stepDuration)
+      .to("#antebrazo_izq", { rotation: 15, duration: stepDuration }, stepDuration);
+
+    // --- Animación de Fumar (Integrada y Refinada) ---
+    // Se ejecuta aproximadamente cada 2 ciclos completos de caminar
+    const smokeCycleLength = walkCycleDuration * 2.5;
+    const smokeStartTime = walkCycleDuration; // Empezar después del primer ciclo completo
+
+    tl.addLabel("startSmoking", smokeStartTime)
+      .to("#brazo_derecho", {
+          rotation: -80, // Sube un poco más
+          duration: stepDuration * 0.6,
+          ease: "power3.out" // Un ease más decidido al subir
+       }, "startSmoking")
+      .to("#antebrazo_der", {
+          rotation: 95, // Dobla más el codo
+          duration: stepDuration * 0.6,
+          ease: "power3.out"
+       }, "<") // Mismo tiempo
+      .to("#cabeza", { // Inclina la cabeza hacia el cigarro
+            rotation: -10,
+            duration: stepDuration * 0.5,
+            ease: "power2.out"
+      }, "startSmoking+=0.1")
+
+       // Pausa y Humo
+      .addLabel("puff", `+=${stepDuration*0.3}`) // Pausa un poco más larga
+      .fromTo("#humo", // Usar fromTo para asegurar estado inicial
+            { opacity: 0, scale: 0, x:0, y:0 }, // From (estado inicial antes de aparecer)
+            { // To (animación del humo)
+                opacity: 0.8,
+                scale: 1,
+                duration: stepDuration * 0.15
+            }, "puff")
+      .to("#humo", {
+            y: "-=25",
+            x: "+=15",
+            scale: 3,
+            opacity: 0,
+            duration: stepDuration * 1.2, // El humo dura un poco más
+            ease: "sine.out"
+         }, ">")
+
+       // Bajar el brazo e inclinar cabeza de vuelta
+      .addLabel("lowerArm", "puff+=0.2") // Empieza a bajar poco después de la calada
+      .to("#cabeza", { // Enderezar cabeza
+            rotation: (time) => { // Volver a la rotación que debería tener en el ciclo normal
+                 let progress = (time - tl.labels.lowerArm) / (stepDuration * 0.5);
+                 return gsap.utils.interpolate( -10, tl.getById("cabezaRotation").vars.rotation, progress);
+                 // Nota: Esto es complejo, una forma más simple es volver a 0 o a la rotación del torso
+                 // return 0; // Opción más simple
+            },
+            duration: stepDuration * 0.5,
+            ease: "power2.inOut"
+       }, "lowerArm")
+      .to("#brazo_derecho", {
+            rotation: 10, // Posición intermedia para volver al ciclo
+            duration: stepDuration * 0.5,
+            ease: "power2.in"
+       }, "lowerArm")
+      .to("#antebrazo_der", {
+            rotation: 10,
+            duration: stepDuration * 0.5,
+            ease: "power2.in"
+       }, "<");
+
+
+       // Hacer que la duración total de la timeline sea un múltiplo
+       // conveniente para que el fumar ocurra periódicamente de forma predecible.
+       // Ajustar la duración total si es necesario, aquí usamos la duración natural
+       // tl.duration(walkCycleDuration * ?)
+
+       // Asignar un ID a una animación para referenciarla (ejemplo para cabeza)
+       tl.getTweensOf("#cabeza")[1].vars.id = "cabezaRotation"; // Asigna ID al tween de rotación
+
+  });
+</script>
+
+</body>
+</html>
