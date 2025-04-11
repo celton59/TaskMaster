@@ -126,11 +126,8 @@ export default function HabitsPage() {
         onEditHabit={handleOpenEditDialog}
         onCompleteHabit={handleCompleteHabit}
         onViewStats={(habit) => {
-          // Futura implementación: mostrar estadísticas detalladas del hábito
-          toast({
-            title: "Próximamente",
-            description: `Estadísticas detalladas para "${habit.title}" estarán disponibles pronto`,
-          });
+          setCurrentHabit(habit);
+          setStatsDialogOpen(true);
         }}
       />
 
@@ -166,6 +163,18 @@ export default function HabitsPage() {
               onSubmit={handleEditHabit}
               onCancel={() => setEditDialogOpen(false)}
               isSubmitting={updateHabitMutation.isPending}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Diálogo para estadísticas del hábito */}
+      <Dialog open={statsDialogOpen} onOpenChange={setStatsDialogOpen}>
+        <DialogContent className="max-w-4xl">
+          {currentHabit && (
+            <HabitStats
+              habit={currentHabit}
+              onClose={() => setStatsDialogOpen(false)}
             />
           )}
         </DialogContent>
