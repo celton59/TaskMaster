@@ -530,7 +530,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("⚡ Webhook de WhatsApp recibido:", JSON.stringify(req.body, null, 2));
       const result = await processIncomingWebhook(req.body);
       if (result.success) {
-        console.log("✅ Mensaje de WhatsApp procesado correctamente:", result.message);
+        console.log("✅ Mensaje de WhatsApp procesado correctamente:", result.messageId || "");
         // Enviar respuesta TwiML para confirmar recepción
         res.set('Content-Type', 'text/xml');
         res.send('<Response></Response>');
@@ -546,6 +546,265 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         status: 'error',
         message: "Error al procesar webhook de WhatsApp" 
+      });
+    }
+  });
+
+  // Rutas para hábitos
+  apiRouter.get("/habits", async (req, res) => {
+    try {
+      const habits = await storage.getHabits();
+      res.json(habits);
+    } catch (error) {
+      console.error("Error al obtener hábitos:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al obtener hábitos" 
+      });
+    }
+  });
+
+  apiRouter.get("/habits/stats", async (req, res) => {
+    try {
+      const habitId = req.query.habitId ? parseInt(req.query.habitId as string) : undefined;
+      const stats = await storage.getHabitStats(habitId);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error al obtener estadísticas de hábitos:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al obtener estadísticas de hábitos" 
+      });
+    }
+  });
+
+  apiRouter.get("/habits/frequency/:frequency", async (req, res) => {
+    try {
+      const { frequency } = req.params;
+      
+      // Validar que la frecuencia sea válida
+      if (!Object.values(HabitFrequency).includes(frequency as any)) {
+        return res.status(400).json({ 
+          status: 'error',
+          message: "Frecuencia no válida. Debe ser 'daily', 'weekday' o 'weekend'" 
+        });
+      }
+      
+      const habits = await storage.getHabitsByFrequency(frequency);
+      res.json(habits);
+    } catch (error) {
+      console.error("Error al obtener hábitos por frecuencia:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al obtener hábitos por frecuencia" 
+      });
+    }
+  });
+
+  apiRouter.get("/habits/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const habit = await storage.getHabit(id);
+      
+      if (!habit) {
+        return res.status(404).json({ 
+          status: 'error',
+          message: "Hábito no encontrado" 
+        });
+      }
+      
+      res.json(habit);
+    } catch (error) {
+      console.error("Error al obtener hábito:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al obtener hábito" 
+      });
+    }
+  });
+
+  apiRouter.post("/habits", async (req, res) => {
+    try {
+      const habitData = insertHabitSchema.parse(req.body);
+      const habit = await storage.createHabit(habitData);
+      res.status(201).json({
+        status: 'success',
+        message: "Hábito creado correctamente",
+        habit
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ 
+          status: 'error',
+          message: validationError.message 
+        });
+      }
+      console.error("Error al crear hábito:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al crear hábito" 
+      });
+    }
+  });
+
+  apiRouter.patch("/habits/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const habitData = insertHabitSchema.partial().parse(req.body);
+      
+      const updatedHabit = await storage.updateHabit(id, habitData);
+      
+      if (!updatedHabit) {
+        return res.status(404).json({ 
+          status: 'error',
+          message: "Hábito no encontrado" 
+        });
+      }
+      
+      res.json({
+        status: 'success',
+        message: "Hábito actualizado correctamente",
+        habit: updatedHabit
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ 
+          status: 'error',
+          message: validationError.message 
+        });
+      }
+      console.error("Error al actualizar hábito:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al actualizar hábito" 
+      });
+    }
+  });
+
+  apiRouter.delete("/habits/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteHabit(id);
+      
+      if (!success) {
+        return res.status(404).json({ 
+          status: 'error',
+          message: "Hábito no encontrado" 
+        });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error al eliminar hábito:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al eliminar hábito" 
+      });
+    }
+  });
+
+  // Rutas para registros de hábitos (logs)
+  apiRouter.get("/habit-logs", async (req, res) => {
+    try {
+      const habitId = req.query.habitId ? parseInt(req.query.habitId as string) : undefined;
+      const logs = await storage.getHabitLogs(habitId);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error al obtener registros de hábitos:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al obtener registros de hábitos" 
+      });
+    }
+  });
+
+  apiRouter.get("/habit-logs/date-range", async (req, res) => {
+    try {
+      const { startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return res.status(400).json({ 
+          status: 'error',
+          message: "Se requieren fechas de inicio y fin" 
+        });
+      }
+      
+      const start = new Date(startDate as string);
+      const end = new Date(endDate as string);
+      
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return res.status(400).json({ 
+          status: 'error',
+          message: "Formato de fecha no válido" 
+        });
+      }
+      
+      const logs = await storage.getHabitLogsByDateRange(start, end);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error al obtener registros por rango de fechas:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al obtener registros por rango de fechas" 
+      });
+    }
+  });
+
+  apiRouter.post("/habit-logs", async (req, res) => {
+    try {
+      const logData = insertHabitLogSchema.parse(req.body);
+      
+      // Verificar que el hábito existe
+      const habit = await storage.getHabit(logData.habitId);
+      if (!habit) {
+        return res.status(404).json({ 
+          status: 'error',
+          message: "El hábito no existe" 
+        });
+      }
+      
+      const log = await storage.createHabitLog(logData);
+      res.status(201).json({
+        status: 'success',
+        message: "Registro de hábito creado correctamente",
+        log
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ 
+          status: 'error',
+          message: validationError.message 
+        });
+      }
+      console.error("Error al crear registro de hábito:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al crear registro de hábito" 
+      });
+    }
+  });
+
+  apiRouter.delete("/habit-logs/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteHabitLog(id);
+      
+      if (!success) {
+        return res.status(404).json({ 
+          status: 'error',
+          message: "Registro de hábito no encontrado" 
+        });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error al eliminar registro de hábito:", error);
+      res.status(500).json({ 
+        status: 'error',
+        message: "Error al eliminar registro de hábito" 
       });
     }
   });
