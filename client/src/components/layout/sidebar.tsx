@@ -129,6 +129,12 @@ export function Sidebar() {
             />
             
             <NavLink 
+              href="/habits" 
+              icon={<Activity className="h-5 w-5" />} 
+              label="Hábitos" 
+            />
+            
+            <NavLink 
               href="/calendar" 
               icon={<Calendar className="h-5 w-5" />} 
               label="Calendario" 
@@ -156,12 +162,6 @@ export function Sidebar() {
               href="/whatsapp-settings" 
               icon={<MessageCircle className="h-5 w-5" />} 
               label="WhatsApp" 
-            />
-            
-            <NavLink 
-              href="/habits" 
-              icon={<Activity className="h-5 w-5" />} 
-              label="Hábitos" 
             />
           </div>
           
@@ -258,6 +258,11 @@ export function Sidebar() {
                     label="Tareas" 
                   />
                   <NavLink 
+                    href="/habits" 
+                    icon={<Activity className="h-5 w-5" />} 
+                    label="Hábitos" 
+                  />
+                  <NavLink 
                     href="/calendar" 
                     icon={<Calendar className="h-5 w-5" />} 
                     label="Calendario" 
@@ -281,11 +286,6 @@ export function Sidebar() {
                     href="/whatsapp-settings" 
                     icon={<MessageCircle className="h-5 w-5" />} 
                     label="WhatsApp" 
-                  />
-                  <NavLink 
-                    href="/habits" 
-                    icon={<Activity className="h-5 w-5" />} 
-                    label="Hábitos" 
                   />
                 </div>
               </div>
