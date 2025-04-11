@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Habit } from "@shared/schema";
 import { HabitList } from "@/components/habits/HabitList";
 import { HabitForm } from "@/components/habits/HabitForm";
+import { HabitStats } from "@/components/habits/HabitStats";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -13,6 +14,7 @@ export default function HabitsPage() {
   const queryClient = useQueryClient();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [statsDialogOpen, setStatsDialogOpen] = useState(false);
   const [currentHabit, setCurrentHabit] = useState<Habit | undefined>(undefined);
 
   // Mutaciones para operaciones CRUD
