@@ -2,7 +2,13 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertTaskSchema, insertCategorySchema } from "@shared/schema";
+import { 
+  insertTaskSchema, 
+  insertCategorySchema,
+  insertHabitSchema,
+  insertHabitLogSchema,
+  HabitFrequency 
+} from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { createTaskFromText, processAgentMessage } from "./openai-service";

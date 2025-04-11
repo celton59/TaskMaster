@@ -95,11 +95,15 @@ export class MemStorage implements IStorage {
     this.categories = new Map();
     this.whatsappContacts = new Map();
     this.whatsappMessages = new Map();
+    this.habits = new Map();
+    this.habitLogs = new Map();
     this.userCurrentId = 1;
     this.taskCurrentId = 1;
     this.categoryCurrentId = 1;
     this.whatsappContactCurrentId = 1;
     this.whatsappMessageCurrentId = 1;
+    this.habitCurrentId = 1;
+    this.habitLogCurrentId = 1;
     
     // Adding default categories
     this.createCategory({ name: "Trabajo", color: "blue" });
@@ -374,11 +378,174 @@ export class MemStorage implements IStorage {
     this.whatsappMessages.set(id, updated);
     return updated;
   }
+
+  // Habit methods
+  async getHabits(): Promise<Habit[]> {
+    return Array.from(this.habits.values());
+  }
+  
+  async getHabit(id: number): Promise<Habit | undefined> {
+    return this.habits.get(id);
+  }
+  
+  async getHabitsByFrequency(frequency: string): Promise<Habit[]> {
+    return Array.from(this.habits.values()).filter(
+      (habit) => habit.frequency === frequency
+    );
+  }
+  
+  async createHabit(habit: InsertHabit): Promise<Habit> {
+    const id = this.habitCurrentId++;
+    const now = new Date();
+    const newHabit: Habit = { 
+      ...habit, 
+      id,
+      color: habit.color || 'blue', // Asegurar que color siempre tenga un valor
+      createdAt: now,
+      updatedAt: null,
+      startDate: habit.startDate || now.toISOString().split('T')[0], // Asegurar que startDate siempre tenga un valor
+      description: habit.description || null,
+      iconName: habit.iconName || null,
+      userId: habit.userId || null,
+      isActive: habit.isActive !== undefined ? habit.isActive : true
+    };
+    this.habits.set(id, newHabit);
+    return newHabit;
+  }
+  
+  async updateHabit(
+    id: number,
+    habit: Partial<InsertHabit>
+  ): Promise<Habit | undefined> {
+    const existing = this.habits.get(id);
+    if (!existing) return undefined;
+    
+    const updated = { 
+      ...existing, 
+      ...habit,
+      updatedAt: new Date() 
+    };
+    this.habits.set(id, updated);
+    return updated;
+  }
+  
+  async deleteHabit(id: number): Promise<boolean> {
+    return this.habits.delete(id);
+  }
+  
+  // Habit log methods
+  async getHabitLogs(habitId?: number): Promise<HabitLog[]> {
+    const logs = Array.from(this.habitLogs.values());
+    if (habitId) {
+      return logs.filter(log => log.habitId === habitId);
+    }
+    return logs;
+  }
+  
+  async getHabitLogsByDateRange(startDate: Date, endDate: Date): Promise<HabitLog[]> {
+    return Array.from(this.habitLogs.values()).filter(
+      (log) => {
+        const logDate = new Date(log.completedDate);
+        return logDate >= startDate && logDate <= endDate;
+      }
+    );
+  }
+  
+  async createHabitLog(log: InsertHabitLog): Promise<HabitLog> {
+    const id = this.habitLogCurrentId++;
+    const now = new Date();
+    const completedDate = log.completedDate || now.toISOString().split('T')[0]; // Asegurar que completedDate siempre tenga un valor
+    const newLog: HabitLog = {
+      ...log,
+      id,
+      completedDate, // Asignar siempre un valor válido
+      createdAt: now,
+      notes: log.notes || null
+    };
+    this.habitLogs.set(id, newLog);
+    return newLog;
+  }
+  
+  async deleteHabitLog(id: number): Promise<boolean> {
+    return this.habitLogs.delete(id);
+  }
+  
+  async getHabitStats(habitId?: number): Promise<{
+    totalHabits: number;
+    activeHabits: number;
+    completedToday: number;
+    streakData: Record<number, number>;
+  }> {
+    const habits = Array.from(this.habits.values());
+    const logs = Array.from(this.habitLogs.values());
+    
+    // Filtrar por habitId si se proporciona
+    const filteredHabits = habitId ? habits.filter(h => h.id === habitId) : habits;
+    
+    // Obtener logs de hoy
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const todayLogs = logs.filter(log => {
+      const logDate = new Date(log.completedDate);
+      logDate.setHours(0, 0, 0, 0);
+      return logDate.getTime() === today.getTime() && 
+        (habitId ? log.habitId === habitId : true);
+    });
+    
+    // Calcular racha para cada hábito
+    const streakData: Record<number, number> = {};
+    
+    filteredHabits.forEach(habit => {
+      // Obtener todos los logs para este hábito
+      const habitLogs = logs.filter(log => log.habitId === habit.id);
+      
+      // Ordenar logs por fecha
+      habitLogs.sort((a, b) => 
+        new Date(a.completedDate).getTime() - new Date(b.completedDate).getTime()
+      );
+      
+      // Calcular racha
+      let streak = 0;
+      let currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      
+      // Retroceder día a día y verificar si existe un log
+      while (true) {
+        const dateToCheck = new Date(currentDate);
+        dateToCheck.setHours(0, 0, 0, 0);
+        
+        const hasLogForDate = habitLogs.some(log => {
+          const logDate = new Date(log.completedDate);
+          logDate.setHours(0, 0, 0, 0);
+          return logDate.getTime() === dateToCheck.getTime();
+        });
+        
+        if (hasLogForDate) {
+          streak++;
+          currentDate.setDate(currentDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      
+      streakData[habit.id] = streak;
+    });
+    
+    return {
+      totalHabits: filteredHabits.length,
+      activeHabits: filteredHabits.filter(h => h.isActive).length,
+      completedToday: todayLogs.length,
+      streakData
+    };
+  }
 }
 
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import { eq } from 'drizzle-orm';
+import { eq, gte, lte, and } from 'drizzle-orm';
 
 // Implementación de almacenamiento PostgreSQL
 export class PostgresStorage implements IStorage {
@@ -390,7 +557,8 @@ export class PostgresStorage implements IStorage {
     this.db = drizzle(sql, { 
       schema: { 
         users, tasks, categories, 
-        whatsappContacts, whatsappMessages 
+        whatsappContacts, whatsappMessages,
+        habits, habitLogs
       } 
     });
     console.log("Conexión a base de datos PostgreSQL establecida");
@@ -552,6 +720,150 @@ export class PostgresStorage implements IStorage {
       .where(eq(whatsappMessages.id, id))
       .returning();
     return result[0];
+  }
+
+  // Habit methods
+  async getHabits(): Promise<Habit[]> {
+    return await this.db.select().from(habits);
+  }
+  
+  async getHabit(id: number): Promise<Habit | undefined> {
+    const result = await this.db.select().from(habits).where(eq(habits.id, id));
+    return result[0];
+  }
+  
+  async getHabitsByFrequency(frequency: string): Promise<Habit[]> {
+    return await this.db.select().from(habits).where(eq(habits.frequency, frequency));
+  }
+  
+  async createHabit(habit: InsertHabit): Promise<Habit> {
+    // Asegurar valores predeterminados
+    const habitToCreate = {
+      ...habit,
+      color: habit.color || 'blue',
+      startDate: habit.startDate || new Date().toISOString().split('T')[0]
+    };
+    const result = await this.db.insert(habits).values(habitToCreate).returning();
+    return result[0];
+  }
+  
+  async updateHabit(id: number, habit: Partial<InsertHabit>): Promise<Habit | undefined> {
+    const result = await this.db.update(habits)
+      .set({
+        ...habit,
+        updatedAt: new Date()
+      })
+      .where(eq(habits.id, id))
+      .returning();
+    return result[0];
+  }
+  
+  async deleteHabit(id: number): Promise<boolean> {
+    const result = await this.db.delete(habits).where(eq(habits.id, id)).returning();
+    return result.length > 0;
+  }
+  
+  // Habit log methods
+  async getHabitLogs(habitId?: number): Promise<HabitLog[]> {
+    if (habitId) {
+      return await this.db.select().from(habitLogs).where(eq(habitLogs.habitId, habitId));
+    }
+    return await this.db.select().from(habitLogs);
+  }
+  
+  async getHabitLogsByDateRange(startDate: Date, endDate: Date): Promise<HabitLog[]> {
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
+    
+    return await this.db.select()
+      .from(habitLogs)
+      .where(
+        and(
+          gte(habitLogs.completedDate, startDateStr),
+          lte(habitLogs.completedDate, endDateStr)
+        )
+      );
+  }
+  
+  async createHabitLog(log: InsertHabitLog): Promise<HabitLog> {
+    // Asegurar valores predeterminados
+    const logToCreate = {
+      ...log,
+      completedDate: log.completedDate || new Date().toISOString().split('T')[0]
+    };
+    const result = await this.db.insert(habitLogs).values(logToCreate).returning();
+    return result[0];
+  }
+  
+  async deleteHabitLog(id: number): Promise<boolean> {
+    const result = await this.db.delete(habitLogs).where(eq(habitLogs.id, id)).returning();
+    return result.length > 0;
+  }
+  
+  async getHabitStats(habitId?: number): Promise<{
+    totalHabits: number;
+    activeHabits: number;
+    completedToday: number;
+    streakData: Record<number, number>;
+  }> {
+    // Obtener hábitos
+    let habitsToProcess = await this.getHabits();
+    if (habitId) {
+      habitsToProcess = habitsToProcess.filter(h => h.id === habitId);
+    }
+    
+    // Obtener todos los logs
+    const allLogs = await this.getHabitLogs();
+    
+    // Filtrar logs de hoy
+    const today = new Date().toISOString().split('T')[0];
+    const todayLogs = allLogs.filter(log => 
+      log.completedDate === today && 
+      (habitId ? log.habitId === habitId : true)
+    );
+    
+    // Calcular racha para cada hábito
+    const streakData: Record<number, number> = {};
+    
+    for (const habit of habitsToProcess) {
+      // Obtener logs para este hábito
+      const habitLogs = allLogs.filter(log => log.habitId === habit.id);
+      
+      // Ordenar logs por fecha
+      habitLogs.sort((a, b) => 
+        new Date(a.completedDate).getTime() - new Date(b.completedDate).getTime()
+      );
+      
+      // Calcular racha
+      let streak = 0;
+      let currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      
+      // Retroceder día a día y verificar si existe un log
+      while (true) {
+        const dateToCheck = currentDate.toISOString().split('T')[0];
+        
+        const hasLogForDate = habitLogs.some(log => 
+          log.completedDate === dateToCheck
+        );
+        
+        if (hasLogForDate) {
+          streak++;
+          currentDate.setDate(currentDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      
+      streakData[habit.id] = streak;
+    }
+    
+    return {
+      totalHabits: habitsToProcess.length,
+      activeHabits: habitsToProcess.filter(h => h.isActive).length,
+      completedToday: todayLogs.length,
+      streakData
+    };
   }
 }
 
