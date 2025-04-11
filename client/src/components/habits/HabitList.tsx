@@ -4,11 +4,13 @@ import { Habit } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, PlusCircle, CheckCircle2, CircleX, BarChart3 } from "lucide-react";
+import { CalendarIcon, PlusCircle, CheckCircle2, CircleX, BarChart3, Eye, EyeOff } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface HabitListProps {
   className?: string;
@@ -32,6 +34,7 @@ export function HabitList({
   onCompleteHabit 
 }: HabitListProps) {
   const [filter, setFilter] = useState<string | null>(null);
+  const [hideCompleted, setHideCompleted] = useState<boolean>(true);
 
   // Obtener todos los hábitos
   const habitsQuery = useQuery<Habit[]>({
@@ -58,9 +61,20 @@ export function HabitList({
     streakData: {} 
   };
 
-  const filteredHabits = filter 
-    ? habits.filter((habit: Habit) => habit.frequency === filter)
-    : habits;
+  // Filtrar por frecuencia y por completados si corresponde
+  const filteredHabits = habits.filter((habit: Habit) => {
+    // Filtrar por frecuencia si hay un filtro activo
+    if (filter && habit.frequency !== filter) {
+      return false;
+    }
+    
+    // Si hideCompleted está activado, ocultar los hábitos completados hoy
+    if (hideCompleted && stats.streakData[habit.id] > 0) {
+      return false;
+    }
+    
+    return true;
+  });
 
   // Ordenar hábitos: primero los activos, luego por nombre
   const sortedHabits = [...filteredHabits].sort((a, b) => {
@@ -89,35 +103,51 @@ export function HabitList({
         </Button>
       </div>
 
-      <div className="flex items-center space-x-2 pb-2">
-        <Button
-          variant={filter === null ? "default" : "outline"}
-          size="sm"
-          onClick={() => setFilter(null)}
-        >
-          Todos
-        </Button>
-        <Button
-          variant={filter === "daily" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setFilter("daily")}
-        >
-          Diarios
-        </Button>
-        <Button
-          variant={filter === "weekday" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setFilter("weekday")}
-        >
-          Laborables
-        </Button>
-        <Button
-          variant={filter === "weekend" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setFilter("weekend")}
-        >
-          Fin de semana
-        </Button>
+      <div className="flex flex-wrap gap-3 pb-2">
+        <div className="flex items-center space-x-2">
+          <Button
+            variant={filter === null ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilter(null)}
+          >
+            Todos
+          </Button>
+          <Button
+            variant={filter === "daily" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilter("daily")}
+          >
+            Diarios
+          </Button>
+          <Button
+            variant={filter === "weekday" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilter("weekday")}
+          >
+            Laborables
+          </Button>
+          <Button
+            variant={filter === "weekend" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilter("weekend")}
+          >
+            Fin de semana
+          </Button>
+        </div>
+        
+        <div className="flex items-center space-x-2 ml-auto">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="hide-completed"
+              checked={hideCompleted}
+              onCheckedChange={setHideCompleted}
+            />
+            <Label htmlFor="hide-completed" className="text-sm cursor-pointer">
+              {hideCompleted ? "Mostrar completados" : "Ocultar completados"}
+            </Label>
+            {hideCompleted ? <EyeOff className="h-4 w-4 ml-1" /> : <Eye className="h-4 w-4 ml-1" />}
+          </div>
+        </div>
       </div>
 
       {habitsQuery.isLoading ? (
