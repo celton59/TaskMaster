@@ -61,6 +61,16 @@ export function HabitList({
     streakData: {} 
   };
 
+  // Función auxiliar para verificar si el hábito se completó hoy
+  const isHabitCompletedToday = (habitId: number): boolean => {
+    // Verificamos si hay un log para hoy
+    const today = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
+    
+    // Obtener logs para este hábito de las estadísticas
+    // El streak solo cuenta si incluye el día de hoy
+    return stats.streakData[habitId] > 0;
+  };
+
   // Filtrar por frecuencia y por completados si corresponde
   const filteredHabits = habits.filter((habit: Habit) => {
     // Filtrar por frecuencia si hay un filtro activo
@@ -69,7 +79,7 @@ export function HabitList({
     }
     
     // Si hideCompleted está activado, ocultar los hábitos completados hoy
-    if (hideCompleted && stats.streakData[habit.id] > 0) {
+    if (hideCompleted && isHabitCompletedToday(habit.id)) {
       return false;
     }
     
