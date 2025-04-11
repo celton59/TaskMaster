@@ -765,11 +765,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      // Verificar si ya existe un log para este hábito en esta fecha
+      const completedDate = new Date(logData.completedDate);
+      const existingLog = await storage.getHabitLogByDate(logData.habitId, completedDate);
+      
+      if (existingLog) {
+        // Si ya existe un log para esta fecha, lo eliminamos (descompletar)
+        await storage.deleteHabitLog(existingLog.id);
+        return res.status(200).json({
+          status: 'success',
+          message: "Hábito descompletado correctamente",
+          completed: false
+        });
+      }
+      
+      // Si no existe, creamos un nuevo log (completar)
       const log = await storage.createHabitLog(logData);
       res.status(201).json({
         status: 'success',
-        message: "Registro de hábito creado correctamente",
-        log
+        message: "Hábito completado correctamente",
+        log,
+        completed: true
       });
     } catch (error) {
       if (error instanceof ZodError) {

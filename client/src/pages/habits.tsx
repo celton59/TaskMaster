@@ -171,6 +171,11 @@ export default function HabitsPage() {
       {/* Diálogo para estadísticas del hábito */}
       <Dialog open={statsDialogOpen} onOpenChange={setStatsDialogOpen}>
         <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="sr-only">
+              Estadísticas del hábito
+            </DialogTitle>
+          </DialogHeader>
           {currentHabit && (
             <HabitStats
               habit={currentHabit}

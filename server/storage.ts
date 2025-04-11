@@ -63,6 +63,7 @@ export interface IStorage {
   // Habit log methods
   getHabitLogs(habitId?: number): Promise<HabitLog[]>;
   getHabitLogsByDateRange(startDate: Date, endDate: Date): Promise<HabitLog[]>;
+  getHabitLogByDate(habitId: number, date: Date): Promise<HabitLog | undefined>;
   createHabitLog(log: InsertHabitLog): Promise<HabitLog>;
   deleteHabitLog(id: number): Promise<boolean>;
   getHabitStats(habitId?: number): Promise<{
@@ -451,6 +452,17 @@ export class MemStorage implements IStorage {
     );
   }
   
+  async getHabitLogByDate(habitId: number, date: Date): Promise<HabitLog | undefined> {
+    const dateStr = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    
+    return Array.from(this.habitLogs.values()).find(
+      (log) => {
+        return log.habitId === habitId && 
+               log.completedDate === dateStr;
+      }
+    );
+  }
+  
   async createHabitLog(log: InsertHabitLog): Promise<HabitLog> {
     const id = this.habitLogCurrentId++;
     const now = new Date();
@@ -783,6 +795,21 @@ export class PostgresStorage implements IStorage {
           lte(habitLogs.completedDate, endDateStr)
         )
       );
+  }
+
+  async getHabitLogByDate(habitId: number, date: Date): Promise<HabitLog | undefined> {
+    const dateStr = date.toISOString().split('T')[0];
+    
+    const result = await this.db.select()
+      .from(habitLogs)
+      .where(
+        and(
+          eq(habitLogs.habitId, habitId),
+          eq(habitLogs.completedDate, dateStr)
+        )
+      );
+    
+    return result[0];
   }
   
   async createHabitLog(log: InsertHabitLog): Promise<HabitLog> {
