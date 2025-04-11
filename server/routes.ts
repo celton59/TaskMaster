@@ -769,10 +769,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Asegurarse de que completedDate sea string antes de convertirlo a Date
       const dateStr = typeof logData.completedDate === 'string' ? logData.completedDate : new Date().toISOString().split('T')[0];
       const completedDate = new Date(dateStr);
+      
+      console.log("Buscando log para habitId:", logData.habitId, "fecha:", dateStr);
       const existingLog = await storage.getHabitLogByDate(logData.habitId, completedDate);
+      console.log("Log encontrado:", existingLog ? "Sí" : "No");
       
       if (existingLog) {
         // Si ya existe un log para esta fecha, lo eliminamos (descompletar)
+        console.log("Descompletando hábito, eliminando log ID:", existingLog.id);
         await storage.deleteHabitLog(existingLog.id);
         return res.status(200).json({
           status: 'success',
@@ -782,7 +786,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Si no existe, creamos un nuevo log (completar)
+      console.log("Completando hábito, creando nuevo log");
       const log = await storage.createHabitLog(logData);
+      console.log("Log creado:", log);
       res.status(201).json({
         status: 'success',
         message: "Hábito completado correctamente",
