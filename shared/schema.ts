@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, timestamp, boolean, json } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, boolean, json, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -135,4 +135,65 @@ export const MessageStatus = {
   DELIVERED: "delivered",
   READ: "read",
   FAILED: "failed",
+} as const;
+
+// Hábitos
+export const habits = pgTable("habits", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  frequency: text("frequency").notNull(), // "daily", "weekday", "weekend"
+  iconName: text("icon_name"), // Nombre del icono para usar de Lucide
+  color: text("color").notNull().default("blue"),
+  isActive: boolean("is_active").notNull().default(true),
+  startDate: date("start_date").notNull().defaultNow(),
+  userId: integer("user_id"), // Para cuando se implementen usuarios
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at"),
+});
+
+// Registros de hábitos completados
+export const habitLogs = pgTable("habit_logs", {
+  id: serial("id").primaryKey(),
+  habitId: integer("habit_id").notNull().references(() => habits.id),
+  completedDate: date("completed_date").notNull().defaultNow(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Insert schemas para Hábitos
+export const insertHabitSchema = createInsertSchema(habits).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertHabitLogSchema = createInsertSchema(habitLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types para Hábitos
+export type InsertHabit = z.infer<typeof insertHabitSchema>;
+export type Habit = typeof habits.$inferSelect;
+
+export type InsertHabitLog = z.infer<typeof insertHabitLogSchema>;
+export type HabitLog = typeof habitLogs.$inferSelect;
+
+// Enums para Hábitos
+export const HabitFrequency = {
+  DAILY: "daily",
+  WEEKDAY: "weekday",
+  WEEKEND: "weekend",
+} as const;
+
+export const HabitColors = {
+  BLUE: "blue",
+  PURPLE: "purple",
+  PINK: "pink",
+  GREEN: "green",
+  YELLOW: "yellow",
+  RED: "red",
+  ORANGE: "orange",
+  CYAN: "cyan",
 } as const;

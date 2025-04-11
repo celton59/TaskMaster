@@ -4,7 +4,9 @@ import {
   categories, type Category, type InsertCategory,
   whatsappContacts, type WhatsappContact, type InsertWhatsappContact,
   whatsappMessages, type WhatsappMessage, type InsertWhatsappMessage,
-  TaskStatus, MessageDirection, MessageStatus
+  habits, type Habit, type InsertHabit,
+  habitLogs, type HabitLog, type InsertHabitLog,
+  TaskStatus, MessageDirection, MessageStatus, HabitFrequency
 } from "@shared/schema";
 
 export interface IStorage {
@@ -49,6 +51,26 @@ export interface IStorage {
   getWhatsappMessage(id: number): Promise<WhatsappMessage | undefined>;
   createWhatsappMessage(message: InsertWhatsappMessage): Promise<WhatsappMessage>;
   updateWhatsappMessageStatus(id: number, status: string): Promise<WhatsappMessage | undefined>;
+  
+  // Habit methods
+  getHabits(): Promise<Habit[]>;
+  getHabit(id: number): Promise<Habit | undefined>;
+  getHabitsByFrequency(frequency: string): Promise<Habit[]>; 
+  createHabit(habit: InsertHabit): Promise<Habit>;
+  updateHabit(id: number, habit: Partial<InsertHabit>): Promise<Habit | undefined>;
+  deleteHabit(id: number): Promise<boolean>;
+  
+  // Habit log methods
+  getHabitLogs(habitId?: number): Promise<HabitLog[]>;
+  getHabitLogsByDateRange(startDate: Date, endDate: Date): Promise<HabitLog[]>;
+  createHabitLog(log: InsertHabitLog): Promise<HabitLog>;
+  deleteHabitLog(id: number): Promise<boolean>;
+  getHabitStats(habitId?: number): Promise<{
+    totalHabits: number;
+    activeHabits: number;
+    completedToday: number;
+    streakData: Record<number, number>; // habitId -> streak count
+  }>;
 }
 
 export class MemStorage implements IStorage {
@@ -57,11 +79,15 @@ export class MemStorage implements IStorage {
   private categories: Map<number, Category>;
   private whatsappContacts: Map<number, WhatsappContact>;
   private whatsappMessages: Map<number, WhatsappMessage>;
+  private habits: Map<number, Habit>;
+  private habitLogs: Map<number, HabitLog>;
   private userCurrentId: number;
   private taskCurrentId: number;
   private categoryCurrentId: number;
   private whatsappContactCurrentId: number;
   private whatsappMessageCurrentId: number;
+  private habitCurrentId: number;
+  private habitLogCurrentId: number;
 
   constructor() {
     this.users = new Map();
