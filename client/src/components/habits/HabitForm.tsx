@@ -36,10 +36,10 @@ export function HabitForm({ habit, onSubmit, onCancel, isSubmitting = false }: H
   });
 
   // Valores por defecto
-  const defaultValues = {
+  const defaultValues: z.infer<typeof formSchema> = {
     title: habit?.title || "",
     description: habit?.description || "",
-    frequency: habit?.frequency || "daily",
+    frequency: (habit?.frequency as "daily" | "weekday" | "weekend") || "daily",
     color: habit?.color || "blue",
     iconName: habit?.iconName || "",
     isActive: habit?.isActive !== undefined ? habit.isActive : true,

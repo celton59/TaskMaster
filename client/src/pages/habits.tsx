@@ -18,10 +18,7 @@ export default function HabitsPage() {
   // Mutaciones para operaciones CRUD
   const createHabitMutation = useMutation({
     mutationFn: (data: any) => {
-      return apiRequest("/api/habits", {
-        method: "POST",
-        data,
-      });
+      return apiRequest("/api/habits", "POST", data);
     },
     onSuccess: () => {
       toast({

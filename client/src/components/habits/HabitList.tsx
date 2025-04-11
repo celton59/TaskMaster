@@ -34,13 +34,18 @@ export function HabitList({
   const [filter, setFilter] = useState<string | null>(null);
 
   // Obtener todos los hábitos
-  const habitsQuery = useQuery({
+  const habitsQuery = useQuery<Habit[]>({
     queryKey: ['/api/habits'],
     staleTime: 1000 * 60, // 1 minuto
   });
 
   // Obtener las estadísticas de los hábitos
-  const statsQuery = useQuery({
+  const statsQuery = useQuery<{
+    totalHabits: number;
+    activeHabits: number;
+    completedToday: number;
+    streakData: Record<number, number>;
+  }>({
     queryKey: ['/api/habits/stats'],
     staleTime: 1000 * 60, // 1 minuto
   });
@@ -54,7 +59,7 @@ export function HabitList({
   };
 
   const filteredHabits = filter 
-    ? habits.filter(habit => habit.frequency === filter)
+    ? habits.filter((habit: Habit) => habit.frequency === filter)
     : habits;
 
   // Ordenar hábitos: primero los activos, luego por nombre
