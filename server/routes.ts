@@ -766,7 +766,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verificar si ya existe un log para este hábito en esta fecha
-      const completedDate = new Date(logData.completedDate);
+      // Asegurarse de que completedDate sea string antes de convertirlo a Date
+      const dateStr = typeof logData.completedDate === 'string' ? logData.completedDate : new Date().toISOString().split('T')[0];
+      const completedDate = new Date(dateStr);
       const existingLog = await storage.getHabitLogByDate(logData.habitId, completedDate);
       
       if (existingLog) {

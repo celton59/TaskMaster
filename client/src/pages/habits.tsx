@@ -62,27 +62,41 @@ export default function HabitsPage() {
     },
   });
 
+  // Definimos la interfaz para la respuesta del API
+  interface HabitLogResponse {
+    status: string;
+    message: string;
+    completed: boolean;
+    log?: any;
+  }
+
   const completeHabitMutation = useMutation({
     mutationFn: (habit: Habit) => {
       const today = new Date();
-      return apiRequest("/api/habit-logs", "POST", {
+      return apiRequest<HabitLogResponse>("/api/habit-logs", "POST", {
         habitId: habit.id,
         completedDate: format(today, "yyyy-MM-dd"),
         notes: null,
       });
     },
-    onSuccess: () => {
+    onSuccess: (response: HabitLogResponse) => {
+      // La respuesta incluye 'completed: true/false' para indicar si se completó o descompletó
+      const { completed } = response;
+      
       toast({
-        title: "Hábito completado",
-        description: "Se ha registrado la realización del hábito para hoy",
+        title: completed ? "Hábito completado" : "Hábito descompletado",
+        description: completed 
+          ? "Se ha registrado la realización del hábito para hoy"
+          : "Se ha eliminado el registro del hábito para hoy",
       });
+      
       queryClient.invalidateQueries({ queryKey: ["/api/habits/stats"] });
       queryClient.invalidateQueries({ queryKey: ["/api/habit-logs"] });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "No se pudo registrar la realización del hábito",
+        description: "No se pudo actualizar el estado del hábito",
         variant: "destructive",
       });
     },
