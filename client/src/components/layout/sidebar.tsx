@@ -28,7 +28,8 @@ import {
   Clock,
   CheckCircle2,
   Bot,
-  MessageCircle
+  MessageCircle,
+  Activity
 } from "lucide-react";
 import type { Category } from "@shared/schema";
 
@@ -156,6 +157,12 @@ export function Sidebar() {
               icon={<MessageCircle className="h-5 w-5" />} 
               label="WhatsApp" 
             />
+            
+            <NavLink 
+              href="/habits" 
+              icon={<Activity className="h-5 w-5" />} 
+              label="Hábitos" 
+            />
           </div>
           
           <Separator className="my-3 bg-neon-accent/20 flex-shrink-0" />
@@ -274,6 +281,11 @@ export function Sidebar() {
                     href="/whatsapp-settings" 
                     icon={<MessageCircle className="h-5 w-5" />} 
                     label="WhatsApp" 
+                  />
+                  <NavLink 
+                    href="/habits" 
+                    icon={<Activity className="h-5 w-5" />} 
+                    label="Hábitos" 
                   />
                 </div>
               </div>
