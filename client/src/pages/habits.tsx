@@ -40,10 +40,7 @@ export default function HabitsPage() {
 
   const updateHabitMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: any }) => {
-      return apiRequest(`/api/habits/${id}`, {
-        method: "PATCH",
-        data,
-      });
+      return apiRequest(`/api/habits/${id}`, "PATCH", data);
     },
     onSuccess: () => {
       toast({
@@ -66,13 +63,10 @@ export default function HabitsPage() {
   const completeHabitMutation = useMutation({
     mutationFn: (habit: Habit) => {
       const today = new Date();
-      return apiRequest("/api/habit-logs", {
-        method: "POST",
-        data: {
-          habitId: habit.id,
-          completedDate: format(today, "yyyy-MM-dd"),
-          notes: null,
-        },
+      return apiRequest("/api/habit-logs", "POST", {
+        habitId: habit.id,
+        completedDate: format(today, "yyyy-MM-dd"),
+        notes: null,
       });
     },
     onSuccess: () => {
