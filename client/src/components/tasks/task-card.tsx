@@ -317,8 +317,8 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
         isDragging ? 'opacity-50 scale-95' : ''
       )}
       draggable
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+      onDragStart={(e) => handleDragStart(e)}
+      onDragEnd={() => handleDragEnd()}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
