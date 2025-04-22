@@ -3,7 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { TaskColumn } from "@/components/tasks/task-column";
 import { TaskFilter } from "@/components/tasks/task-filter";
-import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Plus, Filter, LayoutGrid, ArrowDownUp } from "lucide-react";
@@ -20,7 +19,6 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
-  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   
   // Update filtered tasks when tasks or filter changes
   useEffect(() => {
@@ -105,14 +103,6 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
                 <ArrowDownUp className="h-3.5 w-3.5 mr-2" />
                 Ordenar
               </Button>
-              <Button 
-                onClick={() => setIsTaskFormOpen(true)} 
-                size="sm" 
-                className="h-8 bg-neon-accent/90 hover:bg-neon-accent text-neon-darker font-medium shadow-[0_0_8px_rgba(0,225,255,0.2)]"
-              >
-                <Plus className="h-3.5 w-3.5 mr-2" />
-                Nueva tarea
-              </Button>
             </div>
           </div>
         </CardHeader>
@@ -167,12 +157,6 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
           </div>
         </CardContent>
       </Card>
-      
-      <TaskForm 
-        isOpen={isTaskFormOpen} 
-        onClose={() => setIsTaskFormOpen(false)}
-        categories={categories}
-      />
     </>
   );
 }
