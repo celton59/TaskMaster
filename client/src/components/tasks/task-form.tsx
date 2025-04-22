@@ -112,10 +112,12 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
   // Create task mutation
   const createTaskMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      await apiRequest("POST", "/api/tasks", data);
+      console.log("Intentando crear tarea con datos:", data);
+      return await apiRequest("/api/tasks", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks/stats"] });
       toast({
         title: "Tarea creada",
         description: "La tarea se creó correctamente.",
@@ -124,6 +126,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
       onClose();
     },
     onError: (error) => {
+      console.error("Error al crear tarea:", error);
       toast({
         title: "Error",
         description: `No se pudo crear la tarea: ${error.message}`,
@@ -136,7 +139,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
   const updateTaskMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
       if (!taskId) return;
-      await apiRequest("PATCH", `/api/tasks/${taskId}`, data);
+      return await apiRequest(`/api/tasks/${taskId}`, "PATCH", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
