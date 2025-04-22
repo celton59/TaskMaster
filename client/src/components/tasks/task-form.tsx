@@ -173,10 +173,10 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] border-0 bg-[#65d8e4] text-neon-darker">
         <DialogHeader>
-          <DialogTitle>{taskId ? "Editar tarea" : "Nueva tarea"}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-neon-darker text-xl font-semibold">{taskId ? "Editar tarea" : "Nueva tarea"}</DialogTitle>
+          <DialogDescription className="text-neon-darker/80">
             {taskId 
               ? "Actualiza los detalles de la tarea existente." 
               : "Crea una nueva tarea para tu lista de tareas."}
@@ -184,20 +184,21 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Título</FormLabel>
+                  <FormLabel className="text-neon-darker font-medium">Título</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Título de la tarea" 
+                      className="bg-transparent border-[#3dadb8] text-neon-darker placeholder:text-neon-darker/60 focus-visible:ring-offset-0 focus-visible:ring-[#3dadb8]"
                       {...field} 
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-700" />
                 </FormItem>
               )}
             />
@@ -207,15 +208,16 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descripción</FormLabel>
+                  <FormLabel className="text-neon-darker font-medium">Descripción</FormLabel>
                   <FormControl>
                     <Textarea 
                       placeholder="Descripción de la tarea" 
+                      className="bg-transparent border-[#3dadb8] text-neon-darker placeholder:text-neon-darker/60 focus-visible:ring-offset-0 focus-visible:ring-[#3dadb8] min-h-[100px]"
                       {...field} 
                       value={field.value || ""}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-700" />
                 </FormItem>
               )}
             />
@@ -226,13 +228,13 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Estado</FormLabel>
+                    <FormLabel className="text-neon-darker font-medium">Estado</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value || TaskStatus.PENDING}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-transparent border-[#3dadb8] text-neon-darker focus:ring-[#3dadb8] focus:ring-offset-0">
                           <SelectValue placeholder="Seleccionar estado" />
                         </SelectTrigger>
                       </FormControl>
@@ -243,7 +245,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                         <SelectItem value={TaskStatus.COMPLETED}>Completado</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage className="text-red-700" />
                   </FormItem>
                 )}
               />
@@ -253,13 +255,13 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prioridad</FormLabel>
+                    <FormLabel className="text-neon-darker font-medium">Prioridad</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value || TaskPriority.MEDIUM}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-transparent border-[#3dadb8] text-neon-darker focus:ring-[#3dadb8] focus:ring-offset-0">
                           <SelectValue placeholder="Seleccionar prioridad" />
                         </SelectTrigger>
                       </FormControl>
@@ -270,7 +272,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                         <SelectItem value={TaskPriority.URGENT}>Urgente</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage className="text-red-700" />
                   </FormItem>
                 )}
               />
@@ -282,13 +284,13 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                 name="categoryId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Categoría</FormLabel>
+                    <FormLabel className="text-neon-darker font-medium">Categoría</FormLabel>
                     <Select 
                       onValueChange={(value) => field.onChange(parseInt(value, 10))} 
                       defaultValue={field.value?.toString()}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-transparent border-[#3dadb8] text-neon-darker focus:ring-[#3dadb8] focus:ring-offset-0">
                           <SelectValue placeholder="Seleccionar categoría" />
                         </SelectTrigger>
                       </FormControl>
@@ -300,7 +302,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage className="text-red-700" />
                   </FormItem>
                 )}
               />
@@ -310,15 +312,15 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                 name="deadline"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Fecha límite</FormLabel>
+                    <FormLabel className="text-neon-darker font-medium">Fecha límite</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              "w-full pl-3 text-left font-normal bg-transparent border-[#3dadb8] text-neon-darker focus:ring-[#3dadb8] focus:ring-offset-0",
+                              !field.value && "text-neon-darker/60"
                             )}
                           >
                             {field.value ? (
@@ -342,14 +344,18 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                         />
                       </PopoverContent>
                     </Popover>
-                    <FormMessage />
+                    <FormMessage className="text-red-700" />
                   </FormItem>
                 )}
               />
             </div>
             
             <DialogFooter>
-              <Button type="submit" disabled={isLoadingTask}>
+              <Button 
+                type="submit" 
+                disabled={isLoadingTask}
+                className="bg-[#00a6b3] hover:bg-[#008f9a] text-white font-medium rounded-lg"
+              >
                 {taskId ? "Actualizar" : "Crear"}
               </Button>
             </DialogFooter>
