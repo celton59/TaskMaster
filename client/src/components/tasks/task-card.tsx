@@ -221,13 +221,26 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
   // Delete task
   const deleteTask = async () => {
     try {
-      await apiRequest(`/api/tasks/${task.id}`, "DELETE", undefined);
-      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-      toast({
-        title: "Tarea eliminada",
-        description: "La tarea ha sido eliminada correctamente."
+      // Hacemos la solicitud DELETE directamente con fetch para manejar el status 204
+      const response = await fetch(`/api/tasks/${task.id}`, {
+        method: "DELETE",
+        credentials: "include"
       });
+      
+      if (response.ok) {
+        // Invalidamos las consultas relacionadas
+        queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/tasks/stats"] });
+        
+        toast({
+          title: "Tarea eliminada",
+          description: "La tarea ha sido eliminada correctamente."
+        });
+      } else {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
     } catch (error) {
+      console.error("Error al eliminar la tarea:", error);
       toast({
         title: "Error",
         description: "No se pudo eliminar la tarea.",

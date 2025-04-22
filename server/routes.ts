@@ -92,15 +92,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.delete("/tasks/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      console.log(`Recibida solicitud para eliminar tarea ID: ${id}`);
+      
+      if (isNaN(id)) {
+        console.error(`ID de tarea inválido: ${req.params.id}`);
+        return res.status(400).json({ message: "ID de tarea inválido" });
+      }
+      
       const success = await storage.deleteTask(id);
       
       if (!success) {
-        return res.status(404).json({ message: "Task not found" });
+        console.error(`Tarea no encontrada con ID: ${id}`);
+        return res.status(404).json({ message: "Tarea no encontrada" });
       }
       
-      res.status(204).end();
+      console.log(`Tarea eliminada correctamente con ID: ${id}`);
+      res.status(200).json({ message: "Tarea eliminada correctamente" });
     } catch (error) {
-      res.status(500).json({ message: "Failed to delete task" });
+      console.error(`Error al eliminar tarea ID ${req.params.id}:`, error);
+      res.status(500).json({ message: "Error al eliminar la tarea", error: String(error) });
     }
   });
   

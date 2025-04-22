@@ -649,8 +649,18 @@ export class PostgresStorage implements IStorage {
   }
   
   async deleteTask(id: number): Promise<boolean> {
-    const result = await this.db.delete(tasks).where(eq(tasks.id, id)).returning();
-    return result.length > 0;
+    try {
+      // Aseguramos que el id es un número
+      const numericId = typeof id === 'string' ? parseInt(id) : id;
+      
+      // Realizamos la eliminación y devolvemos el resultado
+      const result = await this.db.delete(tasks).where(eq(tasks.id, numericId)).returning();
+      console.log(`Tarea eliminada (ID: ${id}):`, result);
+      return result.length > 0;
+    } catch (error) {
+      console.error(`Error al eliminar tarea (ID: ${id}):`, error);
+      return false;
+    }
   }
   
   async getTaskStats(): Promise<{
