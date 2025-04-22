@@ -173,7 +173,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] border-0 bg-[#65d8e4] text-neon-darker">
+      <DialogContent className="sm:max-w-[500px] border-0 bg-[#16e0f0] text-neon-darker">
         <DialogHeader>
           <DialogTitle className="text-neon-darker text-xl font-semibold">{taskId ? "Editar tarea" : "Nueva tarea"}</DialogTitle>
           <DialogDescription className="text-neon-darker/80">
@@ -194,7 +194,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                   <FormControl>
                     <Input 
                       placeholder="Título de la tarea" 
-                      className="bg-transparent border-[#3dadb8] text-neon-darker placeholder:text-neon-darker/60 focus-visible:ring-offset-0 focus-visible:ring-[#3dadb8]"
+                      className="bg-transparent border-[#0a7a83] text-neon-darker placeholder:text-neon-darker/60 focus-visible:ring-offset-0 focus-visible:ring-[#0a7a83]"
                       {...field} 
                     />
                   </FormControl>
@@ -212,7 +212,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                   <FormControl>
                     <Textarea 
                       placeholder="Descripción de la tarea" 
-                      className="bg-transparent border-[#3dadb8] text-neon-darker placeholder:text-neon-darker/60 focus-visible:ring-offset-0 focus-visible:ring-[#3dadb8] min-h-[100px]"
+                      className="bg-transparent border-[#0a7a83] text-neon-darker placeholder:text-neon-darker/60 focus-visible:ring-offset-0 focus-visible:ring-[#0a7a83] min-h-[100px]"
                       {...field} 
                       value={field.value || ""}
                     />
@@ -234,7 +234,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                       defaultValue={field.value || TaskStatus.PENDING}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-transparent border-[#3dadb8] text-neon-darker focus:ring-[#3dadb8] focus:ring-offset-0">
+                        <SelectTrigger className="bg-transparent border-[#0a7a83] text-neon-darker focus:ring-[#0a7a83] focus:ring-offset-0">
                           <SelectValue placeholder="Seleccionar estado" />
                         </SelectTrigger>
                       </FormControl>
@@ -261,7 +261,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                       defaultValue={field.value || TaskPriority.MEDIUM}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-transparent border-[#3dadb8] text-neon-darker focus:ring-[#3dadb8] focus:ring-offset-0">
+                        <SelectTrigger className="bg-transparent border-[#0a7a83] text-neon-darker focus:ring-[#0a7a83] focus:ring-offset-0">
                           <SelectValue placeholder="Seleccionar prioridad" />
                         </SelectTrigger>
                       </FormControl>
@@ -290,7 +290,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                       defaultValue={field.value?.toString()}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-transparent border-[#3dadb8] text-neon-darker focus:ring-[#3dadb8] focus:ring-offset-0">
+                        <SelectTrigger className="bg-transparent border-[#0a7a83] text-neon-darker focus:ring-[#0a7a83] focus:ring-offset-0">
                           <SelectValue placeholder="Seleccionar categoría" />
                         </SelectTrigger>
                       </FormControl>
@@ -319,7 +319,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-full pl-3 text-left font-normal bg-transparent border-[#3dadb8] text-neon-darker focus:ring-[#3dadb8] focus:ring-offset-0",
+                              "w-full pl-3 text-left font-normal bg-transparent border-[#0a7a83] text-neon-darker focus:ring-[#0a7a83] focus:ring-offset-0",
                               !field.value && "text-neon-darker/60"
                             )}
                           >
