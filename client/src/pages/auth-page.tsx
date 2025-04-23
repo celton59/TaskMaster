@@ -221,6 +221,58 @@ export default function AuthPage() {
                     "Iniciar sesión"
                   )}
                 </Button>
+                
+                {/* Botón de acceso rápido para desarrollo */}
+                <div className="pt-6 text-center">
+                  <div className="relative mb-2">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-[#00E1FF]/30"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs">
+                      <span className="bg-[#132237] px-2 text-[#CFF4FC]/60">Acceso rápido para desarrollo</span>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    className="mt-2 border-[#00E1FF]/50 hover:border-[#00E1FF] text-[#00E1FF] hover:bg-[#00E1FF]/10 transition-all duration-300"
+                    disabled={isLoading}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      try {
+                        const response = await fetch("/api/auto-login", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          credentials: "include",
+                        });
+                        
+                        if (!response.ok) {
+                          throw new Error("Error en el acceso rápido");
+                        }
+                        
+                        toast({
+                          title: "Acceso rápido exitoso",
+                          description: "Has entrado como usuario de desarrollo",
+                        });
+                        
+                        navigate("/");
+                      } catch (error) {
+                        toast({
+                          title: "Error en el acceso rápido",
+                          description: error instanceof Error ? error.message : "Error inesperado",
+                          variant: "destructive",
+                        });
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                  >
+                    Entrar como desarrollador
+                  </Button>
+                </div>
               </form>
             </Form>
           </TabsContent>

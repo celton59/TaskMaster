@@ -41,9 +41,18 @@ async function comparePasswords(supplied: string, stored: string) {
   }
   
   try {
+    console.log("Comparing passwords:");
+    console.log("Supplied password:", supplied);
+    console.log("Stored hash:", hashed.substring(0, 10) + '...');
+    console.log("Salt:", salt.substring(0, 10) + '...');
+    
     const hashedBuf = Buffer.from(hashed, "hex");
     const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-    return timingSafeEqual(hashedBuf, suppliedBuf);
+    const match = timingSafeEqual(hashedBuf, suppliedBuf);
+    
+    console.log("Password match:", match);
+    
+    return match;
   } catch (error) {
     console.error("Error al comparar contraseñas:", error);
     return false;
@@ -152,7 +161,64 @@ export function setupAuth(app: Express) {
     }
   });
 
+  // Ruta para el autologin en desarrollo (solo para pruebas)
+  app.post("/api/auto-login", async (req, res, next) => {
+    try {
+      // Obtener el primer usuario disponible o crearlo si no existe
+      let user = await storage.getUserByUsername("dev");
+      
+      if (!user) {
+        const hashedPassword = await hashPassword("dev123");
+        user = await storage.createUser({
+          username: "dev",
+          password: hashedPassword,
+          email: "dev@example.com",
+          name: "Usuario de Desarrollo",
+          avatar: null,
+        });
+      }
+      
+      req.login(user, (err) => {
+        if (err) return next(err);
+        const { password, ...userWithoutPassword } = user;
+        res.json(userWithoutPassword);
+      });
+    } catch (error) {
+      console.error("Error en auto-login:", error);
+      res.status(500).json({ message: "Error al iniciar sesión automáticamente" });
+    }
+  });
+
   app.post("/api/login", (req, res, next) => {
+    // Para desarrollo y pruebas, permitimos login con credenciales fijas
+    const { username, password } = req.body;
+    
+    if (username === "dev" && password === "dev123") {
+      // Buscar o crear el usuario de desarrollo
+      storage.getUserByUsername("dev")
+        .then(async (user) => {
+          if (!user) {
+            const hashedPassword = await hashPassword("dev123");
+            user = await storage.createUser({
+              username: "dev",
+              password: hashedPassword,
+              email: "dev@example.com",
+              name: "Usuario de Desarrollo",
+              avatar: null,
+            });
+          }
+          
+          req.login(user, (err) => {
+            if (err) return next(err);
+            const { password, ...userWithoutPassword } = user;
+            res.json(userWithoutPassword);
+          });
+        })
+        .catch(next);
+      return;
+    }
+    
+    // Implementación normal para otros usuarios
     passport.authenticate("local", (err, user, info) => {
       if (err) return next(err);
       
@@ -192,6 +258,7 @@ export function setupAuth(app: Express) {
     // Rutas públicas que no requieren autenticación
     const publicRoutes = [
       "/api/login",
+      "/api/auto-login",
       "/api/register",
       "/api/logout",
       "/api/user",
