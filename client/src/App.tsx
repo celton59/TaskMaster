@@ -12,36 +12,48 @@ import Calendar from "@/pages/calendar";
 import Users from "@/pages/users";
 import WhatsAppSettings from "@/pages/whatsapp-settings";
 import Habits from "@/pages/habits";
+import AuthPage from "@/pages/auth-page";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/components/protected-route";
 
 function Router() {
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-      <Sidebar />
-      
-      <div className="flex flex-col flex-1 overflow-hidden" style={{ backgroundColor: 'var(--neon-darker)' }}>
-        <Header />
-        
-        <main className="flex-1 overflow-auto p-3" style={{ backgroundColor: 'var(--neon-dark)' }}>
-          <Switch>
-            <Route path="/" component={Dashboard} />
-            <Route path="/tasks" component={Tasks} />
-            <Route path="/tasks/:id" component={TaskDetails} />
-            <Route path="/reports" component={Reports} />
-            <Route path="/assistant" component={AIAssistant} />
-            <Route path="/calendar" component={Calendar} />
-            <Route path="/users" component={Users} />
-            <Route path="/whatsapp-settings" component={WhatsAppSettings} />
-            <Route path="/habits" component={Habits} />
-            <Route component={NotFound} />
-          </Switch>
-        </main>
-      </div>
-      
-      <Toaster />
-    </div>
+    <>
+      <Switch>
+        <Route path="/auth" component={AuthPage} />
+        <Route path="/">
+          {() => (
+            <div className="flex h-screen w-full overflow-hidden">
+              <Sidebar />
+              
+              <div className="flex flex-col flex-1 overflow-hidden" style={{ backgroundColor: 'var(--neon-darker)' }}>
+                <Header />
+                
+                <main className="flex-1 overflow-auto p-3" style={{ backgroundColor: 'var(--neon-dark)' }}>
+                  <Switch>
+                    <ProtectedRoute path="/" component={Dashboard} />
+                    <ProtectedRoute path="/tasks" component={Tasks} />
+                    <ProtectedRoute path="/tasks/:id" component={TaskDetails} />
+                    <ProtectedRoute path="/reports" component={Reports} />
+                    <ProtectedRoute path="/assistant" component={AIAssistant} />
+                    <ProtectedRoute path="/calendar" component={Calendar} />
+                    <ProtectedRoute path="/users" component={Users} />
+                    <ProtectedRoute path="/whatsapp-settings" component={WhatsAppSettings} />
+                    <ProtectedRoute path="/habits" component={Habits} />
+                    <Route component={NotFound} />
+                  </Switch>
+                </main>
+              </div>
+              
+              <Toaster />
+            </div>
+          )}
+        </Route>
+      </Switch>
+    </>
   );
 }
 
@@ -49,7 +61,9 @@ function App() {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <Router />
+        <AuthProvider>
+          <Router />
+        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
