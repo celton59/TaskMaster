@@ -26,10 +26,28 @@ async function hashPassword(password: string) {
 
 // Función para comparar contraseñas
 async function comparePasswords(supplied: string, stored: string) {
+  // Verificar si la contraseña almacenada tiene el formato correcto
+  if (!stored || !stored.includes(".")) {
+    console.error("Formato de contraseña inválido:", stored);
+    return false;
+  }
+  
   const [hashed, salt] = stored.split(".");
-  const hashedBuf = Buffer.from(hashed, "hex");
-  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-  return timingSafeEqual(hashedBuf, suppliedBuf);
+  
+  // Verificar que ambos componentes existan
+  if (!hashed || !salt) {
+    console.error("Hash o salt faltante en la contraseña:", { hashed, salt });
+    return false;
+  }
+  
+  try {
+    const hashedBuf = Buffer.from(hashed, "hex");
+    const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
+    return timingSafeEqual(hashedBuf, suppliedBuf);
+  } catch (error) {
+    console.error("Error al comparar contraseñas:", error);
+    return false;
+  }
 }
 
 // Configuración de la autenticación
