@@ -78,19 +78,14 @@ export default function AuthPage() {
         throw new Error(errorData.message || "Error al iniciar sesión");
       }
       
-      // Login exitoso, redirigir al dashboard con redirección fuerte
+      // Login exitoso, mostrar notificación
       toast({
         title: "Inicio de sesión exitoso",
         description: "Bienvenido al sistema",
       });
       
-      // Primero intentamos la redirección normal
-      navigate("/");
-      
-      // Como respaldo, forzamos la redirección después de un breve retraso
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 100);
+      // Usar solo un método de redirección para evitar problemas
+      window.location.href = "/";
     } catch (error) {
       toast({
         title: "Error al iniciar sesión",
@@ -120,19 +115,14 @@ export default function AuthPage() {
         throw new Error(errorData.message || "Error al registrarse");
       }
       
-      // Registro exitoso, redirigir al dashboard con redirección fuerte
+      // Registro exitoso, mostrar notificación
       toast({
         title: "Registro exitoso",
         description: "Tu cuenta ha sido creada correctamente",
       });
       
-      // Primero intentamos la redirección normal
-      navigate("/");
-      
-      // Como respaldo, forzamos la redirección después de un breve retraso
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 100);
+      // Usar solo un método de redirección para evitar problemas
+      window.location.href = "/";
     } catch (error) {
       toast({
         title: "Error al registrarse",
