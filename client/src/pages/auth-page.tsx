@@ -253,12 +253,17 @@ export default function AuthPage() {
                           throw new Error("Error en el acceso rápido");
                         }
                         
+                        // Obtener y mostrar la respuesta para depuración
+                        const userData = await response.json();
+                        console.log("Auto-login successful, user data:", userData);
+                        
                         toast({
                           title: "Acceso rápido exitoso",
                           description: "Has entrado como usuario de desarrollo",
                         });
                         
-                        navigate("/");
+                        // Forzar recarga para actualizar la sesión en el cliente
+                        window.location.href = "/";
                       } catch (error) {
                         toast({
                           title: "Error en el acceso rápido",

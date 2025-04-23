@@ -48,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } = useQuery<User | null, Error>({
     queryKey: ["/api/user"],
     queryFn: async () => {
+      console.log("Fetching user data...");
       try {
         const response = await fetch("/api/user", {
           method: "GET",
@@ -57,7 +58,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           credentials: "include",
         });
         
+        console.log("User API response status:", response.status);
+        
         if (response.status === 401) {
+          console.log("User not authenticated");
           return null;
         }
         
@@ -65,13 +69,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           throw new Error("Error al obtener los datos del usuario");
         }
         
-        return await response.json();
+        const userData = await response.json();
+        console.log("User data received:", userData);
+        return userData;
       } catch (error) {
         console.error("Error fetching user", error);
         return null;
       }
     },
-    enabled: false, // No ejecutar automáticamente al inicio
+    refetchOnWindowFocus: true, // Recargar al volver a enfocar la ventana
+    staleTime: 1000 * 60 * 5, // Datos considerados frescos por 5 minutos
+    refetchInterval: 1000 * 60 * 30, // Refrescar automáticamente cada 30 minutos
   });
 
   // Cargar usuario al inicio

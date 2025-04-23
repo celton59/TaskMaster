@@ -13,6 +13,7 @@ import Users from "@/pages/users";
 import WhatsAppSettings from "@/pages/whatsapp-settings";
 import Habits from "@/pages/habits";
 import AuthPage from "@/pages/auth-page";
+import DevLoginPage from "@/pages/dev-login";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/hooks/use-theme";

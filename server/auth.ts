@@ -72,9 +72,10 @@ export function setupAuth(app: Express) {
     }),
     secret: process.env.SESSION_SECRET || "a1gu3nc0n7r4s3ña53cr3t4",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true, // Cambiado a true para asegurar que la sesión se crea siempre
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // Cambiado a false para asegurarnos que funciona en desarrollo
+      sameSite: "lax", // Añadido para mejorar compatibilidad
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 semana
     }
   };
