@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
@@ -11,7 +11,8 @@ import {
   Settings,
   LogOut,
   Moon,
-  Sun
+  Sun,
+  Loader2
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -25,14 +26,38 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useTheme } from "@/hooks/use-theme";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Header() {
   const [searchTerm, setSearchTerm] = useState("");
   const { theme, toggleTheme } = useTheme();
+  const { toast } = useToast();
+  const [, navigate] = useLocation();
+  const { user, logoutMutation } = useAuth();
   
   const toggleMobileMenu = () => {
     const event = new CustomEvent('toggle-mobile-menu');
     window.dispatchEvent(event);
+  };
+  
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast({
+          title: "Sesión cerrada",
+          description: "Has cerrado sesión correctamente",
+        });
+        navigate('/auth');
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: "No se pudo cerrar la sesión. Inténtalo de nuevo.",
+          variant: "destructive",
+        });
+      }
+    });
   };
   
   return (
@@ -128,18 +153,20 @@ export function Header() {
               <button className="flex items-center space-x-2 focus:outline-none">
                 <Avatar className="h-8 w-8 border border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]">
                   <AvatarImage src="/avatar.png" />
-                  <AvatarFallback className="bg-neon-medium text-neon-accent text-xs">AD</AvatarFallback>
+                  <AvatarFallback className="bg-neon-medium text-neon-accent text-xs">
+                    {user?.username ? user.username.substring(0, 2).toUpperCase() : 'U'}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block text-left">
-                  <p className="text-sm font-medium text-neon-text">Admin Demo</p>
-                  <p className="text-xs text-neon-text/70">admin@example.com</p>
+                  <p className="text-sm font-medium text-neon-text">{user?.name || user?.username || 'Usuario'}</p>
+                  <p className="text-xs text-neon-text/70">{user?.email || ''}</p>
                 </div>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 rounded-xl border border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] bg-neon-dark" align="end">
               <div className="p-3 border-b border-neon-accent/20 bg-neon-darker/70">
-                <p className="text-sm font-medium text-neon-text">Admin Demo</p>
-                <p className="text-xs text-neon-text/70">admin@example.com</p>
+                <p className="text-sm font-medium text-neon-text">{user?.name || user?.username || 'Usuario'}</p>
+                <p className="text-xs text-neon-text/70">{user?.email || ''}</p>
               </div>
               <DropdownMenuGroup>
                 <DropdownMenuItem className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors">
@@ -152,7 +179,10 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator className="bg-neon-accent/20" />
-              <DropdownMenuItem className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors">
+              <DropdownMenuItem 
+                className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors"
+                onClick={handleLogout}
+              >
                 <LogOut className="mr-2 h-4 w-4 text-neon-text/70" />
                 <span>Cerrar sesión</span>
               </DropdownMenuItem>
