@@ -261,8 +261,16 @@ export function setupAuth(app: Express) {
     res.json(userWithoutPassword);
   });
 
+  // Variable para habilitar o deshabilitar la verificación de autenticación
+  const DEVELOPMENT_MODE = true;
+  
   // Middleware para proteger rutas
   app.use("/api/*", (req, res, next) => {
+    // En modo desarrollo, permitir todas las peticiones sin autenticación
+    if (DEVELOPMENT_MODE) {
+      return next();
+    }
+    
     // Rutas públicas que no requieren autenticación
     const publicRoutes = [
       "/api/login",
@@ -285,7 +293,10 @@ export function setupAuth(app: Express) {
 
 // Función de ayuda para proteger rutas individuales
 export function isAuthenticated(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated()) {
+  // En modo desarrollo, permitir siempre el acceso
+  const DEVELOPMENT_MODE = true;
+  
+  if (DEVELOPMENT_MODE || req.isAuthenticated()) {
     return next();
   }
   res.status(401).json({ message: "No autorizado" });
