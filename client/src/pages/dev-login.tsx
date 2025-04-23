@@ -46,7 +46,8 @@ export default function DevLoginPage() {
   
   // Si el inicio de sesión fue exitoso, redirigir al dashboard
   if (userId) {
-    return <Navigate to="/" />;
+    window.location.href = "/";
+    return null;
   }
   
   return (

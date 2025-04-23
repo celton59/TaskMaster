@@ -25,6 +25,7 @@ function Router() {
     <>
       <Switch>
         <Route path="/auth" component={AuthPage} />
+        <Route path="/dev-login" component={DevLoginPage} />
         <Route path="/">
           {() => (
             <div className="flex h-screen w-full overflow-hidden">
