@@ -131,40 +131,58 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen" style={{ backgroundColor: 'var(--neon-darker)' }}>
       {/* Panel izquierdo - Formulario */}
-      <div className="flex flex-col justify-center w-full max-w-md p-8 space-y-6">
-        <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold">Task Manager</h1>
-          <p className="text-muted-foreground">
+      <div className="flex flex-col justify-center w-full max-w-md p-8 space-y-8 relative">
+        {/* Efecto de fondo */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00E1FF]/5 to-[#00E1FF]/2 z-0"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[radial-gradient(ellipse_at_center,_rgba(0,225,255,0.15)_0%,rgba(0,0,0,0)_70%)] pointer-events-none"></div>
+        
+        {/* Contenido del formulario */}
+        <div className="z-10 space-y-3 text-center">
+          <h1 className="text-4xl font-bold text-white">
+            <span className="text-[#00E1FF] drop-shadow-[0_0_8px_rgba(0,225,255,0.8)] neon-text">Task Manager</span>
+          </h1>
+          <p className="text-[#CFF4FC] opacity-80">
             Sistema de gestión de tareas inteligente
           </p>
         </div>
 
-        <Tabs defaultValue="login" className="w-full" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2 w-full">
-            <TabsTrigger value="login">Iniciar sesión</TabsTrigger>
-            <TabsTrigger value="register">Registrarse</TabsTrigger>
+        <Tabs defaultValue="login" className="w-full z-10" value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid grid-cols-2 w-full bg-[#132237] border border-[#00E1FF]/20 shadow-[0_0_15px_rgba(0,225,255,0.15)]">
+            <TabsTrigger 
+              value="login" 
+              className="data-[state=active]:bg-[#00E1FF]/10 data-[state=active]:text-[#00E1FF] data-[state=active]:shadow-[0_0_10px_rgba(0,225,255,0.3)] transition-all duration-300"
+            >
+              Iniciar sesión
+            </TabsTrigger>
+            <TabsTrigger 
+              value="register"
+              className="data-[state=active]:bg-[#00E1FF]/10 data-[state=active]:text-[#00E1FF] data-[state=active]:shadow-[0_0_10px_rgba(0,225,255,0.3)] transition-all duration-300"
+            >
+              Registrarse
+            </TabsTrigger>
           </TabsList>
 
           {/* Formulario de login */}
-          <TabsContent value="login" className="space-y-4 pt-4">
+          <TabsContent value="login" className="space-y-4 pt-6">
             <Form {...loginForm}>
-              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
                 <FormField
                   control={loginForm.control}
                   name="username"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Usuario</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-[#CFF4FC] font-medium">Usuario</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Ingresa tu nombre de usuario"
                           {...field}
                           disabled={isLoading}
+                          className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -173,22 +191,27 @@ export default function AuthPage() {
                   control={loginForm.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contraseña</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-[#CFF4FC] font-medium">Contraseña</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
                           placeholder="Ingresa tu contraseña"
                           {...field}
                           disabled={isLoading}
+                          className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#00E1FF]/90 hover:bg-[#00E1FF] text-[#0D1321] hover:text-[#0D1321] font-medium shadow-[0_0_15px_rgba(0,225,255,0.5)] hover:shadow-[0_0_20px_rgba(0,225,255,0.7)] transition-all duration-300 mt-4"
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -203,23 +226,24 @@ export default function AuthPage() {
           </TabsContent>
 
           {/* Formulario de registro */}
-          <TabsContent value="register" className="space-y-4 pt-4">
+          <TabsContent value="register" className="space-y-4 pt-6">
             <Form {...registerForm}>
-              <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+              <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-6">
                 <FormField
                   control={registerForm.control}
                   name="username"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Usuario</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-[#CFF4FC] font-medium">Usuario</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Elige un nombre de usuario"
                           {...field}
                           disabled={isLoading}
+                          className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -228,17 +252,18 @@ export default function AuthPage() {
                   control={registerForm.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contraseña</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-[#CFF4FC] font-medium">Contraseña</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
                           placeholder="Crea una contraseña"
                           {...field}
                           disabled={isLoading}
+                          className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -247,17 +272,18 @@ export default function AuthPage() {
                   control={registerForm.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Correo (opcional)</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-[#CFF4FC] font-medium">Correo (opcional)</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
                           placeholder="Correo electrónico"
                           {...field}
                           disabled={isLoading}
+                          className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -266,21 +292,26 @@ export default function AuthPage() {
                   control={registerForm.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombre (opcional)</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-[#CFF4FC] font-medium">Nombre (opcional)</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Tu nombre completo"
                           {...field}
                           disabled={isLoading}
+                          className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#00E1FF]/90 hover:bg-[#00E1FF] text-[#0D1321] hover:text-[#0D1321] font-medium shadow-[0_0_15px_rgba(0,225,255,0.5)] hover:shadow-[0_0_20px_rgba(0,225,255,0.7)] transition-all duration-300 mt-4"
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -297,28 +328,52 @@ export default function AuthPage() {
       </div>
 
       {/* Panel derecho - Hero */}
-      <div className="hidden lg:flex flex-col justify-center w-full bg-gradient-to-r from-primary/20 to-primary/10 p-12">
-        <div className="max-w-xl space-y-6">
-          <h1 className="text-5xl font-bold">
-            Task Manager{" "}
-            <span className="text-primary">Inteligente</span>
-          </h1>
-          <p className="text-xl">
-            Una plataforma avanzada para gestionar tus tareas con la ayuda de IA.
+      <div className="hidden lg:flex flex-col justify-center w-full relative overflow-hidden">
+        {/* Background with gradients and effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0D1321] to-[#102436] z-0"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,_rgba(0,225,255,0.25)_0%,rgba(0,0,0,0)_60%)] z-0"></div>
+        
+        {/* Animation lines */}
+        <div className="absolute bottom-0 left-0 w-full h-40 overflow-hidden z-10">
+          <div className="absolute h-[1px] w-full bg-gradient-to-r from-transparent via-[#00E1FF]/30 to-transparent animate-pulse-slow"></div>
+          <div className="absolute top-6 h-[1px] w-full bg-gradient-to-r from-transparent via-[#00E1FF]/20 to-transparent animate-pulse-slower"></div>
+          <div className="absolute top-12 h-[1px] w-full bg-gradient-to-r from-transparent via-[#00E1FF]/10 to-transparent animate-pulse-slowest"></div>
+        </div>
+        
+        {/* Futuristic grid lines overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00E1FF05_1px,transparent_1px),linear-gradient(to_bottom,#00E1FF05_1px,transparent_1px)] bg-[size:40px_40px] z-10"></div>
+        
+        {/* Content with neon effect */}
+        <div className="relative z-20 max-w-xl space-y-8 p-12">
+          <div className="space-y-3">
+            <h1 className="text-6xl font-bold text-white">
+              Task Manager{" "}
+              <span className="text-[#00E1FF] drop-shadow-[0_0_8px_rgba(0,225,255,0.8)]">Inteligente</span>
+            </h1>
+            <div className="h-1 w-32 bg-gradient-to-r from-[#00E1FF] to-transparent rounded-full shadow-[0_0_8px_rgba(0,225,255,0.6)]"></div>
+          </div>
+          
+          <p className="text-xl text-[#CFF4FC]">
+            Una plataforma avanzada para gestionar tus tareas con la ayuda de inteligencia artificial.
             Organiza tu trabajo, hábitos personales y mejora tu productividad.
           </p>
-          <ul className="space-y-2">
-            <li className="flex items-center">
-              <span className="mr-2 text-primary">✓</span> Sistema multi-agente con IA
+          
+          <ul className="space-y-5">
+            <li className="flex items-center text-white">
+              <span className="mr-3 flex items-center justify-center w-6 h-6 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/30 text-[#00E1FF] shadow-[0_0_8px_rgba(0,225,255,0.4)]">✓</span> 
+              <span className="text-lg">Sistema <span className="text-[#00E1FF]">multi-agente</span> con IA</span>
             </li>
-            <li className="flex items-center">
-              <span className="mr-2 text-primary">✓</span> Integración con WhatsApp
+            <li className="flex items-center text-white">
+              <span className="mr-3 flex items-center justify-center w-6 h-6 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/30 text-[#00E1FF] shadow-[0_0_8px_rgba(0,225,255,0.4)]">✓</span> 
+              <span className="text-lg">Integración con <span className="text-[#00E1FF]">WhatsApp</span></span>
             </li>
-            <li className="flex items-center">
-              <span className="mr-2 text-primary">✓</span> Seguimiento de hábitos
+            <li className="flex items-center text-white">
+              <span className="mr-3 flex items-center justify-center w-6 h-6 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/30 text-[#00E1FF] shadow-[0_0_8px_rgba(0,225,255,0.4)]">✓</span> 
+              <span className="text-lg">Seguimiento de <span className="text-[#00E1FF]">hábitos</span></span>
             </li>
-            <li className="flex items-center">
-              <span className="mr-2 text-primary">✓</span> Estadísticas detalladas
+            <li className="flex items-center text-white">
+              <span className="mr-3 flex items-center justify-center w-6 h-6 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/30 text-[#00E1FF] shadow-[0_0_8px_rgba(0,225,255,0.4)]">✓</span> 
+              <span className="text-lg">Estadísticas <span className="text-[#00E1FF]">detalladas</span></span>
             </li>
           </ul>
         </div>

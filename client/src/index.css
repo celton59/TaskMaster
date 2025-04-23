@@ -95,6 +95,34 @@
   50% { opacity: 1; box-shadow: 0 0 12px rgba(187, 0, 255, 0.8); }
 }
 
+/* Animaciones para la página de login */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes pulse-slower {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes pulse-slowest {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-pulse-slower {
+  animation: pulse-slower 6s ease-in-out infinite;
+}
+
+.animate-pulse-slowest {
+  animation: pulse-slowest 8s ease-in-out infinite;
+}
+
 @keyframes pulse-glow-pink {
   0%, 100% { opacity: 0.7; box-shadow: 0 0 5px rgba(255, 0, 230, 0.5); }
   50% { opacity: 1; box-shadow: 0 0 12px rgba(255, 0, 230, 0.8); }
