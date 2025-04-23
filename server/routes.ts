@@ -15,8 +15,12 @@ import { createTaskFromText, processAgentMessage } from "./openai-service";
 import { processUserMessage } from "./agents/agent-service";
 import { processIncomingWebhook, checkTwilioConfig, sendWhatsAppMessage } from "./services/whatsapp-service";
 import { orchestrator } from "./agents/orchestrator";
+import { setupAuth, isAuthenticated } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configurar autenticación
+  setupAuth(app);
+  
   // API routes
   const apiRouter = express.Router();
   
