@@ -201,22 +201,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
-  // Usuario de desarrollo para cuando no hay un usuario autenticado
-  const devModeEnabled = true;
-  
-  // Si estamos en modo desarrollo y no hay usuario, devolver un usuario simulado
-  const mockUserForDev = devModeEnabled && !user ? {
-    id: 0,
-    username: "dev_user",
-    email: "dev@example.com",
-    name: "Usuario de Desarrollo",
-    avatar: null,
-  } : null;
-
   return (
     <AuthContext.Provider
       value={{
-        user: user || mockUserForDev,
+        user: user || null,
         isLoading,
         error,
         loginMutation,
