@@ -7,8 +7,21 @@ interface ProtectedRouteProps {
   component: React.ComponentType<any>;
 }
 
+// Variable para habilitar o deshabilitar el bypass de autenticación
+// Establecido como true para permitir desarrollo sin autenticación
+const DEVELOPMENT_BYPASS_AUTH = true;
+
 export function ProtectedRoute({ path, component: Component }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
+
+  // Si estamos en modo desarrollo y el bypass está activado, renderizar el componente directamente
+  if (DEVELOPMENT_BYPASS_AUTH) {
+    return (
+      <Route path={path}>
+        {(params) => <Component {...params} />}
+      </Route>
+    );
+  }
 
   if (isLoading) {
     return (
