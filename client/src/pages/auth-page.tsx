@@ -78,12 +78,19 @@ export default function AuthPage() {
         throw new Error(errorData.message || "Error al iniciar sesión");
       }
       
-      // Login exitoso, redirigir al dashboard
+      // Login exitoso, redirigir al dashboard con redirección fuerte
       toast({
         title: "Inicio de sesión exitoso",
         description: "Bienvenido al sistema",
       });
+      
+      // Primero intentamos la redirección normal
       navigate("/");
+      
+      // Como respaldo, forzamos la redirección después de un breve retraso
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 100);
     } catch (error) {
       toast({
         title: "Error al iniciar sesión",
@@ -113,12 +120,19 @@ export default function AuthPage() {
         throw new Error(errorData.message || "Error al registrarse");
       }
       
-      // Registro exitoso, redirigir al dashboard
+      // Registro exitoso, redirigir al dashboard con redirección fuerte
       toast({
         title: "Registro exitoso",
         description: "Tu cuenta ha sido creada correctamente",
       });
+      
+      // Primero intentamos la redirección normal
       navigate("/");
+      
+      // Como respaldo, forzamos la redirección después de un breve retraso
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 100);
     } catch (error) {
       toast({
         title: "Error al registrarse",
@@ -222,60 +236,44 @@ export default function AuthPage() {
                   )}
                 </Button>
                 
-                {/* Botón de acceso rápido para desarrollo */}
+                {/* Credenciales de login simplificadas */}
                 <div className="pt-6 text-center">
                   <div className="relative mb-2">
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t border-[#00E1FF]/30"></div>
                     </div>
                     <div className="relative flex justify-center text-xs">
-                      <span className="bg-[#132237] px-2 text-[#CFF4FC]/60">Acceso rápido para desarrollo</span>
+                      <span className="bg-[#132237] px-2 text-[#CFF4FC]/60">Credenciales de Admin</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4 mt-3 flex gap-2 justify-center">
+                    <div className="text-[#CFF4FC] bg-[#132237] px-2 py-1 rounded border border-[#00E1FF]/30">
+                      <span className="opacity-70">Usuario:</span> <span className="font-bold">admin</span>
+                    </div>
+                    <div className="text-[#CFF4FC] bg-[#132237] px-2 py-1 rounded border border-[#00E1FF]/30">
+                      <span className="opacity-70">Contraseña:</span> <span className="font-bold">admin123</span>
                     </div>
                   </div>
                   
                   <Button 
                     type="button" 
-                    variant="outline"
-                    className="mt-2 border-[#00E1FF]/50 hover:border-[#00E1FF] text-[#00E1FF] hover:bg-[#00E1FF]/10 transition-all duration-300"
+                    variant="default"
+                    className="mt-2 bg-[#00E1FF]/90 hover:bg-[#00E1FF] text-[#0D1321] hover:text-[#0D1321] font-medium shadow-[0_0_15px_rgba(0,225,255,0.5)] hover:shadow-[0_0_20px_rgba(0,225,255,0.7)] transition-all duration-300"
                     disabled={isLoading}
-                    onClick={async () => {
-                      setIsLoading(true);
-                      try {
-                        const response = await fetch("/api/auto-login", {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          credentials: "include",
-                        });
-                        
-                        if (!response.ok) {
-                          throw new Error("Error en el acceso rápido");
-                        }
-                        
-                        // Obtener y mostrar la respuesta para depuración
-                        const userData = await response.json();
-                        console.log("Auto-login successful, user data:", userData);
-                        
-                        toast({
-                          title: "Acceso rápido exitoso",
-                          description: "Has entrado como usuario de desarrollo",
-                        });
-                        
-                        // Forzar recarga para actualizar la sesión en el cliente
-                        window.location.href = "/";
-                      } catch (error) {
-                        toast({
-                          title: "Error en el acceso rápido",
-                          description: error instanceof Error ? error.message : "Error inesperado",
-                          variant: "destructive",
-                        });
-                      } finally {
-                        setIsLoading(false);
-                      }
+                    onClick={() => {
+                      // Completar los campos automáticamente
+                      loginForm.setValue("username", "admin");
+                      loginForm.setValue("password", "admin123");
+                      
+                      // Mostrar mensaje informativo
+                      toast({
+                        title: "Credenciales cargadas",
+                        description: "Usuario: admin, Contraseña: admin123",
+                      });
                     }}
                   >
-                    Entrar como desarrollador
+                    Completar formulario automáticamente
                   </Button>
                 </div>
               </form>
