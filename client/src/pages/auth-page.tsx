@@ -68,77 +68,38 @@ export default function AuthPage() {
     },
   });
 
-  // Manejar envío del formulario de login
+  // Estado local para controlar la carga específica de cada formulario
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Manejar envío del formulario de login usando la mutación de autenticación
   const onLoginSubmit = async (data: LoginFormValues) => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
+      await loginMutation.mutateAsync(data);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al iniciar sesión");
-      }
-      
-      // Login exitoso, mostrar notificación
-      toast({
-        title: "Inicio de sesión exitoso",
-        description: "Bienvenido al sistema",
-      });
-      
-      // Usar solo un método de redirección para evitar problemas
-      window.location.href = "/";
+      // La redirección ocurrirá automáticamente gracias al useEffect
+      // que verifica si user está definido
     } catch (error) {
-      toast({
-        title: "Error al iniciar sesión",
-        description: error instanceof Error ? error.message : "Ocurrió un error inesperado",
-        variant: "destructive",
-      });
+      // Los errores se manejan automáticamente en la configuración de la mutación
+      console.error("Error de login:", error);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  // Manejar envío del formulario de registro
+  // Manejar envío del formulario de registro usando la mutación de autenticación
   const onRegisterSubmit = async (data: RegisterFormValues) => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
+      await registerMutation.mutateAsync(data);
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al registrarse");
-      }
-      
-      // Registro exitoso, mostrar notificación
-      toast({
-        title: "Registro exitoso",
-        description: "Tu cuenta ha sido creada correctamente",
-      });
-      
-      // Usar solo un método de redirección para evitar problemas
-      window.location.href = "/";
+      // La redirección ocurrirá automáticamente gracias al useEffect
+      // que verifica si user está definido
     } catch (error) {
-      toast({
-        title: "Error al registrarse",
-        description: error instanceof Error ? error.message : "Ocurrió un error inesperado",
-        variant: "destructive",
-      });
+      // Los errores se manejan automáticamente en la configuración de la mutación
+      console.error("Error de registro:", error);
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -190,7 +151,7 @@ export default function AuthPage() {
                         <Input
                           placeholder="Ingresa tu nombre de usuario"
                           {...field}
-                          disabled={isLoading}
+                          disabled={isLoading || isSubmitting || loginMutation.isPending}
                           className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
@@ -210,7 +171,7 @@ export default function AuthPage() {
                           type="password"
                           placeholder="Ingresa tu contraseña"
                           {...field}
-                          disabled={isLoading}
+                          disabled={isLoading || isSubmitting || loginMutation.isPending}
                           className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
@@ -222,9 +183,9 @@ export default function AuthPage() {
                 <Button 
                   type="submit" 
                   className="w-full bg-[#00E1FF]/90 hover:bg-[#00E1FF] text-[#0D1321] hover:text-[#0D1321] font-medium shadow-[0_0_15px_rgba(0,225,255,0.5)] hover:shadow-[0_0_20px_rgba(0,225,255,0.7)] transition-all duration-300 mt-4"
-                  disabled={isLoading}
+                  disabled={isLoading || isSubmitting || loginMutation.isPending}
                 >
-                  {isLoading ? (
+                  {isLoading || isSubmitting || loginMutation.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Iniciando sesión...
@@ -324,9 +285,9 @@ export default function AuthPage() {
                 <Button 
                   type="submit" 
                   className="w-full bg-[#00E1FF]/90 hover:bg-[#00E1FF] text-[#0D1321] hover:text-[#0D1321] font-medium shadow-[0_0_15px_rgba(0,225,255,0.5)] hover:shadow-[0_0_20px_rgba(0,225,255,0.7)] transition-all duration-300 mt-4"
-                  disabled={isLoading}
+                  disabled={isLoading || isSubmitting || registerMutation.isPending}
                 >
-                  {isLoading ? (
+                  {isLoading || isSubmitting || registerMutation.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Registrando...
