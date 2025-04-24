@@ -43,10 +43,11 @@ export default function AuthPage() {
   
   // Redirigir si el usuario ya está autenticado
   useEffect(() => {
-    if (user) {
+    if (user && !isLoading) {
+      console.log("Usuario autenticado detectado, redirigiendo a dashboard");
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [user, isLoading, navigate]);
 
   // Formulario de login
   const loginForm = useForm<LoginFormValues>({
