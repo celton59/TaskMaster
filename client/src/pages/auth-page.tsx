@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useLocation, useRoute } from "wouter";
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
 
 // Esquema de validación para el login
 const loginSchema = z.object({
@@ -37,12 +35,9 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const { toast } = useToast();
-  const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("login");
-  const { user, isLoading, loginMutation, registerMutation } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // La redirección ahora es manejada por el componente LoginCheck en App.tsx
-
   // Formulario de login
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -62,37 +57,80 @@ export default function AuthPage() {
       name: "",
     },
   });
-
-  // Estado local para controlar la carga específica de cada formulario
-  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Manejar envío del formulario de login usando la mutación de autenticación
+  // Manejar envío del formulario de login directamente
   const onLoginSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     try {
-      await loginMutation.mutateAsync(data);
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
       
-      // La redirección ocurrirá automáticamente gracias al useEffect
-      // que verifica si user está definido
-    } catch (error) {
-      // Los errores se manejan automáticamente en la configuración de la mutación
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al iniciar sesión");
+      }
+      
+      const userData = await response.json();
+      
+      toast({
+        title: "Inicio de sesión exitoso",
+        description: "Bienvenido al sistema de gestión de tareas",
+      });
+      
+      // Recargar la página para actualizar el estado de autenticación
+      window.location.href = "/";
+      
+    } catch (error: any) {
       console.error("Error de login:", error);
+      toast({
+        title: "Error al iniciar sesión",
+        description: error.message || "Credenciales incorrectas",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Manejar envío del formulario de registro usando la mutación de autenticación
+  // Manejar envío del formulario de registro
   const onRegisterSubmit = async (data: RegisterFormValues) => {
     setIsSubmitting(true);
     try {
-      await registerMutation.mutateAsync(data);
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
       
-      // La redirección ocurrirá automáticamente gracias al useEffect
-      // que verifica si user está definido
-    } catch (error) {
-      // Los errores se manejan automáticamente en la configuración de la mutación
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Error al registrarse");
+      }
+      
+      toast({
+        title: "Registro exitoso",
+        description: "Tu cuenta ha sido creada correctamente",
+      });
+      
+      // Recargar la página para actualizar el estado de autenticación
+      window.location.href = "/";
+      
+    } catch (error: any) {
       console.error("Error de registro:", error);
+      toast({
+        title: "Error al registrarse",
+        description: error.message || "No se pudo crear la cuenta",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -146,7 +184,7 @@ export default function AuthPage() {
                         <Input
                           placeholder="Ingresa tu nombre de usuario"
                           {...field}
-                          disabled={isLoading || isSubmitting || loginMutation.isPending}
+                          disabled={isSubmitting}
                           className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
@@ -166,7 +204,7 @@ export default function AuthPage() {
                           type="password"
                           placeholder="Ingresa tu contraseña"
                           {...field}
-                          disabled={isLoading || isSubmitting || loginMutation.isPending}
+                          disabled={isSubmitting}
                           className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
@@ -178,9 +216,9 @@ export default function AuthPage() {
                 <Button 
                   type="submit" 
                   className="w-full bg-[#00E1FF]/90 hover:bg-[#00E1FF] text-[#0D1321] hover:text-[#0D1321] font-medium shadow-[0_0_15px_rgba(0,225,255,0.5)] hover:shadow-[0_0_20px_rgba(0,225,255,0.7)] transition-all duration-300 mt-4"
-                  disabled={isLoading || isSubmitting || loginMutation.isPending}
+                  disabled={isSubmitting}
                 >
-                  {isLoading || isSubmitting || loginMutation.isPending ? (
+                  {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Iniciando sesión...
@@ -209,7 +247,7 @@ export default function AuthPage() {
                         <Input
                           placeholder="Elige un nombre de usuario"
                           {...field}
-                          disabled={isLoading}
+                          disabled={isSubmitting}
                           className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
@@ -229,7 +267,7 @@ export default function AuthPage() {
                           type="password"
                           placeholder="Crea una contraseña"
                           {...field}
-                          disabled={isLoading}
+                          disabled={isSubmitting}
                           className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
@@ -249,7 +287,7 @@ export default function AuthPage() {
                           type="email"
                           placeholder="Correo electrónico"
                           {...field}
-                          disabled={isLoading}
+                          disabled={isSubmitting}
                           className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
@@ -268,7 +306,7 @@ export default function AuthPage() {
                         <Input
                           placeholder="Tu nombre completo"
                           {...field}
-                          disabled={isLoading}
+                          disabled={isSubmitting}
                           className="bg-[#132237] border-[#00E1FF]/30 focus:border-[#00E1FF] focus:ring-1 focus:ring-[#00E1FF]/50 shadow-[0_0_5px_rgba(0,225,255,0.2)] transition-all duration-300"
                         />
                       </FormControl>
@@ -280,9 +318,9 @@ export default function AuthPage() {
                 <Button 
                   type="submit" 
                   className="w-full bg-[#00E1FF]/90 hover:bg-[#00E1FF] text-[#0D1321] hover:text-[#0D1321] font-medium shadow-[0_0_15px_rgba(0,225,255,0.5)] hover:shadow-[0_0_20px_rgba(0,225,255,0.7)] transition-all duration-300 mt-4"
-                  disabled={isLoading || isSubmitting || registerMutation.isPending}
+                  disabled={isSubmitting}
                 >
-                  {isLoading || isSubmitting || registerMutation.isPending ? (
+                  {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Registrando...
@@ -305,47 +343,73 @@ export default function AuthPage() {
         
         {/* Animation lines */}
         <div className="absolute bottom-0 left-0 w-full h-40 overflow-hidden z-10">
-          <div className="absolute h-[1px] w-full bg-gradient-to-r from-transparent via-[#00E1FF]/30 to-transparent animate-pulse-slow"></div>
-          <div className="absolute top-6 h-[1px] w-full bg-gradient-to-r from-transparent via-[#00E1FF]/20 to-transparent animate-pulse-slower"></div>
-          <div className="absolute top-12 h-[1px] w-full bg-gradient-to-r from-transparent via-[#00E1FF]/10 to-transparent animate-pulse-slowest"></div>
+          <div className="grid-lines"></div>
         </div>
         
-        {/* Futuristic grid lines overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00E1FF05_1px,transparent_1px),linear-gradient(to_bottom,#00E1FF05_1px,transparent_1px)] bg-[size:40px_40px] z-10"></div>
-        
-        {/* Content with neon effect */}
-        <div className="relative z-20 max-w-xl space-y-8 p-12">
-          <div className="space-y-3">
-            <h1 className="text-6xl font-bold text-white">
-              Task Manager{" "}
-              <span className="text-[#00E1FF] drop-shadow-[0_0_8px_rgba(0,225,255,0.8)]">Inteligente</span>
-            </h1>
-            <div className="h-1 w-32 bg-gradient-to-r from-[#00E1FF] to-transparent rounded-full shadow-[0_0_8px_rgba(0,225,255,0.6)]"></div>
-          </div>
+        {/* Content */}
+        <div className="relative z-10 px-12 max-w-2xl mx-auto">
+          <h2 className="text-5xl font-bold mb-6 text-white">
+            <span className="text-[#00E1FF] drop-shadow-[0_0_10px_rgba(0,225,255,0.9)] neon-text">Potencia</span> tu productividad
+          </h2>
           
-          <p className="text-xl text-[#CFF4FC]">
-            Una plataforma avanzada para gestionar tus tareas con la ayuda de inteligencia artificial.
-            Organiza tu trabajo, hábitos personales y mejora tu productividad.
+          <p className="text-[#CFF4FC] text-xl mb-8 opacity-90">
+            Un sistema inteligente para gestionar tus tareas, integrado con WhatsApp y asistentes IA
           </p>
           
           <ul className="space-y-5">
-            <li className="flex items-center text-white">
-              <span className="mr-3 flex items-center justify-center w-6 h-6 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/30 text-[#00E1FF] shadow-[0_0_8px_rgba(0,225,255,0.4)]">✓</span> 
-              <span className="text-lg">Sistema <span className="text-[#00E1FF]">multi-agente</span> con IA</span>
+            <li className="flex items-start">
+              <div className="w-8 h-8 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/40 flex items-center justify-center mr-4 mt-1 shadow-[0_0_10px_rgba(0,225,255,0.3)]">
+                <svg className="w-4 h-4 text-[#00E1FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-[#00E1FF] text-lg font-medium mb-1">
+                  Gestión inteligente de tareas
+                </h3>
+                <p className="text-[#CFF4FC]/80">
+                  Sistema de priorización y análisis para maximizar tu productividad
+                </p>
+              </div>
             </li>
-            <li className="flex items-center text-white">
-              <span className="mr-3 flex items-center justify-center w-6 h-6 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/30 text-[#00E1FF] shadow-[0_0_8px_rgba(0,225,255,0.4)]">✓</span> 
-              <span className="text-lg">Integración con <span className="text-[#00E1FF]">WhatsApp</span></span>
+            
+            <li className="flex items-start">
+              <div className="w-8 h-8 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/40 flex items-center justify-center mr-4 mt-1 shadow-[0_0_10px_rgba(0,225,255,0.3)]">
+                <svg className="w-4 h-4 text-[#00E1FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-[#00E1FF] text-lg font-medium mb-1">
+                  Integración con WhatsApp
+                </h3>
+                <p className="text-[#CFF4FC]/80">
+                  Recibe notificaciones y administra tareas desde tu aplicación de mensajería
+                </p>
+              </div>
             </li>
-            <li className="flex items-center text-white">
-              <span className="mr-3 flex items-center justify-center w-6 h-6 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/30 text-[#00E1FF] shadow-[0_0_8px_rgba(0,225,255,0.4)]">✓</span> 
-              <span className="text-lg">Seguimiento de <span className="text-[#00E1FF]">hábitos</span></span>
-            </li>
-            <li className="flex items-center text-white">
-              <span className="mr-3 flex items-center justify-center w-6 h-6 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/30 text-[#00E1FF] shadow-[0_0_8px_rgba(0,225,255,0.4)]">✓</span> 
-              <span className="text-lg">Estadísticas <span className="text-[#00E1FF]">detalladas</span></span>
+            
+            <li className="flex items-start">
+              <div className="w-8 h-8 rounded-full bg-[#00E1FF]/20 border border-[#00E1FF]/40 flex items-center justify-center mr-4 mt-1 shadow-[0_0_10px_rgba(0,225,255,0.3)]">
+                <svg className="w-4 h-4 text-[#00E1FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-[#00E1FF] text-lg font-medium mb-1">
+                  Asistente IA avanzado
+                </h3>
+                <p className="text-[#CFF4FC]/80">
+                  Sistema multi-agente inteligente que te ayuda a gestionar mejor tu trabajo
+                </p>
+              </div>
             </li>
           </ul>
+        </div>
+        
+        {/* Visual elements */}
+        <div className="absolute right-[-20%] top-1/2 transform -translate-y-1/2 w-[70%] h-[70%] opacity-30 z-5">
+          <div className="neon-circle"></div>
         </div>
       </div>
     </div>
