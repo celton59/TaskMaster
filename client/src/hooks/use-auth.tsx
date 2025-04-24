@@ -117,7 +117,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return await response.json();
     },
     onSuccess: (data: User) => {
+      // Refrescar los datos del usuario
       queryClient.setQueryData(["/api/user"], data);
+      
+      // Invalidar todas las consultas para forzar recarga de datos
+      queryClient.invalidateQueries();
+      
       toast({
         title: "Inicio de sesión exitoso",
         description: "Bienvenido al sistema de gestión de tareas",
