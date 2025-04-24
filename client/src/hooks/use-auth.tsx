@@ -100,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Mutación para iniciar sesión
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
+      console.log("Iniciando sesión con:", credentials.username);
       const response = await fetch("/api/login", {
         method: "POST",
         headers: {
@@ -111,14 +112,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("Error en login:", errorData);
         throw new Error(errorData.message || "Error al iniciar sesión");
       }
       
       return await response.json();
     },
     onSuccess: (data: User) => {
+      console.log("Login exitoso, datos recibidos:", data);
+      
       // Refrescar los datos del usuario
       queryClient.setQueryData(["/api/user"], data);
+      
+      // Refetch para asegurar que tenemos los datos más recientes
+      queryClient.refetchQueries({ queryKey: ['/api/user'] });
       
       // Invalidar todas las consultas para forzar recarga de datos
       queryClient.invalidateQueries();

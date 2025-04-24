@@ -41,13 +41,7 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
   const { user, isLoading, loginMutation, registerMutation } = useAuth();
   
-  // Redirigir si el usuario ya está autenticado
-  useEffect(() => {
-    if (user && !isLoading) {
-      console.log("Usuario autenticado detectado, redirigiendo a dashboard");
-      navigate("/");
-    }
-  }, [user, isLoading, navigate]);
+  // La redirección ahora es manejada por el componente LoginCheck en App.tsx
 
   // Formulario de login
   const loginForm = useForm<LoginFormValues>({
