@@ -22,11 +22,25 @@ export interface IStorage {
   updateCategory(id: number, category: Partial<InsertCategory>): Promise<Category | undefined>;
   deleteCategory(id: number): Promise<boolean>;
   
+  // Project methods
+  getProjects(): Promise<Project[]>;
+  getProject(id: number): Promise<Project | undefined>;
+  createProject(project: InsertProject): Promise<Project>;
+  updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined>;
+  deleteProject(id: number): Promise<boolean>;
+  getProjectWithTasks(id: number): Promise<{ project: Project; tasks: Task[] }>;
+  getProjectProgress(id: number): Promise<{
+    totalTasks: number;
+    completedTasks: number;
+    percentage: number;
+  }>;
+  
   // Task methods
   getTasks(): Promise<Task[]>;
   getTask(id: number): Promise<Task | undefined>;
   getTasksByStatus(status: string): Promise<Task[]>;
   getTasksByCategory(categoryId: number): Promise<Task[]>;
+  getTasksByProject(projectId: number): Promise<Task[]>;
   createTask(task: InsertTask): Promise<Task>;
   updateTask(id: number, task: Partial<InsertTask>): Promise<Task | undefined>;
   deleteTask(id: number): Promise<boolean>;

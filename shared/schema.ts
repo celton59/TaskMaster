@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, timestamp, boolean, json, date } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, boolean, json, date, foreignKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -17,6 +18,23 @@ export const categories = pgTable("categories", {
   color: text("color").notNull(),
 });
 
+// Proyectos estilo Notion
+export const projects = pgTable("projects", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  color: text("color").notNull().default("blue"),
+  startDate: timestamp("start_date"),
+  dueDate: timestamp("due_date"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at"),
+  status: text("status").notNull().default("active"), // active, completed, archived
+  ownerId: integer("owner_id").references(() => users.id),
+});
+
+// Definimos las relaciones después de definir todas las tablas
+// Las relaciones se crearán más abajo
+
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
@@ -24,9 +42,13 @@ export const tasks = pgTable("tasks", {
   status: text("status").notNull().default("pending"),
   priority: text("priority"),
   categoryId: integer("categoryId"),
+  projectId: integer("project_id").references(() => projects.id),
   deadline: timestamp("deadline"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   assignedTo: integer("assignedTo"),
+  order: integer("order").default(0), // para ordenar tareas dentro del proyecto
+  startDate: timestamp("start_date"), // para la línea de tiempo
+  completedAt: timestamp("completed_at"), // para calcular duración real
 });
 
 // Insert schemas
@@ -45,12 +67,21 @@ export const insertTaskSchema = createInsertSchema(tasks).omit({
   createdAt: true,
 });
 
+export const insertProjectSchema = createInsertSchema(projects).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categories.$inferSelect;
+
+export type InsertProject = z.infer<typeof insertProjectSchema>;
+export type Project = typeof projects.$inferSelect;
 
 export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type Task = typeof tasks.$inferSelect;
@@ -197,3 +228,22 @@ export const HabitColors = {
   ORANGE: "orange",
   CYAN: "cyan",
 } as const;
+
+// Definición de estados de proyecto
+export const ProjectStatus = {
+  ACTIVE: "active",
+  COMPLETED: "completed",
+  ARCHIVED: "archived",
+} as const;
+
+// Relaciones entre tablas (definidas después de todas las tablas)
+export const projectsRelations = relations(projects, ({ many }) => ({
+  tasks: many(tasks),
+}));
+
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  project: one(projects, {
+    fields: [tasks.projectId],
+    references: [projects.id],
+  }),
+}));
