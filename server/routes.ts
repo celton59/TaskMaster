@@ -419,6 +419,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Rutas de Proyectos
+  // Primero la ruta específica para el resumen
+  apiRouter.get("/projects/summary", async (req, res) => {
+    try {
+      const projects = await storage.getProjects();
+      
+      // Para cada proyecto, conseguir sus tareas y calcular el progreso
+      const projectSummaries = await Promise.all(projects.map(async (project) => {
+        const tasks = await storage.getTasksByProject(project.id);
+        const progress = await storage.getProjectProgress(project.id);
+        
+        return {
+          ...project,
+          taskCount: tasks.length,
+          progress: progress.percentage
+        };
+      }));
+      
+      res.json(projectSummaries);
+    } catch (error) {
+      console.error("Error al obtener resumen de proyectos:", error);
+      res.status(500).json({ message: "Error al obtener resumen de proyectos" });
+    }
+  });
+
+  // Luego las rutas genéricas de proyectos
   apiRouter.get("/projects", async (req, res) => {
     try {
       const projects = await storage.getProjects();
@@ -531,29 +556,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Endpoint para obtener un resumen con información adicional de todos los proyectos
-  apiRouter.get("/projects/summary", async (req, res) => {
-    try {
-      const projects = await storage.getProjects();
-      
-      // Para cada proyecto, conseguir sus tareas y calcular el progreso
-      const projectSummaries = await Promise.all(projects.map(async (project) => {
-        const tasks = await storage.getTasksByProject(project.id);
-        const progress = await storage.getProjectProgress(project.id);
-        
-        return {
-          ...project,
-          taskCount: tasks.length,
-          progress: progress.percentage
-        };
-      }));
-      
-      res.json(projectSummaries);
-    } catch (error) {
-      console.error("Error al obtener resumen de proyectos:", error);
-      res.status(500).json({ message: "Error al obtener resumen de proyectos" });
-    }
-  });
+
   
   // Rutas de WhatsApp
   apiRouter.get("/whatsapp/status", async (req, res) => {

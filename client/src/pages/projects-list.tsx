@@ -7,17 +7,23 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs";
 import { FolderKanban, Plus, CheckCircle2, FileText } from "lucide-react";
 
+// Interfaz para el resumen de proyecto
+interface ProjectSummary extends Project {
+  taskCount: number;
+  progress: number;
+}
+
 export default function ProjectsList() {
   const [selectedTab, setSelectedTab] = useState("active");
   const [, setLocation] = useLocation();
   
-  // Consulta para obtener todos los proyectos
+  // Consulta para obtener el resumen de proyectos con número de tareas y progreso
   const { 
     data: projects = [], 
     isLoading: isLoadingProjects,
     isError: isErrorProjects 
-  } = useQuery<Project[]>({
-    queryKey: ['/api/projects'],
+  } = useQuery<ProjectSummary[]>({
+    queryKey: ['/api/projects/summary'],
   });
   
   // Filtrar proyectos según la pestaña seleccionada
@@ -27,17 +33,6 @@ export default function ProjectsList() {
     if (selectedTab === "archived") return project.status === ProjectStatus.ARCHIVED;
     return true;
   });
-  
-  // Calcular progreso básico (simulación)
-  const getProjectProgress = (project: Project): number => {
-    if (project.status === ProjectStatus.COMPLETED) return 100;
-    if (project.status === ProjectStatus.ARCHIVED) return 0;
-    
-    // Simulación básica de progreso
-    // En una implementación real, esto vendría de los datos o una API
-    const seed = project.id * 17 % 100; // Valor entre 0 y 99 basado en ID
-    return Math.min(85, Math.max(20, seed)); // Limitar entre 20% y 85%
-  };
   
   // Vista de lista de proyectos
   return (
@@ -99,7 +94,8 @@ export default function ProjectsList() {
                 <ProjectCard 
                   key={project.id}
                   project={project}
-                  progress={getProjectProgress(project)}
+                  progress={project.progress}
+                  taskCount={project.taskCount}
                   onClick={() => setLocation(`/projects/${project.id}`)}
                 />
               ))}
@@ -125,7 +121,8 @@ export default function ProjectsList() {
                 <ProjectCard 
                   key={project.id}
                   project={project}
-                  progress={getProjectProgress(project)}
+                  progress={project.progress}
+                  taskCount={project.taskCount}
                   onClick={() => setLocation(`/projects/${project.id}`)}
                 />
               ))}
@@ -151,7 +148,8 @@ export default function ProjectsList() {
                 <ProjectCard 
                   key={project.id}
                   project={project}
-                  progress={getProjectProgress(project)}
+                  progress={project.progress}
+                  taskCount={project.taskCount}
                   onClick={() => setLocation(`/projects/${project.id}`)}
                 />
               ))}
