@@ -93,6 +93,7 @@ export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private tasks: Map<number, Task>;
   private categories: Map<number, Category>;
+  private projects: Map<number, Project>;
   private whatsappContacts: Map<number, WhatsappContact>;
   private whatsappMessages: Map<number, WhatsappMessage>;
   private habits: Map<number, Habit>;
@@ -100,6 +101,7 @@ export class MemStorage implements IStorage {
   private userCurrentId: number;
   private taskCurrentId: number;
   private categoryCurrentId: number;
+  private projectCurrentId: number;
   private whatsappContactCurrentId: number;
   private whatsappMessageCurrentId: number;
   private habitCurrentId: number;
@@ -109,6 +111,7 @@ export class MemStorage implements IStorage {
     this.users = new Map();
     this.tasks = new Map();
     this.categories = new Map();
+    this.projects = new Map();
     this.whatsappContacts = new Map();
     this.whatsappMessages = new Map();
     this.habits = new Map();
@@ -116,6 +119,7 @@ export class MemStorage implements IStorage {
     this.userCurrentId = 1;
     this.taskCurrentId = 1;
     this.categoryCurrentId = 1;
+    this.projectCurrentId = 1;
     this.whatsappContactCurrentId = 1;
     this.whatsappMessageCurrentId = 1;
     this.habitCurrentId = 1;
@@ -258,12 +262,17 @@ export class MemStorage implements IStorage {
       ...task, 
       id,
       createdAt: now,
+      title: task.title,
       status: task.status || TaskStatus.PENDING,
       description: task.description || null,
       priority: task.priority || null,
       categoryId: task.categoryId || null,
+      projectId: task.projectId || null,
       deadline: task.deadline || null,
-      assignedTo: task.assignedTo || null
+      assignedTo: task.assignedTo || null,
+      order: task.order || 0,
+      startDate: task.startDate || null,
+      completedAt: task.completedAt || null
     };
     this.tasks.set(id, newTask);
     return newTask;
@@ -300,6 +309,89 @@ export class MemStorage implements IStorage {
       inProgress: tasks.filter(task => task.status === TaskStatus.IN_PROGRESS).length,
       review: tasks.filter(task => task.status === TaskStatus.REVIEW).length,
       completed: tasks.filter(task => task.status === TaskStatus.COMPLETED).length
+    };
+  }
+  
+  // Projects methods
+  async getProjects(): Promise<Project[]> {
+    return Array.from(this.projects.values());
+  }
+  
+  async getProject(id: number): Promise<Project | undefined> {
+    return this.projects.get(id);
+  }
+  
+  async createProject(project: InsertProject): Promise<Project> {
+    const id = this.projectCurrentId++;
+    const now = new Date();
+    const newProject: Project = {
+      ...project,
+      id,
+      createdAt: now,
+      updatedAt: now,
+      status: project.status || ProjectStatus.ACTIVE,
+      color: project.color || 'blue',
+      description: project.description || null,
+      startDate: project.startDate || null,
+      dueDate: project.dueDate || null,
+      ownerId: project.ownerId || null
+    };
+    this.projects.set(id, newProject);
+    return newProject;
+  }
+  
+  async updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined> {
+    const existing = this.projects.get(id);
+    if (!existing) return undefined;
+    
+    const updated = { 
+      ...existing, 
+      ...project,
+      updatedAt: new Date()
+    };
+    this.projects.set(id, updated);
+    return updated;
+  }
+  
+  async deleteProject(id: number): Promise<boolean> {
+    return this.projects.delete(id);
+  }
+  
+  async getTasksByProject(projectId: number): Promise<Task[]> {
+    return Array.from(this.tasks.values()).filter(
+      (task) => task.projectId === projectId
+    );
+  }
+  
+  async getProjectWithTasks(id: number): Promise<{ project: Project; tasks: Task[] }> {
+    const project = this.projects.get(id);
+    if (!project) {
+      throw new Error(`Project with id ${id} not found`);
+    }
+    
+    const tasks = await this.getTasksByProject(id);
+    
+    return {
+      project,
+      tasks
+    };
+  }
+  
+  async getProjectProgress(id: number): Promise<{
+    totalTasks: number;
+    completedTasks: number;
+    percentage: number;
+  }> {
+    const tasks = await this.getTasksByProject(id);
+    
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length;
+    const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    
+    return {
+      totalTasks,
+      completedTasks,
+      percentage
     };
   }
   
@@ -583,7 +675,7 @@ export class PostgresStorage implements IStorage {
     const sql = neon(process.env.DATABASE_URL!);
     this.db = drizzle(sql, { 
       schema: { 
-        users, tasks, categories, 
+        users, tasks, categories, projects,
         whatsappContacts, whatsappMessages,
         habits, habitLogs
       } 
@@ -698,6 +790,76 @@ export class PostgresStorage implements IStorage {
       review,
       completed
     };
+  }
+  
+  // Project methods
+  async getProjects(): Promise<Project[]> {
+    return await this.db.select().from(projects);
+  }
+  
+  async getProject(id: number): Promise<Project | undefined> {
+    const result = await this.db.select().from(projects).where(eq(projects.id, id));
+    return result[0];
+  }
+  
+  async createProject(project: InsertProject): Promise<Project> {
+    const result = await this.db.insert(projects).values({
+      ...project,
+      updatedAt: new Date(),
+    }).returning();
+    return result[0];
+  }
+  
+  async updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined> {
+    const result = await this.db.update(projects)
+      .set({
+        ...project,
+        updatedAt: new Date(),
+      })
+      .where(eq(projects.id, id))
+      .returning();
+    return result[0];
+  }
+  
+  async deleteProject(id: number): Promise<boolean> {
+    const result = await this.db.delete(projects).where(eq(projects.id, id)).returning();
+    return result.length > 0;
+  }
+  
+  async getProjectWithTasks(id: number): Promise<{ project: Project; tasks: Task[] }> {
+    const project = await this.getProject(id);
+    if (!project) {
+      throw new Error(`Project with id ${id} not found`);
+    }
+    
+    const projectTasks = await this.getTasksByProject(id);
+    
+    return {
+      project,
+      tasks: projectTasks
+    };
+  }
+  
+  async getProjectProgress(id: number): Promise<{
+    totalTasks: number;
+    completedTasks: number;
+    percentage: number;
+  }> {
+    const projectTasks = await this.getTasksByProject(id);
+    
+    const totalTasks = projectTasks.length;
+    const completedTasks = projectTasks.filter(task => task.status === TaskStatus.COMPLETED).length;
+    const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    
+    return {
+      totalTasks,
+      completedTasks,
+      percentage
+    };
+  }
+  
+  async getTasksByProject(projectId: number): Promise<Task[]> {
+    return await this.db.select().from(tasks).where(eq(tasks.projectId, projectId));
   }
   
   // WhatsApp contact methods
