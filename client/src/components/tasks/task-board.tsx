@@ -105,8 +105,7 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     // Find the task being dragged
     const task = findTaskById(activeTaskId);
     
-    // If the task status already matches the column, do nothing
-    if (task && task.status === overColumnId) return;
+    if (!task) return;
     
     // Actualizamos el estado de la tarea temporalmente para dar feedback visual
     // La actualización real se hará en handleDragEnd
@@ -131,16 +130,25 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     // Extract column ID (status) from the drop target
     const overColumnId = over.id.toString();
     
-    // Only update if dropped in a different column
+    // Update if there's a valid task ID and column ID
     if (activeTaskId && overColumnId) {
       const task = findTaskById(activeTaskId);
       
-      if (task && task.status !== overColumnId) {
-        // Update task status
+      if (task) {
+        // Siempre actualizamos el estado de la tarea,
+        // incluso si la columna es la misma, para asegurar consistencia
         updateTaskMutation.mutate({
           taskId: activeTaskId,
           updates: { status: overColumnId }
         });
+        
+        // Aseguramos que el estado local refleje el cambio
+        // ya que esto garantizará la sincronización con el servidor
+        setFilteredTasks(prevTasks => prevTasks.map(t => 
+          t.id === activeTaskId 
+            ? { ...t, status: overColumnId } 
+            : t
+        ));
       }
     }
   };
