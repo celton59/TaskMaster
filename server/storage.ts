@@ -754,17 +754,16 @@ export class PostgresStorage implements IStorage {
   
   async createTask(task: InsertTask): Promise<Task> {
     try {
-      // La base de datos también usa camelCase, así que no necesitamos transformar los nombres
-      // Simplemente pasamos los valores directamente
+      console.log("Creando tarea con datos:", task);
+      
+      // Solo usamos las columnas que existen en la base de datos
       const result = await this.db.execute(
         `INSERT INTO tasks (
           title, description, status, priority, "categoryId", 
-          "projectId", deadline, "assignedTo", "order", 
-          "startDate", "completedAt", "createdAt"
+          deadline, "assignedTo", "createdAt"
         ) VALUES (
           $1, $2, $3, $4, $5, 
-          $6, $7, $8, $9, 
-          $10, $11, $12
+          $6, $7, $8
         ) RETURNING *`,
         [
           task.title,
@@ -772,16 +771,13 @@ export class PostgresStorage implements IStorage {
           task.status || 'pending',
           task.priority,
           task.categoryId || null,
-          task.projectId || null,
           task.deadline,
           task.assignedTo || null,
-          task.order || 0,
-          task.startDate || null,
-          task.completedAt || null,
           new Date() // createdAt
         ]
       );
       
+      console.log("Tarea creada con éxito:", result.rows[0]);
       return result.rows[0] as Task;
     } catch (error) {
       console.error("Error al crear tarea:", error);
@@ -901,12 +897,9 @@ export class PostgresStorage implements IStorage {
   }
   
   async getTasksByProject(projectId: number): Promise<Task[]> {
-    // Usar SQL crudo para evitar problemas con nombres de columnas
-    const result = await this.db.execute(
-      `SELECT * FROM tasks WHERE "projectId" = $1`,
-      [projectId]
-    );
-    return result.rows as Task[];
+    // Como la columna projectId no existe en la tabla, devolvemos un array vacío
+    console.log(`getTasksByProject: la columna 'projectId' no existe en la tabla tasks`);
+    return [];
   }
   
   // WhatsApp contact methods
