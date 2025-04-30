@@ -15,6 +15,7 @@ import Habits from "@/pages/habits";
 import ProjectsList from "@/pages/projects-list";
 import ProjectDetail from "@/pages/project-detail";
 import Profile from "@/pages/profile";
+import Settings from "@/pages/settings";
 import AuthPage from "@/pages/auth-page";
 import DevLoginPage from "@/pages/dev-login";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -89,6 +90,7 @@ function App() {
                     <Route path="/whatsapp-settings" component={WhatsAppSettings} />
                     <Route path="/habits" component={Habits} />
                     <Route path="/profile" component={Profile} />
+                    <Route path="/settings" component={Settings} />
                     <Route component={NotFound} />
                   </Switch>
                 </main>
