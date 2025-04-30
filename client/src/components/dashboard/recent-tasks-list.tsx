@@ -104,21 +104,21 @@ export function RecentTasksList({ tasks, onViewAll }: RecentTasksListProps) {
     <>
       <div className="space-y-6">
         {tasks.map((task, index) => (
-          <div key={task.id} className="group relative hover:bg-neon-medium/10 px-3 py-3 -mx-3 rounded-md transition-colors cursor-pointer">
+          <div key={task.id} className="group relative hover:bg-neon-medium/10 px-4 py-3 -mx-3 rounded-lg transition-colors cursor-pointer border border-transparent hover:border-neon-accent/20 mb-3 shadow-sm hover:shadow-[0_0_10px_rgba(0,225,255,0.15)] duration-300">
             <div className="flex justify-between items-start mb-2">
-              <div className="space-y-1.5">
-                <h3 className="text-sm font-medium text-neon-text group-hover:text-neon-accent transition-colors pr-4">
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium text-neon-text group-hover:text-neon-accent transition-colors pr-4 line-clamp-1">
                   {task.title}
                 </h3>
                 <div className="flex items-center text-xs text-neon-text/60">
                   <Clock className="h-3 w-3 mr-1 text-neon-accent/60" />
-                  {task.createdAt && formatDate(task.createdAt)}
+                  <span className="font-medium">{task.createdAt && formatDate(task.createdAt)}</span>
                 </div>
               </div>
-              <ArrowUpRight className="h-4 w-4 text-neon-accent/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowUpRight className="h-4 w-4 text-neon-accent/40 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
             
-            <div className="flex flex-wrap gap-2 items-center justify-between">
+            <div className="flex gap-2 items-center justify-between mt-2 pt-2 border-t border-neon-accent/10">
               <div className="flex items-center">
                 {getStatusBadge(task.status)}
               </div>

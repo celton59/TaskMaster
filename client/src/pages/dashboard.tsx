@@ -372,17 +372,17 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="md:col-span-2 neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className="md:col-span-2 neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)] animate-card-glow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker via-neon-medium/20 to-neon-dark bg-[length:200%_100%] animate-flow-gradient">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Tareas recientes</CardTitle>
+              <CardTitle className="text-base font-medium text-neon-accent [text-shadow:0_0_10px_rgba(0,225,255,0.5)] font-mono">Tareas recientes</CardTitle>
               <CardDescription className="text-neon-text/70">Últimas adiciones</CardDescription>
             </div>
             <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
               <Clock className="h-5 w-5" />
             </div>
           </CardHeader>
-          <CardContent className="px-0 py-0">
+          <CardContent className="p-4">
             <RecentTasksList 
               tasks={recentTasks} 
               onViewAll={() => navigate("/tasks")} 
