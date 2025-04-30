@@ -726,7 +726,11 @@ export class PostgresStorage implements IStorage {
   }
   
   async getTasks(): Promise<Task[]> {
-    return await this.db.select().from(tasks);
+    // Usamos SQL crudo para evitar problemas de discrepancia en nombres de columnas
+    const result = await this.db.execute(
+      `SELECT * FROM tasks`
+    );
+    return result.rows as Task[];
   }
   
   async getTask(id: number): Promise<Task | undefined> {
@@ -739,12 +743,65 @@ export class PostgresStorage implements IStorage {
   }
   
   async getTasksByCategory(categoryId: number): Promise<Task[]> {
-    return await this.db.select().from(tasks).where(eq(tasks.categoryId, categoryId));
+    // En PostgreSQL, las columnas usan snake_case, pero en TypeScript usamos camelCase.
+    // El error se debe a esta discrepancia en la convención de nomenclatura.
+    // Usamos SQL crudo para evitar el error de columna no encontrada
+    const result = await this.db.execute(
+      `SELECT * FROM tasks WHERE category_id = $1`,
+      [categoryId]
+    );
+    return result.rows as Task[];
   }
   
   async createTask(task: InsertTask): Promise<Task> {
-    const result = await this.db.insert(tasks).values(task).returning();
-    return result[0];
+    try {
+      // Transformar las propiedades de camelCase a snake_case para la base de datos
+      const transformedTask: any = {};
+      
+      // Mapear las propiedades correctamente
+      if (task.title !== undefined) transformedTask.title = task.title;
+      if (task.description !== undefined) transformedTask.description = task.description;
+      if (task.status !== undefined) transformedTask.status = task.status;
+      if (task.priority !== undefined) transformedTask.priority = task.priority;
+      if (task.categoryId !== undefined) transformedTask.category_id = task.categoryId;
+      if (task.projectId !== undefined) transformedTask.project_id = task.projectId;
+      if (task.deadline !== undefined) transformedTask.deadline = task.deadline;
+      if (task.assignedTo !== undefined) transformedTask.assigned_to = task.assignedTo;
+      if (task.order !== undefined) transformedTask.order = task.order;
+      if (task.startDate !== undefined) transformedTask.start_date = task.startDate;
+      if (task.completedAt !== undefined) transformedTask.completed_at = task.completedAt;
+      
+      // Usar SQL crudo para insertar
+      const result = await this.db.execute(
+        `INSERT INTO tasks (
+          title, description, status, priority, category_id, 
+          project_id, deadline, assigned_to, "order", 
+          start_date, completed_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, 
+          $6, $7, $8, $9, 
+          $10, $11
+        ) RETURNING *`,
+        [
+          transformedTask.title,
+          transformedTask.description,
+          transformedTask.status || 'pending',
+          transformedTask.priority,
+          transformedTask.category_id,
+          transformedTask.project_id,
+          transformedTask.deadline,
+          transformedTask.assigned_to,
+          transformedTask.order || 0,
+          transformedTask.start_date,
+          transformedTask.completed_at
+        ]
+      );
+      
+      return result.rows[0] as Task;
+    } catch (error) {
+      console.error("Error al crear tarea:", error);
+      throw error;
+    }
   }
   
   async updateTask(id: number, task: Partial<InsertTask>): Promise<Task | undefined> {
@@ -859,7 +916,12 @@ export class PostgresStorage implements IStorage {
   }
   
   async getTasksByProject(projectId: number): Promise<Task[]> {
-    return await this.db.select().from(tasks).where(eq(tasks.projectId, projectId));
+    // Usar SQL crudo para evitar problemas con nombres de columnas
+    const result = await this.db.execute(
+      `SELECT * FROM tasks WHERE project_id = $1`,
+      [projectId]
+    );
+    return result.rows as Task[];
   }
   
   // WhatsApp contact methods
