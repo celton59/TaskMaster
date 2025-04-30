@@ -62,10 +62,31 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export const insertCategorySchema = createInsertSchema(categories);
 
-export const insertTaskSchema = createInsertSchema(tasks).omit({
-  id: true,
-  createdAt: true,
-});
+// Crear un esquema personalizado para validar fechas
+const dateSchema = z.union([
+  z.date(),
+  z.string().transform((str) => {
+    try {
+      const date = new Date(str);
+      if (isNaN(date.getTime())) return null;
+      return date;
+    } catch (e) {
+      return null;
+    }
+  }).nullable(),
+  z.null()
+]);
+
+export const insertTaskSchema = createInsertSchema(tasks)
+  .omit({
+    id: true,
+    createdAt: true,
+  })
+  .extend({
+    deadline: dateSchema.optional(),
+    startDate: dateSchema.optional(),
+    completedAt: dateSchema.optional(),
+  });
 
 export const insertProjectSchema = createInsertSchema(projects).omit({
   id: true,
