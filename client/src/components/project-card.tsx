@@ -6,16 +6,20 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarIcon, Clock, Users } from "lucide-react";
 
+interface ProjectCardProps { 
+  project: Project, 
+  progress?: number,
+  taskCount?: number,
+  onClick: () => void 
+}
+
 // Definir un componente para visualizar un proyecto
 export function ProjectCard({ 
   project,
   progress = 0,
+  taskCount = 0,
   onClick 
-}: { 
-  project: Project, 
-  progress?: number,
-  onClick: () => void 
-}) {
+}: ProjectCardProps) {
   // Colores predeterminados cuando la propiedad color no está disponible
   const getColorStyles = (colorName?: string) => {
     const color = colorName || 'blue';
@@ -128,7 +132,7 @@ export function ProjectCard({
         <div className="flex items-center space-x-3">
           <div className="flex items-center">
             <Users className="h-4 w-4 text-neon-accent/70 mr-1" />
-            <span className="text-xs text-neon-text/70">1</span>
+            <span className="text-xs text-neon-text/70">{taskCount} {taskCount === 1 ? 'tarea' : 'tareas'}</span>
           </div>
         </div>
         <Badge
