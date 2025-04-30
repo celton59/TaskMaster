@@ -183,31 +183,48 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
         
         if (targetIndex === -1) return;
         
+        // Creamos una copia actualizada de la tarea activa con el nuevo estado
+        const updatedActiveTask = {
+          ...task,
+          status: targetStatus,
+          // Aseguramos que la tarea activa tenga todas las propiedades correctas
+          id: activeTaskId,  
+          title: task.title,
+          description: task.description,
+          priority: task.priority,
+          categoryId: task.categoryId,
+          deadline: task.deadline,
+          createdAt: task.createdAt,
+          assignedTo: task.assignedTo,
+          projectId: task.projectId,
+          project_id: task.project_id,
+          start_date: task.start_date,
+          completed_at: task.completed_at
+        };
+        
         // Actualizar el estado local para dar feedback visual
         setFilteredTasks(prevTasks => {
           // 1. Remover la tarea activa de la lista previa
           const tasksWithoutActive = prevTasks.filter(t => t.id !== activeTaskId);
           
-          // 2. Crear copia de tarea activa con nuevo estado
-          const updatedActiveTask = { ...task, status: targetStatus };
-          
-          // 3. Obtener las tareas de la columna destino sin la activa
+          // 2. Obtener las tareas de la columna destino sin la activa
           const targetTasks = tasksWithoutActive.filter(t => t.status === targetStatus);
           
-          // 4. Insertar la tarea activa en la posición correcta
+          // 3. Insertar la tarea activa en la posición correcta
           const updatedTargetTasks = [...targetTasks];
           updatedTargetTasks.splice(targetIndex, 0, updatedActiveTask);
           
-          // 5. Actualizar órdenes de las tareas de destino
+          // 4. Actualizar órdenes de las tareas de destino
           const finalTargetTasks = updatedTargetTasks.map((t, index) => ({
             ...t,
+            status: targetStatus, // Aseguramos que todas tengan el estado correcto
             order: index
           }));
           
-          // 6. Obtener el resto de tareas que no son de la columna destino
+          // 5. Obtener el resto de tareas que no son de la columna destino
           const otherTasks = tasksWithoutActive.filter(t => t.status !== targetStatus);
           
-          // 7. Unir todas las tareas
+          // 6. Unir todas las tareas
           return [...otherTasks, ...finalTargetTasks];
         });
       }
@@ -333,25 +350,51 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
         
         if (targetIndex === -1) return;
         
+        // Creamos una copia actualizada de la tarea activa con el nuevo estado
+        const updatedActiveTask = {
+          ...task,
+          status: targetStatus,
+          // Aseguramos que la tarea activa tenga todas las propiedades correctas
+          id: activeTaskId,  
+          title: task.title,
+          description: task.description,
+          priority: task.priority,
+          categoryId: task.categoryId,
+          deadline: task.deadline,
+          createdAt: task.createdAt,
+          assignedTo: task.assignedTo,
+          projectId: task.projectId,
+          project_id: task.project_id,
+          start_date: task.start_date,
+          completed_at: task.completed_at
+        };
+        
         // Reorganizamos las tareas de la columna de destino para incluir nuestra tarea
         const updatedColumnTasks = [...targetColumnTasks];
-        updatedColumnTasks.splice(targetIndex, 0, { ...task, status: targetStatus });
+        updatedColumnTasks.splice(targetIndex, 0, updatedActiveTask);
         
-        // Actualizamos las órdenes en el servidor
-        updatedColumnTasks.forEach((t, index) => {
-          if (t.id === activeTaskId) {
-            // La tarea activa requiere actualizar status y orden
-            console.log(`Actualizando tarea activa ${t.id} a status ${targetStatus} y orden ${index}`);
-            updateTaskMutation.mutate({
-              taskId: t.id,
-              updates: { status: targetStatus, order: index }
-            });
-          } else {
-            // Las demás tareas solo necesitan actualizar orden
-            console.log(`Actualizando tarea destino ${t.id} a orden ${index}`);
-            updateTaskMutation.mutate({
-              taskId: t.id,
-              updates: { order: index }
+        // Actualizamos primero la tarea activa para cambiar su estado
+        console.log(`Actualizando tarea activa ${activeTaskId} a status ${targetStatus} y orden ${targetIndex}`);
+        updateTaskMutation.mutate({
+          taskId: activeTaskId,
+          updates: { 
+            status: targetStatus, 
+            order: targetIndex 
+          }
+        }, {
+          // Aseguramos que esta mutación se complete antes de continuar
+          onSuccess: () => {
+            console.log("Actualización de estado completada, ahora actualizando órdenes");
+            
+            // Luego actualizamos las órdenes de todas las tareas en la columna destino
+            updatedColumnTasks.forEach((t, index) => {
+              if (t.id !== activeTaskId) {  // No volvemos a actualizar la tarea activa
+                console.log(`Actualizando tarea destino ${t.id} a orden ${index}`);
+                updateTaskMutation.mutate({
+                  taskId: t.id,
+                  updates: { order: index }
+                });
+              }
             });
           }
         });
@@ -373,6 +416,12 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
           // Unimos todas las tareas
           return [...otherTasks, ...finalColumnTasks];
         });
+        
+        // Forzamos un refresco de las tareas después de una breve pausa
+        setTimeout(() => {
+          // Recargar los datos
+          window.location.reload();
+        }, 300);
       }
     }
   };
