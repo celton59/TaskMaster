@@ -50,6 +50,21 @@ async function main() {
       `);
       
       await db.execute(`
+        CREATE TABLE IF NOT EXISTS projects (
+          id SERIAL PRIMARY KEY,
+          name TEXT NOT NULL,
+          description TEXT,
+          color TEXT NOT NULL DEFAULT 'blue',
+          start_date TIMESTAMP,
+          due_date TIMESTAMP,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+          updated_at TIMESTAMP,
+          status TEXT NOT NULL DEFAULT 'active',
+          owner_id INTEGER REFERENCES users(id)
+        );
+      `);
+      
+      await db.execute(`
         CREATE TABLE IF NOT EXISTS tasks (
           id SERIAL PRIMARY KEY,
           title TEXT NOT NULL,
@@ -57,7 +72,7 @@ async function main() {
           status TEXT NOT NULL DEFAULT 'pending',
           priority TEXT,
           category_id INTEGER REFERENCES categories(id),
-          project_id INTEGER,
+          project_id INTEGER REFERENCES projects(id),
           deadline TIMESTAMP,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
           assigned_to INTEGER REFERENCES users(id),
@@ -94,6 +109,40 @@ async function main() {
       });
     }
     
+    const projectsCount = await db.select({ count: count() }).from(projects);
+    if (projectsCount[0].count === 0) {
+      console.log("Insertando proyectos de ejemplo...");
+      
+      const today = new Date();
+      const nextMonth = new Date(today);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      const nextQuarter = new Date(today);
+      nextQuarter.setMonth(nextQuarter.getMonth() + 3);
+      
+      await db.insert(projects).values([
+        {
+          name: "Lanzamiento del nuevo sitio web",
+          description: "Diseño y desarrollo del nuevo sitio web corporativo",
+          color: "blue",
+          start_date: today,
+          due_date: nextMonth,
+          status: ProjectStatus.ACTIVE,
+          owner_id: 1,
+          created_at: today
+        },
+        {
+          name: "Campaña de marketing Q2",
+          description: "Planificación y ejecución de la campaña de marketing para el segundo trimestre",
+          color: "purple",
+          start_date: today,
+          due_date: nextQuarter,
+          status: ProjectStatus.ACTIVE,
+          owner_id: 1,
+          created_at: today
+        }
+      ]);
+    }
+      
     const tasksCount = await db.select({ count: count() }).from(tasks);
     if (tasksCount[0].count === 0) {
       console.log("Insertando tareas de ejemplo...");
