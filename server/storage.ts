@@ -2,11 +2,12 @@ import {
   users, type User, type InsertUser,
   tasks, type Task, type InsertTask,
   categories, type Category, type InsertCategory,
+  projects, type Project, type InsertProject,
   whatsappContacts, type WhatsappContact, type InsertWhatsappContact,
   whatsappMessages, type WhatsappMessage, type InsertWhatsappMessage,
   habits, type Habit, type InsertHabit,
   habitLogs, type HabitLog, type InsertHabitLog,
-  TaskStatus, MessageDirection, MessageStatus, HabitFrequency
+  TaskStatus, MessageDirection, MessageStatus, HabitFrequency, ProjectStatus
 } from "@shared/schema";
 
 export interface IStorage {
