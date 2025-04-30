@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useParams } from "wouter";
 import { Project, ProjectStatus, Task } from "@shared/schema";
@@ -61,6 +61,14 @@ export default function Projects() {
     enabled: !!projectId,
   });
   
+  // Si la consulta está activada pero no hay datos, redirigimos a la lista de proyectos
+  useEffect(() => {
+    if (projectId && !isLoadingDetails && !projectDetails) {
+      // Redirigir a la lista de proyectos si no se encuentra el proyecto
+      setLocation("/projects");
+    }
+  }, [projectId, isLoadingDetails, projectDetails, setLocation]);
+  
   // Abrir el diálogo para crear un nuevo proyecto
   const handleNewProject = () => {
     setSelectedProject(null);
@@ -82,7 +90,9 @@ export default function Projects() {
   });
   
   // Obtener el color de fondo para un proyecto
-  const getProjectColor = (color: string) => {
+  const getProjectColor = (color?: string) => {
+    // Si no se proporciona color, usar el valor por defecto
+    if (!color) color = 'blue';
     const colorMap = {
       blue: {
         bg: "bg-blue-500/10",
