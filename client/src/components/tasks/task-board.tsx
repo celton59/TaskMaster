@@ -122,50 +122,95 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     
     if (isColumn) {
       // Estamos sobre una columna, así que cambiamos el estado de la tarea
-      const overColumnId = overId;
+      const newStatus = overId;
       
       // Actualizamos el estado de la tarea temporalmente para dar feedback visual
       setFilteredTasks(prevTasks => prevTasks.map(t => 
         t.id === activeTaskId 
-          ? { ...t, status: overColumnId } 
+          ? { ...t, status: newStatus } 
           : t
       ));
     } else {
-      // Estamos sobre otra tarea, así que reordenamos dentro de la misma columna
+      // Estamos sobre otra tarea
       const overTaskId = parseInt(overId);
       const overTask = findTaskById(overTaskId);
       
-      if (!overTask || task.status !== overTask.status) return;
+      if (!overTask) return;
       
-      // Filtramos para trabajar solo con las tareas de la misma columna
-      const columnTasks = filteredTasks.filter(t => t.status === task.status);
-      const activeIndex = columnTasks.findIndex(t => t.id === activeTaskId);
-      const overIndex = columnTasks.findIndex(t => t.id === overTaskId);
+      const isSameColumn = task.status === overTask.status;
+      const targetStatus = overTask.status;
       
-      if (activeIndex === -1 || overIndex === -1) return;
-      
-      console.log("Reordenando en DragOver:", 
-        { status: task.status, activeId: activeTaskId, overId: overTaskId, 
-          activeIndex, overIndex, columnTasks });
-      
-      // Reordenar las tareas en el estado temporal
-      setFilteredTasks(prevTasks => {
-        // Primero separamos las tareas de esta columna de las demás
-        const columnTaskIds = columnTasks.map(t => t.id);
-        const otherTasks = prevTasks.filter(t => !columnTaskIds.includes(t.id));
+      if (isSameColumn) {
+        // Reordenamos dentro de la misma columna
+        const columnTasks = filteredTasks.filter(t => t.status === task.status);
+        const activeIndex = columnTasks.findIndex(t => t.id === activeTaskId);
+        const overIndex = columnTasks.findIndex(t => t.id === overTaskId);
         
-        // Reordenamos las tareas de la columna
-        const reorderedColumnTasks = arrayMove(columnTasks, activeIndex, overIndex);
+        if (activeIndex === -1 || overIndex === -1) return;
         
-        // Actualizamos el orden (position) de cada tarea de la columna
-        const updatedColumnTasks = reorderedColumnTasks.map((t, index) => ({
-          ...t, 
-          order: index
-        }));
+        console.log("Reordenando en DragOver:", 
+          { status: task.status, activeId: activeTaskId, overId: overTaskId, 
+            activeIndex, overIndex, columnTasks });
         
-        // Unimos todas las tareas nuevamente
-        return [...otherTasks, ...updatedColumnTasks];
-      });
+        // Reordenar las tareas en el estado temporal
+        setFilteredTasks(prevTasks => {
+          // Primero separamos las tareas de esta columna de las demás
+          const columnTaskIds = columnTasks.map(t => t.id);
+          const otherTasks = prevTasks.filter(t => !columnTaskIds.includes(t.id));
+          
+          // Reordenamos las tareas de la columna
+          const reorderedColumnTasks = arrayMove(columnTasks, activeIndex, overIndex);
+          
+          // Actualizamos el orden (position) de cada tarea de la columna
+          const updatedColumnTasks = reorderedColumnTasks.map((t, index) => ({
+            ...t, 
+            order: index
+          }));
+          
+          // Unimos todas las tareas nuevamente
+          return [...otherTasks, ...updatedColumnTasks];
+        });
+      } else {
+        // Estamos moviéndonos entre columnas diferentes
+        console.log("DragOver entre columnas:", 
+          { sourceStatus: task.status, targetStatus, activeId: activeTaskId, overId: overTaskId });
+        
+        // Obtenemos las tareas de la columna destino
+        const targetColumnTasks = filteredTasks.filter(t => t.status === targetStatus);
+        
+        // Encontramos la posición de la tarea sobre la que estamos
+        const targetIndex = targetColumnTasks.findIndex(t => t.id === overTaskId);
+        
+        if (targetIndex === -1) return;
+        
+        // Actualizar el estado local para dar feedback visual
+        setFilteredTasks(prevTasks => {
+          // 1. Remover la tarea activa de la lista previa
+          const tasksWithoutActive = prevTasks.filter(t => t.id !== activeTaskId);
+          
+          // 2. Crear copia de tarea activa con nuevo estado
+          const updatedActiveTask = { ...task, status: targetStatus };
+          
+          // 3. Obtener las tareas de la columna destino sin la activa
+          const targetTasks = tasksWithoutActive.filter(t => t.status === targetStatus);
+          
+          // 4. Insertar la tarea activa en la posición correcta
+          const updatedTargetTasks = [...targetTasks];
+          updatedTargetTasks.splice(targetIndex, 0, updatedActiveTask);
+          
+          // 5. Actualizar órdenes de las tareas de destino
+          const finalTargetTasks = updatedTargetTasks.map((t, index) => ({
+            ...t,
+            order: index
+          }));
+          
+          // 6. Obtener el resto de tareas que no son de la columna destino
+          const otherTasks = tasksWithoutActive.filter(t => t.status !== targetStatus);
+          
+          // 7. Unir todas las tareas
+          return [...otherTasks, ...finalTargetTasks];
+        });
+      }
     }
   };
   
@@ -200,68 +245,135 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     
     if (isColumn) {
       // Estamos sobre una columna, así que cambiamos el estado de la tarea
-      const overColumnId = overId;
+      const newStatus = overId;
       
       // Solo actualizamos si el estado ha cambiado
-      if (task.status !== overColumnId) {
-        // Actualizamos en el servidor
+      if (task.status !== newStatus) {
+        // Obtenemos todas las tareas de la columna de destino para ordenar
+        const destinationColumnTasks = filteredTasks.filter(t => t.status === newStatus);
+        
+        // Calculamos el índice para la tarea (al final por defecto)
+        const newOrder = destinationColumnTasks.length;
+        
+        console.log(`Moviendo tarea a nueva columna ${newStatus} con orden ${newOrder}`);
+        
+        // Actualizamos en el servidor el estado y el orden
         updateTaskMutation.mutate({
           taskId: activeTaskId,
-          updates: { status: overColumnId }
+          updates: { status: newStatus, order: newOrder }
         });
         
         // También actualizamos localmente para dar feedback inmediato
         setFilteredTasks(prevTasks => prevTasks.map(t => 
           t.id === activeTaskId 
-            ? { ...t, status: overColumnId } 
+            ? { ...t, status: newStatus, order: newOrder } 
             : t
         ));
       }
     } else {
-      // Estamos sobre otra tarea, reordenamos dentro de la misma columna
+      // Estamos sobre otra tarea
       const overTaskId = parseInt(overId);
       const overTask = findTaskById(overTaskId);
       
-      if (!overTask || task.status !== overTask.status) return;
+      if (!overTask) return;
       
-      // Filtramos para trabajar solo con las tareas de la misma columna
-      const columnTasks = filteredTasks.filter(t => t.status === task.status);
-      const activeIndex = columnTasks.findIndex(t => t.id === activeTaskId);
-      const overIndex = columnTasks.findIndex(t => t.id === overTaskId);
+      const isSameColumn = task.status === overTask.status;
+      const sourceStatus = task.status;
+      const targetStatus = overTask.status;
       
-      if (activeIndex === -1 || overIndex === -1) return;
-      
-      console.log("Reordenando en DragEnd:", 
-        { status: task.status, activeId: activeTaskId, overId: overTaskId, 
-          activeIndex, overIndex, columnTasks });
-      
-      // Reordenar las tareas
-      const reorderedTasks = arrayMove(columnTasks, activeIndex, overIndex);
-      
-      // Actualizar las órdenes en el servidor
-      reorderedTasks.forEach((t, index) => {
-        console.log(`Actualizando tarea ${t.id} a orden ${index}`);
-        updateTaskMutation.mutate({
-          taskId: t.id,
-          updates: { order: index }
+      if (isSameColumn) {
+        // Reordenamos dentro de la misma columna
+        const columnTasks = filteredTasks.filter(t => t.status === task.status);
+        const activeIndex = columnTasks.findIndex(t => t.id === activeTaskId);
+        const overIndex = columnTasks.findIndex(t => t.id === overTaskId);
+        
+        if (activeIndex === -1 || overIndex === -1) return;
+        
+        console.log("Reordenando en misma columna:", 
+          { status: task.status, activeId: activeTaskId, overId: overTaskId, 
+            activeIndex, overIndex, columnTasks });
+        
+        // Reordenar las tareas
+        const reorderedTasks = arrayMove(columnTasks, activeIndex, overIndex);
+        
+        // Actualizar las órdenes en el servidor
+        reorderedTasks.forEach((t, index) => {
+          console.log(`Actualizando tarea ${t.id} a orden ${index}`);
+          updateTaskMutation.mutate({
+            taskId: t.id,
+            updates: { order: index }
+          });
         });
-      });
-      
-      // Actualizar el estado local con nuevos órdenes
-      setFilteredTasks(prevTasks => {
-        // Primero separamos las tareas de esta columna de las demás
-        const columnTaskIds = columnTasks.map(t => t.id);
-        const otherTasks = prevTasks.filter(t => !columnTaskIds.includes(t.id));
         
-        // Actualizamos el orden de las tareas reordenadas
-        const updatedColumnTasks = reorderedTasks.map((t, index) => ({
-          ...t, 
-          order: index
-        }));
+        // Actualizar el estado local con nuevos órdenes
+        setFilteredTasks(prevTasks => {
+          // Primero separamos las tareas de esta columna de las demás
+          const columnTaskIds = columnTasks.map(t => t.id);
+          const otherTasks = prevTasks.filter(t => !columnTaskIds.includes(t.id));
+          
+          // Actualizamos el orden de las tareas reordenadas
+          const updatedColumnTasks = reorderedTasks.map((t, index) => ({
+            ...t, 
+            order: index
+          }));
+          
+          // Unimos todas las tareas nuevamente
+          return [...otherTasks, ...updatedColumnTasks];
+        });
+      } else {
+        // Estamos cambiando de columna Y posicionando en una posición específica
+        console.log("Moviendo tarea entre columnas con posición específica:", 
+          { sourceStatus, targetStatus, activeId: activeTaskId, overId: overTaskId });
         
-        // Unimos todas las tareas nuevamente
-        return [...otherTasks, ...updatedColumnTasks];
-      });
+        // Obtenemos las tareas de la columna destino
+        const targetColumnTasks = filteredTasks.filter(t => t.status === targetStatus);
+        
+        // Encontramos la posición de la tarea sobre la que estamos
+        const targetIndex = targetColumnTasks.findIndex(t => t.id === overTaskId);
+        
+        if (targetIndex === -1) return;
+        
+        // Reorganizamos las tareas de la columna de destino para incluir nuestra tarea
+        const updatedColumnTasks = [...targetColumnTasks];
+        updatedColumnTasks.splice(targetIndex, 0, { ...task, status: targetStatus });
+        
+        // Actualizamos las órdenes en el servidor
+        updatedColumnTasks.forEach((t, index) => {
+          if (t.id === activeTaskId) {
+            // La tarea activa requiere actualizar status y orden
+            console.log(`Actualizando tarea activa ${t.id} a status ${targetStatus} y orden ${index}`);
+            updateTaskMutation.mutate({
+              taskId: t.id,
+              updates: { status: targetStatus, order: index }
+            });
+          } else {
+            // Las demás tareas solo necesitan actualizar orden
+            console.log(`Actualizando tarea destino ${t.id} a orden ${index}`);
+            updateTaskMutation.mutate({
+              taskId: t.id,
+              updates: { order: index }
+            });
+          }
+        });
+        
+        // Actualizar el estado local 
+        setFilteredTasks(prevTasks => {
+          // Tareas que no son de la columna destino ni la tarea arrastrada
+          const otherTasks = prevTasks.filter(t => 
+            t.status !== targetStatus && t.id !== activeTaskId
+          );
+          
+          // Tareas actualizadas de la columna destino incluyendo la arrastrada
+          const finalColumnTasks = updatedColumnTasks.map((t, index) => ({
+            ...t,
+            status: targetStatus,
+            order: index
+          }));
+          
+          // Unimos todas las tareas
+          return [...otherTasks, ...finalColumnTasks];
+        });
+      }
     }
   };
   
