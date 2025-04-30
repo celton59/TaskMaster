@@ -756,26 +756,33 @@ export class PostgresStorage implements IStorage {
     try {
       console.log("Creando tarea con datos:", task);
       
-      // Vamos a hacer una inserción manual con SQL crudo para controlar exactamente las columnas
-      const result = await this.db.execute(
-        `INSERT INTO tasks (
-          title, description, status, priority, "categoryId", 
-          deadline, "assignedTo", "createdAt"
-        ) VALUES (
-          $1, $2, $3, $4, $5, 
-          $6, $7, $8
-        ) RETURNING *`,
-        [
-          task.title,
-          task.description,
-          task.status || 'pending',
-          task.priority,
-          task.categoryId || null,
-          task.deadline,
-          task.assignedTo || null,
-          new Date() // createdAt
-        ]
-      );
+      // Crear SQL manualmente con las columnas exactas y sus valores
+      const columns = [];
+      const values = [];
+      const placeholders = [];
+      let paramIndex = 1;
+      
+      // Agregar columnas que sabemos que existen
+      columns.push("title"); values.push(task.title); placeholders.push(`$${paramIndex++}`);
+      columns.push("description"); values.push(task.description); placeholders.push(`$${paramIndex++}`);
+      columns.push("status"); values.push(task.status || 'pending'); placeholders.push(`$${paramIndex++}`);
+      columns.push("priority"); values.push(task.priority); placeholders.push(`$${paramIndex++}`);
+      columns.push('"categoryId"'); values.push(task.categoryId || null); placeholders.push(`$${paramIndex++}`);
+      columns.push("deadline"); values.push(task.deadline); placeholders.push(`$${paramIndex++}`);
+      columns.push('"assignedTo"'); values.push(task.assignedTo || null); placeholders.push(`$${paramIndex++}`);
+      columns.push('"createdAt"'); values.push(new Date()); placeholders.push(`$${paramIndex++}`);
+      
+      // Construir la consulta
+      const query = `
+        INSERT INTO tasks (${columns.join(", ")})
+        VALUES (${placeholders.join(", ")})
+        RETURNING *
+      `;
+      
+      console.log("SQL ejecutado:", query);
+      console.log("Parámetros:", values);
+      
+      const result = await this.db.execute(query, values);
       
       console.log("Tarea creada con éxito:", result.rows[0]);
       return result.rows[0] as Task;
