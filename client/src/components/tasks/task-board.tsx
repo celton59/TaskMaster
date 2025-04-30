@@ -20,6 +20,7 @@ import {
   DragOverEvent,
   DragEndEvent
 } from "@dnd-kit/core";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -97,23 +98,58 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     
     if (!over) return;
     
-    // Extract task ID from active drag item
-    const activeTaskId = parseInt(active.id.toString());
-    // Extract column ID (status) from the drop target
-    const overColumnId = over.id.toString();
+    // Extract IDs from drag items
+    const activeId = active.id.toString();
+    const overId = over.id.toString();
     
-    // Find the task being dragged
+    // Si el ID activo y el ID destino son iguales, no hacemos nada
+    if (activeId === overId) return;
+    
+    const activeTaskId = parseInt(activeId);
     const task = findTaskById(activeTaskId);
     
     if (!task) return;
     
-    // Actualizamos el estado de la tarea temporalmente para dar feedback visual
-    // La actualización real se hará en handleDragEnd
-    setFilteredTasks(prevTasks => prevTasks.map(t => 
-      t.id === activeTaskId 
-        ? { ...t, status: overColumnId } 
-        : t
-    ));
+    // Detectar si estamos sobre una columna o sobre otra tarea
+    const isColumn = !over.data.current?.type || over.data.current.type === 'column';
+    
+    if (isColumn) {
+      // Estamos sobre una columna, así que cambiamos el estado de la tarea
+      const overColumnId = overId;
+      
+      // Actualizamos el estado de la tarea temporalmente para dar feedback visual
+      setFilteredTasks(prevTasks => prevTasks.map(t => 
+        t.id === activeTaskId 
+          ? { ...t, status: overColumnId } 
+          : t
+      ));
+    } else {
+      // Estamos sobre otra tarea, así que reordenamos dentro de la misma columna
+      const overTaskId = parseInt(overId);
+      const overTask = findTaskById(overTaskId);
+      
+      if (!overTask || task.status !== overTask.status) return;
+      
+      // Determine si estamos arrastrando hacia arriba o hacia abajo
+      const activeIndex = filteredTasks.findIndex(t => t.id === activeTaskId);
+      const overIndex = filteredTasks.findIndex(t => t.id === overTaskId);
+      
+      if (activeIndex === -1 || overIndex === -1) return;
+      
+      // Reordenar las tareas en el estado temporal
+      setFilteredTasks(prevTasks => {
+        // Crear una copia del array actual
+        const updatedTasks = arrayMove(prevTasks, activeIndex, overIndex);
+        
+        // Actualizar el orden (position) de cada tarea
+        return updatedTasks.map((t, index) => {
+          if (t.status === task.status) {
+            return { ...t, order: index };
+          }
+          return t;
+        });
+      });
+    }
   };
   
   // Handle drag end
@@ -125,31 +161,84 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     
     if (!over) return;
     
-    // Extract task ID from active drag item
-    const activeTaskId = parseInt(active.id.toString());
-    // Extract column ID (status) from the drop target
-    const overColumnId = over.id.toString();
+    // Extract IDs from drag items
+    const activeId = active.id.toString();
+    const overId = over.id.toString();
     
-    // Update if there's a valid task ID and column ID
-    if (activeTaskId && overColumnId) {
-      const task = findTaskById(activeTaskId);
+    // Si el ID activo y el ID destino son iguales, no hacemos nada
+    if (activeId === overId) return;
+    
+    const activeTaskId = parseInt(activeId);
+    const task = findTaskById(activeTaskId);
+    
+    if (!task) return;
+    
+    // Detectar si estamos sobre una columna o sobre otra tarea
+    const isColumn = !over.data.current?.type || over.data.current.type === 'column';
+    
+    if (isColumn) {
+      // Estamos sobre una columna, así que cambiamos el estado de la tarea
+      const overColumnId = overId;
       
-      if (task) {
-        // Siempre actualizamos el estado de la tarea,
-        // incluso si la columna es la misma, para asegurar consistencia
+      // Solo actualizamos si el estado ha cambiado
+      if (task.status !== overColumnId) {
+        // Actualizamos en el servidor
         updateTaskMutation.mutate({
           taskId: activeTaskId,
           updates: { status: overColumnId }
         });
         
-        // Aseguramos que el estado local refleje el cambio
-        // ya que esto garantizará la sincronización con el servidor
+        // También actualizamos localmente para dar feedback inmediato
         setFilteredTasks(prevTasks => prevTasks.map(t => 
           t.id === activeTaskId 
             ? { ...t, status: overColumnId } 
             : t
         ));
       }
+    } else {
+      // Estamos sobre otra tarea, reordenamos dentro de la misma columna
+      const overTaskId = parseInt(overId);
+      const overTask = findTaskById(overTaskId);
+      
+      if (!overTask || task.status !== overTask.status) return;
+      
+      // Determine si estamos arrastrando hacia arriba o hacia abajo
+      const activeIndex = filteredTasks.findIndex(t => t.id === activeTaskId);
+      const overIndex = filteredTasks.findIndex(t => t.id === overTaskId);
+      
+      if (activeIndex === -1 || overIndex === -1) return;
+      
+      // Reordenar las tareas
+      const reorderedTasks = arrayMove(
+        filteredTasks.filter(t => t.status === task.status),
+        activeIndex,
+        overIndex
+      );
+      
+      // Actualizar las órdenes en el servidor
+      reorderedTasks.forEach((t, index) => {
+        updateTaskMutation.mutate({
+          taskId: t.id,
+          updates: { order: index }
+        });
+      });
+      
+      // Actualizar el estado local con nuevos órdenes
+      setFilteredTasks(prevTasks => {
+        // Crear un mapa de id -> orden para las tareas reordenadas
+        const orderMap = new Map();
+        reorderedTasks.forEach((t, index) => {
+          orderMap.set(t.id, index);
+        });
+        
+        // Actualizar todas las tareas con sus nuevos órdenes
+        return prevTasks.map(t => {
+          if (orderMap.has(t.id)) {
+            return { ...t, order: orderMap.get(t.id) };
+          }
+          return t;
+        });
+      });
     }
   };
   
@@ -163,28 +252,46 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
   
   // Get tasks by status - supporting both English and Spanish status values
   const getTasksByStatus = (status: string) => {
+    let statusTasks;
+    
     if (status === "pending") {
       // Match both "pending" and "pendiente"
-      return filteredTasks.filter(task => 
+      statusTasks = filteredTasks.filter(task => 
         task.status === "pending" || task.status === "pendiente"
       );
     } else if (status === "in-progress") {
       // Match both "in-progress" and "en_progreso"
-      return filteredTasks.filter(task => 
+      statusTasks = filteredTasks.filter(task => 
         task.status === "in-progress" || task.status === "en_progreso"
       );
     } else if (status === "review") {
       // Match both "review" and "revision"
-      return filteredTasks.filter(task => 
+      statusTasks = filteredTasks.filter(task => 
         task.status === "review" || task.status === "revision"
       );
     } else if (status === "completed") {
       // Match both "completed" and "completada"
-      return filteredTasks.filter(task => 
+      statusTasks = filteredTasks.filter(task => 
         task.status === "completed" || task.status === "completada"
       );
+    } else {
+      statusTasks = filteredTasks.filter(task => task.status === status);
     }
-    return filteredTasks.filter(task => task.status === status);
+    
+    // Ordenar las tareas primero por order y luego por id como respaldo
+    return statusTasks.sort((a, b) => {
+      // Si ambas tareas tienen una orden definida, comparar por orden
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      
+      // Si solo una tarea tiene orden definida, esa va primero
+      if (a.order !== undefined) return -1;
+      if (b.order !== undefined) return 1;
+      
+      // Si ninguna tiene orden definida, ordenar por ID como respaldo
+      return a.id - b.id;
+    });
   };
   
   // Componente para renderizar el overlay de arrastre
