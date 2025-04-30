@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Plus, MoreHorizontal, GripVertical } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import type { Task, Category } from "@shared/schema";
+import type { Task, Category, Project } from "@shared/schema";
 
 interface TaskColumnProps {
   title: string;
@@ -31,6 +31,11 @@ export function TaskColumn({
   // Get categories for task cards
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"]
+  });
+  
+  // Get projects for task cards
+  const { data: projects = [] } = useQuery<Project[]>({
+    queryKey: ["/api/projects"]
   });
   
   // Handle drag over
@@ -162,6 +167,7 @@ export function TaskColumn({
               key={task.id} 
               task={task} 
               categories={categories}
+              projects={projects}
               onDragStart={() => setIsDropTarget(false)}
             />
           ))
