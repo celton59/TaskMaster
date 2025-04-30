@@ -5,7 +5,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Calendar, MoreHorizontal, Clock, ArrowUpRight, 
   CheckCircle2, AlertCircle, AlertTriangle, Star, 
-  FlameKindling, Clock4, CircleCheck, CircleEllipsis, Circle
+  FlameKindling, Clock4, CircleCheck, CircleEllipsis, Circle,
+  Folders
 } from "lucide-react";
 import { format, isBefore, addDays, isAfter, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
@@ -23,15 +24,16 @@ import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import type { Task, Category } from "@shared/schema";
+import type { Task, Category, Project } from "@shared/schema";
 
 interface TaskCardProps {
   task: Task;
   categories: Category[];
+  projects?: Project[];
   onDragStart: () => void;
 }
 
-export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
+export function TaskCard({ task, categories, projects = [], onDragStart }: TaskCardProps) {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [isDragging, setIsDragging] = useState(false);
@@ -131,6 +133,16 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
     const category = categories.find(c => c.id === task.categoryId);
     if (!category) return { name: "Sin categoría", color: "gray" };
     return category;
+  };
+  
+  // Get project details
+  const getProject = () => {
+    // Verifica primero projectId y luego el project_id en caso de que uno u otro esté definido
+    const projectId = task.projectId || task.project_id;
+    if (!projectId) return null;
+    
+    const project = projects.find(p => p.id === projectId);
+    return project || null;
   };
   
   // Get priority badge
@@ -255,6 +267,7 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
   };
   
   const category = getCategory();
+  const project = getProject();
   const statusInfo = getStatusInfo(task.status);
   const deadlineInfo = getDeadlineInfo(task.deadline);
   
@@ -378,7 +391,7 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
         <p className="text-xs text-neon-text/70 mt-1 line-clamp-2 leading-relaxed">{task.description}</p>
       )}
       
-      <div className="flex items-center space-x-2 mt-3">
+      <div className="flex items-center flex-wrap gap-2 mt-3">
         <Badge 
           variant="outline" 
           className="rounded-md border border-neon-accent/30 bg-neon-medium/20 hover:bg-neon-medium/30 hover:border-neon-accent/40 text-neon-text/90 font-normal text-xs py-0 h-5"
@@ -392,6 +405,16 @@ export function TaskCard({ task, categories, onDragStart }: TaskCardProps) {
           }`}></div>
           {category.name}
         </Badge>
+        
+        {project && (
+          <Badge 
+            variant="outline" 
+            className="rounded-md border border-blue-500/30 bg-blue-900/20 hover:bg-blue-900/30 hover:border-blue-500/40 text-blue-400 font-normal text-xs py-0 h-5"
+          >
+            <Folders className="h-3 w-3 mr-1" />
+            {project.name}
+          </Badge>
+        )}
       </div>
       
       {/* Barra de progreso */}
