@@ -210,6 +210,40 @@ export default {
             opacity: "1",
             transform: "scale(1)"
           }
+        },
+        // Nuevos keyframes para efectos neón
+        "pulse-neon": {
+          "0%": { 
+            boxShadow: "0 0 5px rgba(0, 225, 255, 0.3), 0 0 10px rgba(0, 225, 255, 0.2)" 
+          },
+          "50%": { 
+            boxShadow: "0 0 10px rgba(0, 225, 255, 0.5), 0 0 15px rgba(0, 225, 255, 0.4), 0 0 20px rgba(0, 225, 255, 0.2)" 
+          },
+          "100%": { 
+            boxShadow: "0 0 5px rgba(0, 225, 255, 0.3), 0 0 10px rgba(0, 225, 255, 0.2)" 
+          }
+        },
+        "flow-gradient": {
+          "0%": { 
+            backgroundPosition: "0% 50%" 
+          },
+          "50%": { 
+            backgroundPosition: "100% 50%" 
+          },
+          "100%": { 
+            backgroundPosition: "0% 50%" 
+          }
+        },
+        "card-glow": {
+          "0%": { 
+            boxShadow: "0 0 8px rgba(0, 225, 255, 0.2), 0 0 16px rgba(0, 225, 255, 0.1)" 
+          },
+          "50%": { 
+            boxShadow: "0 0 16px rgba(0, 225, 255, 0.4), 0 0 24px rgba(0, 225, 255, 0.2)" 
+          },
+          "100%": { 
+            boxShadow: "0 0 8px rgba(0, 225, 255, 0.2), 0 0 16px rgba(0, 225, 255, 0.1)" 
+          }
         }
       },
       animation: {
@@ -226,7 +260,11 @@ export default {
         "rotate-slow": "rotate-slow 8s linear infinite",
         "float": "float 5s ease-in-out infinite",
         "fade-in": "fade-in 0.5s ease-out forwards",
-        "scale-up": "scale-up 0.4s ease-out forwards"
+        "scale-up": "scale-up 0.4s ease-out forwards",
+        // Nuevos efectos de neón
+        "pulse-neon": "pulse-neon 3s ease-in-out infinite",
+        "flow-gradient": "flow-gradient 8s ease infinite",
+        "card-glow": "card-glow 4s ease-in-out infinite"
       },
     },
   },

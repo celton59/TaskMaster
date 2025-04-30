@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 import { LucideIcon, ArrowUpRight, TrendingUp, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { motion } from "framer-motion";
+import { neonEffectClasses, neonCardVariants } from "@/lib/neon-effects";
 
 interface MetricCardProps {
   title: string;
@@ -28,10 +30,20 @@ export function MetricCard({
   trend,
 }: MetricCardProps) {
   return (
-    <div className="neon-card overflow-hidden shadow-[0_0_15px_rgba(0,225,255,0.15)] rounded-xl hover:shadow-[0_0_25px_rgba(0,225,255,0.25)] transition-all duration-300 group animate-fade-in border border-neon-accent/30 bg-neon-dark">
+    <motion.div 
+      className="overflow-hidden rounded-xl group animate-fade-in border border-neon-accent/30 bg-neon-dark
+        shadow-[0_0_15px_rgba(0,225,255,0.15)] hover:shadow-[0_0_25px_rgba(0,225,255,0.25)] animate-card-glow"
+      initial="default"
+      whileHover="hover"
+      whileTap="active"
+      variants={neonCardVariants}
+    >
       <div className="relative p-6">
         {/* Background gradient effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-neon-darker to-neon-dark opacity-80"></div>
+        <div className={cn(
+          "absolute inset-0 bg-gradient-to-r from-neon-darker via-neon-medium/20 to-neon-dark",
+          neonEffectClasses.flowingGradient
+        )}></div>
         
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
@@ -134,6 +146,6 @@ export function MetricCard({
         {/* Hover effect overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-neon-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform translate-x-full group-hover:translate-x-0 animate-pulse"></div>
       </div>
-    </div>
+    </motion.div>
   );
 }

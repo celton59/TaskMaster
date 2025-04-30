@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, Link } from "wouter";
+import { motion } from "framer-motion";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { TaskChart } from "@/components/dashboard/task-chart";
 import { RecentTasksList } from "@/components/dashboard/recent-tasks-list";
@@ -8,7 +9,7 @@ import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// Removed robot animation import
+import { neonEffectClasses } from "@/lib/neon-effects";
 
 import { 
   FileText, 
@@ -513,10 +514,10 @@ export default function Dashboard() {
       
       {/* Robot Animation Card */}
       <div className="grid grid-cols-1 gap-6 mt-8">
-        <Card className="neon-card border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)] overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)] overflow-hidden animate-card-glow rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker via-neon-medium/20 to-neon-dark bg-[length:200%_100%] animate-flow-gradient">
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Asistente Robótico</CardTitle>
+              <CardTitle className="text-base font-medium text-neon-accent [text-shadow:0_0_10px_rgba(0,225,255,0.5)] font-mono">Asistente Robótico</CardTitle>
               <CardDescription className="text-neon-text/70">Tu compañero de productividad</CardDescription>
             </div>
           </CardHeader>
