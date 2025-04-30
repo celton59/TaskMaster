@@ -27,9 +27,6 @@ export function TaskColumn({
   onTaskDrop,
   isLoading 
 }: TaskColumnProps) {
-  const [isDropTarget, setIsDropTarget] = useState(false);
-  const columnRef = useRef<HTMLDivElement>(null);
-  
   // Configurar la columna como un área droppable para @dnd-kit
   const { setNodeRef, isOver } = useDroppable({
     id: status,
@@ -48,28 +45,6 @@ export function TaskColumn({
   const { data: projects = [] } = useQuery<Project[]>({
     queryKey: ["/api/projects"]
   });
-  
-  // Handle drag over - para compatibilidad con navegadores antiguos
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDropTarget(true);
-  };
-  
-  // Handle drag leave - para compatibilidad con navegadores antiguos
-  const handleDragLeave = () => {
-    setIsDropTarget(false);
-  };
-  
-  // Handle drop - para compatibilidad con navegadores antiguos
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDropTarget(false);
-    
-    const taskId = parseInt(e.dataTransfer.getData("taskId"), 10);
-    if (taskId) {
-      onTaskDrop(taskId, status);
-    }
-  };
   
   // Get column styles based on status
   const getColumnStyle = () => {
@@ -105,15 +80,12 @@ export function TaskColumn({
   
   return (
     <div 
-      ref={setNodeRef}  // Usar solo la referencia de dnd-kit
+      ref={setNodeRef}
       className={cn(
         "p-3 rounded-xl border w-[280px]",
         getColumnStyle(),
-        (isDropTarget || isOver) ? "ring-2 ring-neon-accent ring-opacity-70" : ""
+        isOver ? "ring-2 ring-neon-accent ring-opacity-70" : ""
       )}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
       data-status={status}
     >
       <div className="flex items-center justify-between mb-3">
@@ -179,7 +151,7 @@ export function TaskColumn({
               task={task} 
               categories={categories}
               projects={projects}
-              onDragStart={() => setIsDropTarget(false)}
+              onDragStart={() => {}}
             />
           ))
         )}
