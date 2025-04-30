@@ -12,7 +12,8 @@ import Calendar from "@/pages/calendar";
 import Users from "@/pages/users";
 import WhatsAppSettings from "@/pages/whatsapp-settings";
 import Habits from "@/pages/habits";
-import Projects from "@/pages/projects-fixed";
+import ProjectsList from "@/pages/projects-list";
+import ProjectDetail from "@/pages/project-detail";
 import AuthPage from "@/pages/auth-page";
 import DevLoginPage from "@/pages/dev-login";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -78,8 +79,8 @@ function App() {
                     <Route path="/" component={Dashboard} />
                     <Route path="/tasks" component={Tasks} />
                     <Route path="/tasks/:id" component={TaskDetails} />
-                    <Route path="/projects" component={Projects} />
-                    <Route path="/projects/:id" component={Projects} />
+                    <Route path="/projects" component={ProjectsList} />
+                    <Route path="/projects/:id" component={ProjectDetail} />
                     <Route path="/reports" component={Reports} />
                     <Route path="/assistant" component={AIAssistant} />
                     <Route path="/calendar" component={Calendar} />
