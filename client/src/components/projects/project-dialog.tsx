@@ -1,79 +1,101 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { insertProjectSchema, InsertProject, Project, ProjectStatus } from "@shared/schema";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { apiRequest } from "@/lib/queryClient";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { CalendarIcon } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { Loader2 } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { insertProjectSchema, Project, ProjectStatus } from "@shared/schema";
+import { CalendarIcon } from "lucide-react";
 
-interface ProjectDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  project: Project | null;
-}
-
-// Extendemos el esquema para agregar validaciones adicionales
-const projectFormSchema = insertProjectSchema.extend({
-  name: z.string().min(3, "El nombre debe tener al menos 3 caracteres").max(100),
-  description: z.string().optional().nullable(),
+// Extender el esquema de inserción de proyecto para incluir validaciones de formulario
+const formSchema = insertProjectSchema.extend({
+  name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
+  description: z.string().optional(),
   color: z.string(),
-  status: z.string(),
-  startDate: z.date().optional().nullable(),
-  dueDate: z.date().optional().nullable(),
+  startDate: z.date().refine(date => date <= new Date(), {
+    message: "La fecha de inicio no puede ser posterior a hoy"
+  }),
+  dueDate: z.date().refine(date => date > new Date(), {
+    message: "La fecha límite debe ser posterior a hoy"
+  }),
+  status: z.enum([ProjectStatus.ACTIVE, ProjectStatus.COMPLETED, ProjectStatus.ARCHIVED]),
 });
 
-type ProjectFormValues = z.infer<typeof projectFormSchema>;
+// Definir los colores disponibles para los proyectos
+const colorOptions = [
+  { value: "blue", label: "Azul" },
+  { value: "green", label: "Verde" },
+  { value: "orange", label: "Naranja" },
+  { value: "purple", label: "Morado" },
+  { value: "pink", label: "Rosa" },
+  { value: "cyan", label: "Cian" },
+  { value: "red", label: "Rojo" },
+  { value: "yellow", label: "Amarillo" },
+];
+
+// Definir los estados disponibles para los proyectos
+const statusOptions = [
+  { value: ProjectStatus.ACTIVE, label: "Activo" },
+  { value: ProjectStatus.COMPLETED, label: "Completado" },
+  { value: ProjectStatus.ARCHIVED, label: "Archivado" },
+];
+
+type ProjectDialogProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  project?: Project;
+};
 
 export function ProjectDialog({ isOpen, onClose, project }: ProjectDialogProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [submitting, setSubmitting] = useState(false);
+  const isEditing = !!project;
   
-  const form = useForm<ProjectFormValues>({
-    resolver: zodResolver(projectFormSchema),
+  // Configurar el formulario con los valores por defecto
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       name: project?.name || "",
       description: project?.description || "",
-      color: project?.color || "blue", 
+      color: project?.color || "blue",
+      startDate: project?.startDate ? new Date(project.startDate) : new Date(),
+      dueDate: project?.dueDate ? new Date(project.dueDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       status: project?.status || ProjectStatus.ACTIVE,
-      startDate: project?.startDate ? new Date(project.startDate) : null,
-      dueDate: project?.dueDate ? new Date(project.dueDate) : null,
+      ownerId: project?.ownerId || 1, // Valor predeterminado, ajustar según la implementación
     },
   });
   
   // Mutación para crear un nuevo proyecto
   const createMutation = useMutation({
-    mutationFn: async (data: ProjectFormValues) => {
-      const res = await apiRequest("POST", "/api/projects", data);
+    mutationFn: async (newProject: InsertProject) => {
+      const res = await apiRequest("POST", "/api/projects", newProject);
       return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
       toast({
         title: "Proyecto creado",
-        description: "El proyecto ha sido creado exitosamente",
+        description: "El proyecto ha sido creado con éxito",
       });
       onClose();
+      form.reset();
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
-        description: `Error al crear el proyecto: ${error.message}`,
+        title: "Error al crear el proyecto",
+        description: error.message,
         variant: "destructive",
       });
     },
@@ -81,8 +103,8 @@ export function ProjectDialog({ isOpen, onClose, project }: ProjectDialogProps) 
   
   // Mutación para actualizar un proyecto existente
   const updateMutation = useMutation({
-    mutationFn: async (data: ProjectFormValues) => {
-      const res = await apiRequest("PATCH", `/api/projects/${project?.id}`, data);
+    mutationFn: async (projectData: Partial<InsertProject>) => {
+      const res = await apiRequest("PATCH", `/api/projects/${project?.id}`, projectData);
       return await res.json();
     },
     onSuccess: () => {
@@ -92,51 +114,74 @@ export function ProjectDialog({ isOpen, onClose, project }: ProjectDialogProps) 
       }
       toast({
         title: "Proyecto actualizado",
-        description: "El proyecto ha sido actualizado exitosamente",
+        description: "El proyecto ha sido actualizado con éxito",
       });
       onClose();
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
-        description: `Error al actualizar el proyecto: ${error.message}`,
+        title: "Error al actualizar el proyecto",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
   
-  // Manejador de envío del formulario
-  const onSubmit = (data: ProjectFormValues) => {
-    setSubmitting(true);
-    if (project) {
+  // Manejar el envío del formulario
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    if (isEditing && project) {
       updateMutation.mutate(data);
     } else {
       createMutation.mutate(data);
     }
   };
   
+  // Verificar si alguna de las mutaciones está en proceso
+  const isLoading = createMutation.isPending || updateMutation.isPending;
+  
+  // Previsualización de color seleccionado
+  const getColorPreview = (color: string) => {
+    const colorMap: Record<string, string> = {
+      blue: "bg-blue-500",
+      green: "bg-emerald-500",
+      orange: "bg-amber-500", 
+      purple: "bg-purple-500",
+      pink: "bg-pink-500",
+      cyan: "bg-cyan-500",
+      red: "bg-rose-500",
+      yellow: "bg-yellow-500",
+    };
+    
+    return colorMap[color] || "bg-blue-500";
+  };
+  
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] bg-neon-dark border-neon-accent/30">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[500px] bg-neon-medium/40 border-neon-accent/40 text-neon-text backdrop-blur-lg">
         <DialogHeader>
-          <DialogTitle className="text-neon-text">
-            {project ? "Editar proyecto" : "Crear nuevo proyecto"}
+          <DialogTitle className="text-xl text-neon-accent">
+            {isEditing ? "Editar proyecto" : "Crear nuevo proyecto"}
           </DialogTitle>
+          <DialogDescription>
+            {isEditing 
+              ? "Actualiza los detalles del proyecto" 
+              : "Completa la información para crear un nuevo proyecto"}
+          </DialogDescription>
         </DialogHeader>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-neon-text">Nombre del proyecto</FormLabel>
+                  <FormLabel>Nombre</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Nombre del proyecto"
+                    <Input 
+                      placeholder="Nombre del proyecto" 
                       {...field}
-                      className="bg-neon-medium/20 border-neon-accent/30 text-neon-text"
+                      className="bg-neon-dark/60 border-neon-accent/30 focus:border-neon-accent text-neon-text"
                     />
                   </FormControl>
                   <FormMessage />
@@ -149,13 +194,13 @@ export function ProjectDialog({ isOpen, onClose, project }: ProjectDialogProps) 
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-neon-text">Descripción</FormLabel>
+                  <FormLabel>Descripción</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Descripción del proyecto"
+                    <Textarea 
+                      placeholder="Descripción del proyecto" 
+                      className="bg-neon-dark/60 border-neon-accent/30 focus:border-neon-accent text-neon-text resize-none"
                       {...field}
                       value={field.value || ''}
-                      className="bg-neon-medium/20 border-neon-accent/30 text-neon-text min-h-[100px]"
                     />
                   </FormControl>
                   <FormMessage />
@@ -163,25 +208,99 @@ export function ProjectDialog({ isOpen, onClose, project }: ProjectDialogProps) 
               )}
             />
             
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Color</FormLabel>
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-4 h-4 rounded-full ${getColorPreview(field.value)}`}></div>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-neon-dark/60 border-neon-accent/30 text-neon-text">
+                            <SelectValue placeholder="Seleccionar color" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-neon-medium border-neon-accent/30">
+                          {colorOptions.map(color => (
+                            <SelectItem 
+                              key={color.value} 
+                              value={color.value}
+                              className="text-neon-text focus:bg-neon-accent/20 focus:text-neon-text"
+                            >
+                              <div className="flex items-center">
+                                <div className={`w-3 h-3 rounded-full ${getColorPreview(color.value)} mr-2`}></div>
+                                {color.label}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {isEditing && (
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Estado</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-neon-dark/60 border-neon-accent/30 text-neon-text">
+                            <SelectValue placeholder="Seleccionar estado" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-neon-medium border-neon-accent/30">
+                          {statusOptions.map(status => (
+                            <SelectItem 
+                              key={status.value} 
+                              value={status.value}
+                              className="text-neon-text focus:bg-neon-accent/20 focus:text-neon-text"
+                            >
+                              {status.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="startDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-neon-text">Fecha de inicio</FormLabel>
+                    <FormLabel>Fecha de inicio</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant="outline"
+                            variant={"outline"}
                             className={cn(
-                              "pl-3 text-left font-normal bg-neon-medium/20 border-neon-accent/30 text-neon-text",
+                              "pl-3 text-left font-normal bg-neon-dark/60 border-neon-accent/30 text-neon-text",
                               !field.value && "text-muted-foreground"
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP", { locale: es })
+                              format(field.value, "PPP")
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
@@ -189,16 +308,13 @@ export function ProjectDialog({ isOpen, onClose, project }: ProjectDialogProps) 
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-neon-dark border-neon-accent/30" align="start">
+                      <PopoverContent className="w-auto p-0 bg-neon-medium border-neon-accent/30" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value || undefined}
+                          selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date("1900-01-01")
-                          }
                           initialFocus
-                          className="text-neon-text"
+                          className="bg-neon-medium text-neon-text"
                         />
                       </PopoverContent>
                     </Popover>
@@ -212,19 +328,19 @@ export function ProjectDialog({ isOpen, onClose, project }: ProjectDialogProps) 
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-neon-text">Fecha límite</FormLabel>
+                    <FormLabel>Fecha límite</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant="outline"
+                            variant={"outline"}
                             className={cn(
-                              "pl-3 text-left font-normal bg-neon-medium/20 border-neon-accent/30 text-neon-text",
+                              "pl-3 text-left font-normal bg-neon-dark/60 border-neon-accent/30 text-neon-text",
                               !field.value && "text-muted-foreground"
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP", { locale: es })
+                              format(field.value, "PPP")
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
@@ -232,16 +348,14 @@ export function ProjectDialog({ isOpen, onClose, project }: ProjectDialogProps) 
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 bg-neon-dark border-neon-accent/30" align="start">
+                      <PopoverContent className="w-auto p-0 bg-neon-medium border-neon-accent/30" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value || undefined}
+                          selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date("1900-01-01")
-                          }
                           initialFocus
-                          className="text-neon-text"
+                          className="bg-neon-medium text-neon-text"
+                          fromDate={new Date()}
                         />
                       </PopoverContent>
                     </Popover>
@@ -251,85 +365,23 @@ export function ProjectDialog({ isOpen, onClose, project }: ProjectDialogProps) 
               />
             </div>
             
-            <FormField
-              control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-neon-text">Color del proyecto</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="bg-neon-medium/20 border-neon-accent/30 text-neon-text">
-                        <SelectValue placeholder="Seleccionar color" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-neon-dark border-neon-accent/30">
-                      <SelectItem value="blue" className="text-blue-400">Azul</SelectItem>
-                      <SelectItem value="purple" className="text-purple-400">Púrpura</SelectItem>
-                      <SelectItem value="green" className="text-emerald-400">Verde</SelectItem>
-                      <SelectItem value="orange" className="text-amber-400">Naranja</SelectItem>
-                      <SelectItem value="cyan" className="text-cyan-400">Cian</SelectItem>
-                      <SelectItem value="pink" className="text-pink-400">Rosa</SelectItem>
-                      <SelectItem value="red" className="text-rose-400">Rojo</SelectItem>
-                      <SelectItem value="yellow" className="text-yellow-400">Amarillo</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {project && (
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel className="text-neon-text">Estado del proyecto</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex flex-row space-x-4"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value={ProjectStatus.ACTIVE} id="active" className="border-neon-accent/50 text-neon-accent" />
-                          <Label htmlFor="active" className="text-neon-text">Activo</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value={ProjectStatus.COMPLETED} id="completed" className="border-emerald-400/50 text-emerald-400" />
-                          <Label htmlFor="completed" className="text-neon-text">Completado</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value={ProjectStatus.ARCHIVED} id="archived" className="border-slate-400/50 text-slate-400" />
-                          <Label htmlFor="archived" className="text-neon-text">Archivado</Label>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            
-            <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
+            <DialogFooter className="mt-6">
+              <Button
+                type="button"
+                variant="outline"
                 onClick={onClose}
-                className="bg-transparent border-neon-accent/50 text-neon-text hover:bg-neon-accent/10"
+                className="bg-neon-dark/60 border-neon-accent/30 text-neon-text hover:bg-neon-dark"
+                disabled={isLoading}
               >
                 Cancelar
               </Button>
               <Button 
                 type="submit"
-                disabled={submitting}
                 className="bg-neon-accent hover:bg-neon-accent/80 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                disabled={isLoading}
               >
-                {submitting ? "Enviando..." : project ? "Actualizar" : "Crear"}
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isEditing ? "Actualizar" : "Crear"}
               </Button>
             </DialogFooter>
           </form>

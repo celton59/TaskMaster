@@ -12,7 +12,7 @@ import Calendar from "@/pages/calendar";
 import Users from "@/pages/users";
 import WhatsAppSettings from "@/pages/whatsapp-settings";
 import Habits from "@/pages/habits";
-import Projects from "@/pages/projects";
+import Projects from "@/pages/projects-fixed";
 import AuthPage from "@/pages/auth-page";
 import DevLoginPage from "@/pages/dev-login";
 import { Sidebar } from "@/components/layout/sidebar";
