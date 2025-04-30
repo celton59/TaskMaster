@@ -64,36 +64,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   apiRouter.post("/tasks", async (req, res) => {
     try {
-      const taskData = insertTaskSchema.parse(req.body);
-      const task = await storage.createTask(taskData);
+      console.log("Recibiendo datos para crear tarea:", req.body);
+      
+      // Convertir el string ISO de fecha a objeto Date para el deadline
+      let taskData = { ...req.body };
+      if (taskData.deadline && typeof taskData.deadline === 'string') {
+        try {
+          // Parsear la fecha y convertirla a un formato que acepte la BD
+          const date = new Date(taskData.deadline);
+          if (!isNaN(date.getTime())) {
+            taskData.deadline = date;
+          } else {
+            taskData.deadline = null;
+          }
+        } catch (e) {
+          console.error("Error al convertir fecha deadline:", e);
+          taskData.deadline = null;
+        }
+      }
+      
+      // Validar datos
+      const validatedTaskData = insertTaskSchema.parse(taskData);
+      console.log("Datos validados para crear tarea:", validatedTaskData);
+      
+      // Crear tarea
+      const task = await storage.createTask(validatedTaskData);
+      console.log("Tarea creada correctamente:", task);
       res.status(201).json(task);
     } catch (error) {
+      console.error("Error al crear tarea:", error);
       if (error instanceof ZodError) {
         const validationError = fromZodError(error);
         return res.status(400).json({ message: validationError.message });
       }
-      res.status(500).json({ message: "Failed to create task" });
+      res.status(500).json({ message: "Failed to create task", error: String(error) });
     }
   });
   
   apiRouter.patch("/tasks/:id", async (req, res) => {
     try {
+      console.log("Recibiendo datos para actualizar tarea:", req.body);
       const id = parseInt(req.params.id);
-      const taskData = insertTaskSchema.partial().parse(req.body);
       
-      const updatedTask = await storage.updateTask(id, taskData);
+      // Convertir el string ISO de fecha a objeto Date para el deadline
+      let taskData = { ...req.body };
+      if (taskData.deadline && typeof taskData.deadline === 'string') {
+        try {
+          // Parsear la fecha y convertirla a un formato que acepte la BD
+          const date = new Date(taskData.deadline);
+          if (!isNaN(date.getTime())) {
+            taskData.deadline = date;
+          } else {
+            taskData.deadline = null;
+          }
+        } catch (e) {
+          console.error("Error al convertir fecha deadline:", e);
+          taskData.deadline = null;
+        }
+      }
+      
+      // Manejar otras fechas como startDate y completedAt
+      if (taskData.startDate && typeof taskData.startDate === 'string') {
+        try {
+          const date = new Date(taskData.startDate);
+          if (!isNaN(date.getTime())) {
+            taskData.startDate = date;
+          } else {
+            taskData.startDate = null;
+          }
+        } catch (e) {
+          taskData.startDate = null;
+        }
+      }
+      
+      if (taskData.completedAt && typeof taskData.completedAt === 'string') {
+        try {
+          const date = new Date(taskData.completedAt);
+          if (!isNaN(date.getTime())) {
+            taskData.completedAt = date;
+          } else {
+            taskData.completedAt = null;
+          }
+        } catch (e) {
+          taskData.completedAt = null;
+        }
+      }
+      
+      // Validar datos
+      const validatedTaskData = insertTaskSchema.partial().parse(taskData);
+      console.log("Datos validados para actualizar tarea:", validatedTaskData);
+      
+      const updatedTask = await storage.updateTask(id, validatedTaskData);
       
       if (!updatedTask) {
         return res.status(404).json({ message: "Task not found" });
       }
       
+      console.log("Tarea actualizada correctamente:", updatedTask);
       res.json(updatedTask);
     } catch (error) {
+      console.error("Error al actualizar tarea:", error);
       if (error instanceof ZodError) {
         const validationError = fromZodError(error);
         return res.status(400).json({ message: validationError.message });
       }
-      res.status(500).json({ message: "Failed to update task" });
+      res.status(500).json({ message: "Failed to update task", error: String(error) });
     }
   });
   
