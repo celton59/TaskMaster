@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -34,11 +34,25 @@ interface TaskCardProps {
   onDragStart: () => void;
 }
 
-export function TaskCard({ task, categories, projects = [], onDragStart }: TaskCardProps) {
+export function TaskCard({ task, categories, projects = [], onDragStart: parentOnDragStart }: TaskCardProps) {
   const { toast } = useToast();
   const [, navigate] = useLocation();
-  const [isDragging, setIsDragging] = useState(false);
-  const dragRef = useRef<HTMLDivElement>(null);
+  
+  // Configurar la tarea como un elemento draggable para @dnd-kit
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: task.id,
+    data: {
+      type: 'task',
+      task,
+    },
+  });
+  
+  // Notificar al padre cuando comience el arrastre
+  useEffect(() => {
+    if (isDragging) {
+      parentOnDragStart();
+    }
+  }, [isDragging, parentOnDragStart]);
   
   // Format the date
   const formatDate = (date: Date | string | null) => {
@@ -274,18 +288,6 @@ export function TaskCard({ task, categories, projects = [], onDragStart }: TaskC
   const statusInfo = getStatusInfo(task.status);
   const deadlineInfo = getDeadlineInfo(task.deadline);
   
-  // Handle drag start
-  const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData("taskId", task.id.toString());
-    setIsDragging(true);
-    onDragStart();
-  };
-  
-  // Handle drag end
-  const handleDragEnd = () => {
-    setIsDragging(false);
-  };
-  
   // Get card border and background styles
   const getCardStyles = () => {
     // Aplica estilo basado en estado
@@ -325,23 +327,25 @@ export function TaskCard({ task, categories, projects = [], onDragStart }: TaskC
   
   return (
     <motion.div
-      ref={dragRef}
+      ref={setNodeRef}
       className={cn(
         "task-card p-4 rounded-lg shadow-md border border-neon-accent/20 cursor-grab group",
         "border-l-4",
         getCardStyles(),
         isDragging ? 'opacity-50 scale-95' : ''
       )}
-      draggable
-      onDragStart={(e) => handleDragStart(e)}
-      onDragEnd={() => handleDragEnd()}
+      {...attributes}
+      {...listeners}
+      style={{
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+      }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      whileHover={{ 
+      whileHover={!isDragging ? { 
         y: -2, 
         boxShadow: "0 8px 24px -4px rgba(0, 225, 255, 0.15)"
-      }}
+      } : undefined}
       data-task-id={task.id}
       data-priority={task.priority}
       data-status={task.status}

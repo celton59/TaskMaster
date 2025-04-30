@@ -105,10 +105,7 @@ export function TaskColumn({
   
   return (
     <div 
-      ref={(node) => {
-        columnRef.current = node;  // Mantener la referencia original
-        setNodeRef(node);          // Configurar como un área droppable para @dnd-kit
-      }}
+      ref={setNodeRef}  // Usar solo la referencia de dnd-kit
       className={cn(
         "p-3 rounded-xl border w-[280px]",
         getColumnStyle(),
