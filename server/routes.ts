@@ -28,10 +28,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Task routes
   apiRouter.get("/tasks", async (req, res) => {
     try {
+      console.log("Obteniendo todas las tareas...");
       const tasks = await storage.getTasks();
+      console.log("Tareas obtenidas:", tasks.length);
       res.json(tasks);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch tasks" });
+      console.error("ERROR al obtener tareas:", error);
+      res.status(500).json({ message: "Failed to fetch tasks", error: String(error) });
     }
   });
   

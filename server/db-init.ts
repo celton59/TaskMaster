@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 import { migrate } from 'drizzle-orm/neon-http/migrator';
-import { users, categories, tasks, TaskStatus } from '@shared/schema';
+import { users, categories, tasks, projects, TaskStatus, ProjectStatus } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 /**
@@ -24,6 +24,7 @@ async function main() {
       await db.select().from(users).limit(1);
       await db.select().from(categories).limit(1);
       await db.select().from(tasks).limit(1);
+      await db.select().from(projects).limit(1);
       console.log("Las tablas ya existen en la base de datos");
     } catch (error) {
       console.log("Las tablas no existen. Creando tablas...");
@@ -53,12 +54,16 @@ async function main() {
           id SERIAL PRIMARY KEY,
           title TEXT NOT NULL,
           description TEXT,
-          status TEXT NOT NULL,
+          status TEXT NOT NULL DEFAULT 'pending',
           priority TEXT,
-          "categoryId" INTEGER REFERENCES categories(id),
+          category_id INTEGER REFERENCES categories(id),
+          project_id INTEGER,
           deadline TIMESTAMP,
-          "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          "assignedTo" INTEGER REFERENCES users(id)
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+          assigned_to INTEGER REFERENCES users(id),
+          "order" INTEGER DEFAULT 0,
+          start_date TIMESTAMP,
+          completed_at TIMESTAMP
         );
       `);
       
@@ -105,30 +110,39 @@ async function main() {
           description: "Recopilar y analizar los datos del último trimestre para el informe ejecutivo.",
           status: TaskStatus.PENDING,
           priority: "alta",
-          categoryId: 1,
+          category_id: 1,
           deadline: nextWeek,
-          assignedTo: 1,
-          createdAt: today
+          assigned_to: 1,
+          order: 0,
+          start_date: today,
+          completed_at: null,
+          created_at: today
         },
         {
           title: "Preparar presentación de ventas",
           description: "Elaborar diapositivas para la reunión de ventas del próximo mes.",
           status: TaskStatus.IN_PROGRESS,
           priority: "media",
-          categoryId: 1,
+          category_id: 1,
           deadline: tomorrow,
-          assignedTo: 1,
-          createdAt: today
+          assigned_to: 1,
+          order: 1,
+          start_date: today,
+          completed_at: null,
+          created_at: today
         },
         {
           title: "Revisar correos electrónicos",
           description: "Responder a correos pendientes y organizar bandeja de entrada.",
           status: TaskStatus.COMPLETED,
           priority: "baja",
-          categoryId: 1,
+          category_id: 1,
           deadline: today,
-          assignedTo: 1,
-          createdAt: today
+          assigned_to: 1,
+          order: 2,
+          start_date: today,
+          completed_at: today,
+          created_at: today
         }
       ]);
     }
