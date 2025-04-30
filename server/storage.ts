@@ -756,23 +756,29 @@ export class PostgresStorage implements IStorage {
     try {
       console.log("Creando tarea con datos:", task);
       
-      // En lugar de usar execute con SQL parametrizada, usamos insert directo
-      const newTask = {
-        title: task.title,
-        description: task.description,
-        status: task.status || 'pending',
-        priority: task.priority,
-        categoryId: task.categoryId || null,
-        deadline: task.deadline,
-        assignedTo: task.assignedTo || null,
-        createdAt: new Date()
-      };
+      // Vamos a hacer una inserción manual con SQL crudo para controlar exactamente las columnas
+      const result = await this.db.execute(
+        `INSERT INTO tasks (
+          title, description, status, priority, "categoryId", 
+          deadline, "assignedTo", "createdAt"
+        ) VALUES (
+          $1, $2, $3, $4, $5, 
+          $6, $7, $8
+        ) RETURNING *`,
+        [
+          task.title,
+          task.description,
+          task.status || 'pending',
+          task.priority,
+          task.categoryId || null,
+          task.deadline,
+          task.assignedTo || null,
+          new Date() // createdAt
+        ]
+      );
       
-      // Usamos drizzle ORM directamente para evitar problemas con los parámetros
-      const result = await this.db.insert(tasks).values(newTask).returning();
-      
-      console.log("Tarea creada con éxito:", result[0]);
-      return result[0];
+      console.log("Tarea creada con éxito:", result.rows[0]);
+      return result.rows[0] as Task;
     } catch (error) {
       console.error("Error al crear tarea:", error);
       throw error;
