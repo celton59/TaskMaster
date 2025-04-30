@@ -35,7 +35,8 @@ export default function ProjectDetail() {
     project: Project;
     tasks: Task[];
   }>({
-    queryKey: ['/api/projects', projectId],
+    // Usar la ruta correcta para obtener el proyecto con sus tareas
+    queryKey: [`/api/projects/${projectId}/with-tasks`],
     enabled: !!projectId,
   });
   
