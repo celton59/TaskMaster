@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -102,8 +102,10 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
   });
   
   // Set form values when editing task data is loaded
-  useState(() => {
+  // Usamos useEffect en lugar de useState para que se ejecute cuando cambie taskData
+  useEffect(() => {
     if (taskData) {
+      console.log("Configurando formulario con datos de tarea:", taskData);
       form.reset({
         ...taskData,
         deadline: taskData.deadline ? new Date(taskData.deadline) : null,
@@ -113,7 +115,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
         setSelectedDate(new Date(taskData.deadline));
       }
     }
-  });
+  }, [taskData, form]);
   
   // Create task mutation
   const createTaskMutation = useMutation({
