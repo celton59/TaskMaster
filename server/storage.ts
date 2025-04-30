@@ -867,18 +867,28 @@ export class PostgresStorage implements IStorage {
   
   async getProjectWithTasks(id: number): Promise<{ project: Project; tasks: Task[] }> {
     try {
-      const project = await this.getProject(id);
+      // Implementar una versión optimizada para obtener el proyecto y sus tareas
+      console.time(`getProjectWithTasks:${id}`);
+      
+      // Obtenemos primero el proyecto
+      const projectResult = await this.db.execute(`SELECT * FROM projects WHERE id = ${id}`);
+      const project = projectResult.rows[0] as Project;
+      
       if (!project) {
         throw new Error(`Project with id ${id} not found`);
       }
       
-      // Obtener tareas del proyecto usando consulta directa
-      const result = await this.db.execute(`SELECT * FROM tasks WHERE project_id = ${id} ORDER BY "order" ASC`);
+      // Obtenemos las tareas del proyecto con una única consulta
+      const tasksResult = await this.db.execute(`
+        SELECT * FROM tasks 
+        WHERE project_id = ${id} 
+        ORDER BY "order" ASC
+      `);
       
-      return {
-        project,
-        tasks: result.rows as Task[]
-      };
+      const tasks = tasksResult.rows as Task[];
+      
+      console.timeEnd(`getProjectWithTasks:${id}`);
+      return { project, tasks };
     } catch (error) {
       console.error(`Error al obtener proyecto con tareas (ID: ${id}):`, error);
       throw error;
@@ -890,17 +900,43 @@ export class PostgresStorage implements IStorage {
     completedTasks: number;
     percentage: number;
   }> {
-    const projectTasks = await this.getTasksByProject(id);
-    
-    const totalTasks = projectTasks.length;
-    const completedTasks = projectTasks.filter(task => task.status === TaskStatus.COMPLETED).length;
-    const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-    
-    return {
-      totalTasks,
-      completedTasks,
-      percentage
-    };
+    try {
+      console.time(`getProjectProgress:${id}`);
+      
+      // Usar una única consulta SQL para calcular las estadísticas
+      const query = `
+        SELECT 
+          COUNT(*) as "totalTasks", 
+          COUNT(CASE WHEN status = 'completed' THEN 1 END) as "completedTasks",
+          CASE 
+            WHEN COUNT(*) > 0 THEN 
+              ROUND((COUNT(CASE WHEN status = 'completed' THEN 1 END)::float / COUNT(*)::float) * 100)
+            ELSE 0
+          END as "percentage"
+        FROM tasks
+        WHERE project_id = ${id}
+      `;
+      
+      const result = await this.db.execute(query);
+      const rawStats = result.rows[0] || { totalTasks: "0", completedTasks: "0", percentage: "0" };
+      
+      // Convertir los valores a números
+      const stats = {
+        totalTasks: parseInt(rawStats.totalTasks as string) || 0,
+        completedTasks: parseInt(rawStats.completedTasks as string) || 0,
+        percentage: parseInt(rawStats.percentage as string) || 0
+      };
+      
+      console.timeEnd(`getProjectProgress:${id}`);
+      return stats;
+    } catch (error) {
+      console.error(`Error al obtener progreso del proyecto ${id}:`, error);
+      return {
+        totalTasks: 0,
+        completedTasks: 0,
+        percentage: 0
+      };
+    }
   }
   
   async getTasksByProject(projectId: number): Promise<Task[]> {
