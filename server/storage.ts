@@ -664,7 +664,7 @@ export class MemStorage implements IStorage {
 
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import { eq, gte, lte, and } from 'drizzle-orm';
+import { eq, gte, lte, and, sql, asc } from 'drizzle-orm';
 
 // Implementación de almacenamiento PostgreSQL
 export class PostgresStorage implements IStorage {
@@ -672,8 +672,8 @@ export class PostgresStorage implements IStorage {
   
   constructor() {
     // Configurar la conexión a PostgreSQL usando variables de entorno
-    const sql = neon(process.env.DATABASE_URL!);
-    this.db = drizzle(sql, { 
+    const neonClient = neon(process.env.DATABASE_URL!);
+    this.db = drizzle(neonClient, { 
       schema: { 
         users, tasks, categories, projects,
         whatsappContacts, whatsappMessages,
@@ -744,11 +744,8 @@ export class PostgresStorage implements IStorage {
   
   async getTasksByCategory(categoryId: number): Promise<Task[]> {
     // Ahora sabemos que la base de datos usa camelCase igual que en TypeScript
-    // Usamos SQL crudo con el nombre correcto de la columna
-    const result = await this.db.execute(
-      `SELECT * FROM tasks WHERE "categoryId" = $1`,
-      [categoryId]
-    );
+    // Usamos SQL crudo con el nombre correcto de la columna y arreglamos los parámetros
+    const result = await this.db.execute(`SELECT * FROM tasks WHERE "categoryId" = ${categoryId}`);
     return result.rows as Task[];
   }
   
@@ -875,15 +872,12 @@ export class PostgresStorage implements IStorage {
         throw new Error(`Project with id ${id} not found`);
       }
       
-      // Obtener tareas del proyecto en la misma operación
-      const projectTasks = await this.db.select()
-        .from(tasks)
-        .where(sql`project_id = ${id}`)
-        .orderBy(asc(tasks.order));
+      // Obtener tareas del proyecto usando consulta directa
+      const result = await this.db.execute(`SELECT * FROM tasks WHERE project_id = ${id} ORDER BY "order" ASC`);
       
       return {
         project,
-        tasks: projectTasks
+        tasks: result.rows as Task[]
       };
     } catch (error) {
       console.error(`Error al obtener proyecto con tareas (ID: ${id}):`, error);
@@ -911,12 +905,10 @@ export class PostgresStorage implements IStorage {
   
   async getTasksByProject(projectId: number): Promise<Task[]> {
     try {
-      // Usar consulta parametrizada con Drizzle en lugar de SQL directo
-      const result = await this.db.select()
-        .from(tasks)
-        .where(sql`project_id = ${projectId}`);
+      // Usar consulta SQL directa
+      const result = await this.db.execute(`SELECT * FROM tasks WHERE project_id = ${projectId} ORDER BY "order" ASC`);
       
-      return result;
+      return result.rows as Task[];
     } catch (error) {
       console.error(`Error al obtener tareas para el proyecto ${projectId}:`, error);
       return [];
