@@ -107,6 +107,14 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     
     // If the task status already matches the column, do nothing
     if (task && task.status === overColumnId) return;
+    
+    // Actualizamos el estado de la tarea temporalmente para dar feedback visual
+    // La actualización real se hará en handleDragEnd
+    setFilteredTasks(prevTasks => prevTasks.map(t => 
+      t.id === activeTaskId 
+        ? { ...t, status: overColumnId } 
+        : t
+    ));
   };
   
   // Handle drag end
