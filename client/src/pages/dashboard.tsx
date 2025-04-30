@@ -109,17 +109,22 @@ export default function Dashboard() {
             <Button 
               variant="outline"
               size="sm" 
-              className="h-9 border-neon-green/50 text-neon-text hover:bg-neon-green/10 hover:text-neon-green rounded-md transition-all neon-button-green"
+              className="h-9 bg-neon-dark/80 border border-neon-green/50 text-neon-green/80 
+              hover:bg-neon-green/10 hover:text-neon-green hover:border-neon-green/70 rounded-md 
+              transition-all duration-300 shadow-[0_0_8px_rgba(0,255,157,0.2)] 
+              hover:shadow-[0_0_12px_rgba(0,255,157,0.4)]"
             >
-              <Mail className="mr-2 h-4 w-4 text-neon-green/80" />
+              <Mail className="mr-2 h-4 w-4 text-neon-green" />
               Reportes
             </Button>
             <Button 
               onClick={() => setIsTaskFormOpen(true)}
               size="sm" 
-              className="h-9 shadow-glow bg-neon-pink hover:bg-neon-pink/90 text-neon-darker rounded-md transition-all font-medium"
+              className="h-9 bg-gradient-to-r from-neon-pink to-neon-pink/80 hover:from-neon-pink/90 hover:to-neon-pink 
+              text-neon-darker rounded-md transition-all font-medium shadow-[0_0_10px_rgba(255,0,230,0.4)] 
+              hover:shadow-[0_0_15px_rgba(255,0,230,0.6)] border border-neon-pink/50"
             >
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4 animate-pulse-slow" />
               Nueva tarea
             </Button>
           </div>
@@ -142,10 +147,13 @@ export default function Dashboard() {
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigate("/tasks")}
-                className="h-8 border-neon-accent/50 hover:bg-neon-accent/10 text-neon-text hover:text-neon-accent rounded-md neon-button"
+                className="h-8 bg-neon-dark/80 border border-neon-accent/50 text-neon-accent/80 
+                hover:bg-neon-accent/10 hover:text-neon-accent hover:border-neon-accent/70 rounded-md 
+                transition-all duration-300 shadow-[0_0_8px_rgba(0,225,255,0.2)] 
+                hover:shadow-[0_0_12px_rgba(0,225,255,0.4)]"
               >
                 Ver tareas
-                <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+                <ArrowUpRight className="ml-1.5 h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </Button>
             </div>
           </CardHeader>
@@ -574,8 +582,12 @@ export default function Dashboard() {
               <div className="pt-2">
                 <Button 
                   onClick={() => navigate("/ai-assistant")}
-                  className="bg-neon-accent hover:bg-neon-accent/90 text-neon-darker font-medium shadow-[0_0_10px_rgba(0,225,255,0.3)]"
+                  className="bg-gradient-to-r from-neon-accent to-neon-accent/80 hover:from-neon-accent/90 hover:to-neon-accent 
+                  text-neon-darker font-medium shadow-[0_0_15px_rgba(0,225,255,0.4)] 
+                  hover:shadow-[0_0_20px_rgba(0,225,255,0.6)] transition-all duration-300 
+                  border border-neon-accent/50 animate-pulse-slow"
                 >
+                  <span className="mr-2">💬</span>
                   Hablar con el asistente
                 </Button>
               </div>
