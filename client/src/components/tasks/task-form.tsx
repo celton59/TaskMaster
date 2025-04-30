@@ -320,8 +320,8 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                   <FormItem>
                     <FormLabel className="text-foreground font-medium">Proyecto</FormLabel>
                     <Select 
-                      onValueChange={(value) => field.onChange(value ? parseInt(value, 10) : null)} 
-                      defaultValue={field.value?.toString()}
+                      onValueChange={(value) => field.onChange(value === "null" ? null : parseInt(value, 10))} 
+                      defaultValue={field.value?.toString() || "null"}
                     >
                       <FormControl>
                         <SelectTrigger className="bg-background border-border text-foreground focus-visible:ring-offset-0 focus-visible:ring-[#00E1FF]/50">
@@ -329,7 +329,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="0">Sin proyecto</SelectItem>
+                        <SelectItem value="null">Sin proyecto</SelectItem>
                         {projects.map((project) => (
                           <SelectItem key={project.id} value={project.id.toString()}>
                             {project.name}
