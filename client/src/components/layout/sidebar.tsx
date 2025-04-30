@@ -29,7 +29,8 @@ import {
   CheckCircle2,
   Bot,
   MessageCircle,
-  Activity
+  Activity,
+  FolderKanban
 } from "lucide-react";
 import type { Category } from "@shared/schema";
 
@@ -126,6 +127,12 @@ export function Sidebar() {
               href="/tasks" 
               icon={<ListTodo className="h-5 w-5" />} 
               label="Gestión de tareas" 
+            />
+            
+            <NavLink 
+              href="/projects" 
+              icon={<FolderKanban className="h-5 w-5" />} 
+              label="Proyectos" 
             />
             
             <NavLink 
@@ -256,6 +263,11 @@ export function Sidebar() {
                     href="/tasks" 
                     icon={<ListTodo className="h-5 w-5" />} 
                     label="Tareas" 
+                  />
+                  <NavLink 
+                    href="/projects" 
+                    icon={<FolderKanban className="h-5 w-5" />} 
+                    label="Proyectos" 
                   />
                   <NavLink 
                     href="/habits" 
