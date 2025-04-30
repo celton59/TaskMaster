@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useParams } from "wouter";
 import { Project, ProjectStatus, Task } from "@shared/schema";
@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProjectTimeline } from "@/components/projects/project-timeline";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { 
@@ -16,12 +18,15 @@ import {
   AlertCircle,
   ChevronRight,
   Plus,
-  PenLine
+  PenLine,
+  BarChart4,
+  ClipboardList
 } from "lucide-react";
 
 export default function ProjectDetail() {
   const [, setLocation] = useLocation();
   const params = useParams();
+  const [activeTab, setActiveTab] = useState("lista");
   
   // Obtener el ID del proyecto de los parámetros
   const projectId = params?.id ? parseInt(params.id, 10) : undefined;
@@ -283,31 +288,56 @@ export default function ProjectDetail() {
               No hay tareas asociadas a este proyecto.
             </div>
           ) : (
-            <div className="space-y-2">
-              {tasksArray.map(task => (
-                <div
-                  key={task.id}
-                  className="flex items-center justify-between p-3 bg-neon-dark rounded-md border border-neon-accent/10 hover:border-neon-accent/30 transition-all duration-300 cursor-pointer"
-                  onClick={() => setLocation(`/tasks/${task.id}`)}
+            <Tabs defaultValue="lista" value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4 bg-neon-dark">
+                <TabsTrigger 
+                  value="lista" 
+                  className="data-[state=active]:bg-neon-accent/20 data-[state=active]:border-b-2 data-[state=active]:border-neon-accent data-[state=active]:shadow-none data-[state=active]:text-neon-accent"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className={`h-2 w-2 rounded-full ${
-                      task.status === 'completed' ? 'bg-emerald-500' :
-                      task.status === 'in_progress' || task.status === 'in-progress' ? 'bg-amber-500' :
-                      task.status === 'review' ? 'bg-blue-500' :
-                      'bg-rose-500'
-                    }`}></div>
-                    <span className="text-neon-text font-medium">{task.title}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge className="bg-neon-medium border-0 text-neon-text text-xs">
-                      {task.priority || "Normal"}
-                    </Badge>
-                    <ChevronRight className="h-4 w-4 text-neon-accent/70" />
-                  </div>
+                  <ClipboardList className="h-4 w-4 mr-2" />
+                  Lista de Tareas
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="timeline" 
+                  className="data-[state=active]:bg-neon-accent/20 data-[state=active]:border-b-2 data-[state=active]:border-neon-accent data-[state=active]:shadow-none data-[state=active]:text-neon-accent"
+                >
+                  <BarChart4 className="h-4 w-4 mr-2" />
+                  Línea de Tiempo
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="lista" className="mt-0">
+                <div className="space-y-2">
+                  {tasksArray.map(task => (
+                    <div
+                      key={task.id}
+                      className="flex items-center justify-between p-3 bg-neon-dark rounded-md border border-neon-accent/10 hover:border-neon-accent/30 transition-all duration-300 cursor-pointer"
+                      onClick={() => setLocation(`/tasks/${task.id}`)}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`h-2 w-2 rounded-full ${
+                          task.status === 'completed' ? 'bg-emerald-500' :
+                          task.status === 'in_progress' || task.status === 'in-progress' ? 'bg-amber-500' :
+                          task.status === 'review' ? 'bg-blue-500' :
+                          'bg-rose-500'
+                        }`}></div>
+                        <span className="text-neon-text font-medium">{task.title}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-neon-medium border-0 text-neon-text text-xs">
+                          {task.priority || "Normal"}
+                        </Badge>
+                        <ChevronRight className="h-4 w-4 text-neon-accent/70" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </TabsContent>
+              
+              <TabsContent value="timeline" className="mt-0">
+                <ProjectTimeline tasks={tasksArray} />
+              </TabsContent>
+            </Tabs>
           )}
         </CardContent>
       </Card>
