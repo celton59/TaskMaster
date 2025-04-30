@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import React, { useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { TaskColumn } from "@/components/tasks/task-column";
 import { TaskFilter } from "@/components/tasks/task-filter";
 import { Button } from "@/components/ui/button";

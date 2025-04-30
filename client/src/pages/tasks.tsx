@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { TaskBoard } from "@/components/tasks/task-board";
+import { SimpleTaskBoard } from "@/components/tasks/new/simple-task-board";
 import { TaskList } from "@/components/tasks/task-list";
 import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
