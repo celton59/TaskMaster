@@ -5,9 +5,23 @@ import { TaskColumn } from "@/components/tasks/task-column";
 import { TaskFilter } from "@/components/tasks/task-filter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Plus, Filter, LayoutGrid, ArrowDownUp } from "lucide-react";
+import { Filter, ArrowDownUp } from "lucide-react";
 import { Task, Category } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { 
+  DndContext, 
+  DragOverlay,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragStartEvent, 
+  DragOverEvent,
+  DragEndEvent
+} from "@dnd-kit/core";
+import { restrictToWindowEdges } from '@dnd-kit/modifiers';
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -19,6 +33,17 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  
+  // Set up DnD sensors for different interaction methods
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // Minimum drag distance for activation
+      },
+    }),
+    useSensor(KeyboardSensor, {})
+  );
   
   // Update filtered tasks when tasks or filter changes
   useEffect(() => {
@@ -50,7 +75,69 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     }
   });
   
-  // Handle drag and drop
+  // Find task by ID helper
+  const findTaskById = (id: number): Task | undefined => {
+    return tasks.find(task => task.id === id);
+  };
+  
+  // Handle drag start
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const taskId = parseInt(active.id.toString());
+    const task = findTaskById(taskId);
+    
+    if (task) {
+      setActiveTask(task);
+    }
+  };
+  
+  // Handle drag over
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    
+    if (!over) return;
+    
+    // Extract task ID from active drag item
+    const activeTaskId = parseInt(active.id.toString());
+    // Extract column ID (status) from the drop target
+    const overColumnId = over.id.toString();
+    
+    // Find the task being dragged
+    const task = findTaskById(activeTaskId);
+    
+    // If the task status already matches the column, do nothing
+    if (task && task.status === overColumnId) return;
+  };
+  
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    // Reset active task
+    setActiveTask(null);
+    
+    if (!over) return;
+    
+    // Extract task ID from active drag item
+    const activeTaskId = parseInt(active.id.toString());
+    // Extract column ID (status) from the drop target
+    const overColumnId = over.id.toString();
+    
+    // Only update if dropped in a different column
+    if (activeTaskId && overColumnId) {
+      const task = findTaskById(activeTaskId);
+      
+      if (task && task.status !== overColumnId) {
+        // Update task status
+        updateTaskMutation.mutate({
+          taskId: activeTaskId,
+          updates: { status: overColumnId }
+        });
+      }
+    }
+  };
+  
+  // Handle task drop (legacy method, used as backup)
   const handleTaskDrop = (taskId: number, newStatus: string) => {
     updateTaskMutation.mutate({
       taskId,
