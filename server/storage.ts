@@ -762,14 +762,15 @@ export class PostgresStorage implements IStorage {
       const status = task.status ? `'${task.status.replace(/'/g, "''")}'` : "'pending'";
       const priority = task.priority ? `'${task.priority.replace(/'/g, "''")}'` : "NULL";
       const categoryId = task.categoryId ? task.categoryId : "NULL";
+      const projectId = task.projectId ? task.projectId : "NULL";
       const deadline = task.deadline ? `'${new Date(task.deadline).toISOString()}'` : "NULL";
       const assignedTo = task.assignedTo ? task.assignedTo : "NULL";
       const createdAt = `'${new Date().toISOString()}'`;
       
       // Construir la consulta directamente con los valores
       const query = `
-        INSERT INTO tasks (title, description, status, priority, "categoryId", deadline, "assignedTo", "createdAt")
-        VALUES (${title}, ${description}, ${status}, ${priority}, ${categoryId}, ${deadline}, ${assignedTo}, ${createdAt})
+        INSERT INTO tasks (title, description, status, priority, "categoryId", project_id, deadline, "assignedTo", "createdAt")
+        VALUES (${title}, ${description}, ${status}, ${priority}, ${categoryId}, ${projectId}, ${deadline}, ${assignedTo}, ${createdAt})
         RETURNING *
       `;
       
@@ -798,10 +799,13 @@ export class PostgresStorage implements IStorage {
       // Aseguramos que el id es un número
       const numericId = typeof id === 'string' ? parseInt(id) : id;
       
-      // Realizamos la eliminación y devolvemos el resultado
-      const result = await this.db.delete(tasks).where(eq(tasks.id, numericId)).returning();
-      console.log(`Tarea eliminada (ID: ${id}):`, result);
-      return result.length > 0;
+      // Usamos SQL directo para evitar problemas con columnas inexistentes
+      const query = `DELETE FROM tasks WHERE id = ${numericId} RETURNING *`;
+      console.log(`Ejecutando SQL para eliminar tarea (ID: ${id}):`, query);
+      
+      const result = await this.db.execute(query);
+      console.log(`Tarea eliminada (ID: ${id}):`, result.rows);
+      return result.rows.length > 0;
     } catch (error) {
       console.error(`Error al eliminar tarea (ID: ${id}):`, error);
       return false;
@@ -897,9 +901,18 @@ export class PostgresStorage implements IStorage {
   }
   
   async getTasksByProject(projectId: number): Promise<Task[]> {
-    // Como la columna projectId no existe en la tabla, devolvemos un array vacío
-    console.log(`getTasksByProject: la columna 'projectId' no existe en la tabla tasks`);
-    return [];
+    try {
+      // Usar consulta SQL directa para obtener tareas por proyecto
+      const query = `SELECT * FROM tasks WHERE project_id = ${projectId}`;
+      console.log(`Consultando tareas para el proyecto ${projectId} con SQL:`, query);
+      
+      const result = await this.db.execute(query);
+      console.log(`Tareas encontradas para el proyecto ${projectId}:`, result.rows.length);
+      return result.rows as Task[];
+    } catch (error) {
+      console.error(`Error al obtener tareas para el proyecto ${projectId}:`, error);
+      return [];
+    }
   }
   
   // WhatsApp contact methods
