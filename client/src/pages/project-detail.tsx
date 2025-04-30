@@ -120,8 +120,8 @@ export default function ProjectDetail() {
     );
   }
   
-  // Si hay errores, mostrar mensaje
-  if (isError || !projectWithTasks) {
+  // Si hay errores o datos indefinidos, mostrar mensaje
+  if (isError || !projectWithTasks || !projectWithTasks.project) {
     return (
       <div className="text-center py-10 bg-neon-medium/20 rounded-md border border-red-500/30">
         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
@@ -141,8 +141,8 @@ export default function ProjectDetail() {
     );
   }
   
-  // Extraer datos del proyecto y tareas
-  const { project, tasks } = projectWithTasks;
+  // Extraer datos del proyecto y tareas con valores por defecto seguros
+  const { project, tasks = [] } = projectWithTasks;
   const tasksArray = Array.isArray(tasks) ? tasks : [];
   
   // Calcular estadísticas
@@ -151,8 +151,9 @@ export default function ProjectDetail() {
     ? Math.round((completedTasks.length / tasksArray.length) * 100) 
     : 0;
   
-  // Estilos específicos de este proyecto
-  const colorStyles = getColorStyles(project.color);
+  // Estilos específicos de este proyecto - con verificación para evitar errores
+  // El color es indefinido posiblemente porque la API devuelve datos incompletos
+  const colorStyles = getColorStyles(project?.color);
   
   return (
     <div className="space-y-6">
@@ -168,15 +169,15 @@ export default function ProjectDetail() {
             Volver
           </Button>
           <h1 className="text-2xl font-bold text-neon-text">
-            {project.name}
+            {project?.name || "Proyecto"}
           </h1>
           <Badge className={`${colorStyles.bg} ${colorStyles.border} ${colorStyles.text}`}>
-            {project.status === ProjectStatus.ACTIVE ? "Activo" :
-              project.status === ProjectStatus.COMPLETED ? "Completado" : "Archivado"}
+            {project?.status === ProjectStatus.ACTIVE ? "Activo" :
+              project?.status === ProjectStatus.COMPLETED ? "Completado" : "Archivado"}
           </Badge>
         </div>
         <Button 
-          onClick={() => setLocation(`/projects/${project.id}/edit`)}
+          onClick={() => setLocation(`/projects/${project?.id || 0}/edit`)}
           className="bg-neon-accent hover:bg-neon-accent/80 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
           size="sm"
         >
@@ -194,7 +195,7 @@ export default function ProjectDetail() {
             <div>
               <h3 className="text-sm font-medium text-neon-accent mb-1">Descripción</h3>
               <p className="text-sm text-neon-text">
-                {project.description || "Sin descripción"}
+                {project?.description || "Sin descripción"}
               </p>
             </div>
             
@@ -203,14 +204,14 @@ export default function ProjectDetail() {
                 <h3 className="text-sm font-medium text-neon-accent mb-1">Fecha de inicio</h3>
                 <div className="flex items-center text-sm text-neon-text">
                   <CalendarIcon className="h-4 w-4 mr-2 text-neon-accent/70" />
-                  {formatDate(project.startDate)}
+                  {formatDate(project?.startDate)}
                 </div>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-neon-accent mb-1">Fecha límite</h3>
                 <div className="flex items-center text-sm text-neon-text">
                   <Clock className="h-4 w-4 mr-2 text-neon-accent/70" />
-                  {formatDate(project.dueDate)}
+                  {formatDate(project?.dueDate)}
                 </div>
               </div>
             </div>
@@ -269,7 +270,7 @@ export default function ProjectDetail() {
           <Button 
             size="sm"
             className="bg-neon-accent hover:bg-neon-accent/80 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
-            onClick={() => setLocation(`/tasks/new?projectId=${project.id}`)}
+            onClick={() => setLocation(`/tasks/new?projectId=${project?.id || 0}`)}
           >
             <Plus className="h-4 w-4 mr-1.5" />
             Nueva tarea
