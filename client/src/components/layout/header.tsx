@@ -169,11 +169,17 @@ export function Header() {
                 <p className="text-xs text-neon-text/70">{user?.email || ''}</p>
               </div>
               <DropdownMenuGroup>
-                <DropdownMenuItem className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors">
+                <DropdownMenuItem 
+                  className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors"
+                  onClick={() => navigate("/profile")}
+                >
                   <User className="mr-2 h-4 w-4 text-neon-text/70" />
                   <span>Mi perfil</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors">
+                <DropdownMenuItem 
+                  className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors"
+                  onClick={() => navigate("/settings")}
+                >
                   <Settings className="mr-2 h-4 w-4 text-neon-text/70" />
                   <span>Configuración</span>
                 </DropdownMenuItem>
