@@ -67,6 +67,7 @@ const dateSchema = z.union([
   z.date(),
   z.string().transform((str) => {
     try {
+      if (!str) return null;
       const date = new Date(str);
       if (isNaN(date.getTime())) return null;
       return date;
@@ -74,7 +75,8 @@ const dateSchema = z.union([
       return null;
     }
   }).nullable(),
-  z.null()
+  z.null(),
+  z.undefined().transform(() => null)
 ]);
 
 export const insertTaskSchema = createInsertSchema(tasks)
@@ -83,9 +85,9 @@ export const insertTaskSchema = createInsertSchema(tasks)
     createdAt: true,
   })
   .extend({
-    deadline: dateSchema.optional(),
-    startDate: dateSchema.optional(),
-    completedAt: dateSchema.optional(),
+    deadline: dateSchema.optional().nullable(),
+    startDate: dateSchema.optional().nullable(),
+    completedAt: dateSchema.optional().nullable(),
   });
 
 export const insertProjectSchema = createInsertSchema(projects).omit({
