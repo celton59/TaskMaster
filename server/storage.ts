@@ -869,17 +869,26 @@ export class PostgresStorage implements IStorage {
   }
   
   async getProjectWithTasks(id: number): Promise<{ project: Project; tasks: Task[] }> {
-    const project = await this.getProject(id);
-    if (!project) {
-      throw new Error(`Project with id ${id} not found`);
+    try {
+      const project = await this.getProject(id);
+      if (!project) {
+        throw new Error(`Project with id ${id} not found`);
+      }
+      
+      // Obtener tareas del proyecto en la misma operación
+      const projectTasks = await this.db.select()
+        .from(tasks)
+        .where(sql`project_id = ${id}`)
+        .orderBy(asc(tasks.order));
+      
+      return {
+        project,
+        tasks: projectTasks
+      };
+    } catch (error) {
+      console.error(`Error al obtener proyecto con tareas (ID: ${id}):`, error);
+      throw error;
     }
-    
-    const projectTasks = await this.getTasksByProject(id);
-    
-    return {
-      project,
-      tasks: projectTasks
-    };
   }
   
   async getProjectProgress(id: number): Promise<{
@@ -902,13 +911,12 @@ export class PostgresStorage implements IStorage {
   
   async getTasksByProject(projectId: number): Promise<Task[]> {
     try {
-      // Usar consulta SQL directa para obtener tareas por proyecto
-      const query = `SELECT * FROM tasks WHERE project_id = ${projectId}`;
-      console.log(`Consultando tareas para el proyecto ${projectId} con SQL:`, query);
+      // Usar consulta parametrizada con Drizzle en lugar de SQL directo
+      const result = await this.db.select()
+        .from(tasks)
+        .where(sql`project_id = ${projectId}`);
       
-      const result = await this.db.execute(query);
-      console.log(`Tareas encontradas para el proyecto ${projectId}:`, result.rows.length);
-      return result.rows as Task[];
+      return result;
     } catch (error) {
       console.error(`Error al obtener tareas para el proyecto ${projectId}:`, error);
       return [];
