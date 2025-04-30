@@ -4,8 +4,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Plus, MoreHorizontal, GripVertical } from "lucide-react";
+import { Plus, MoreHorizontal } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useDroppable } from "@dnd-kit/core";
+import { motion } from "framer-motion";
 import type { Task, Category, Project } from "@shared/schema";
 
 interface TaskColumnProps {
@@ -28,6 +30,15 @@ export function TaskColumn({
   const [isDropTarget, setIsDropTarget] = useState(false);
   const columnRef = useRef<HTMLDivElement>(null);
   
+  // Configurar la columna como un área droppable para @dnd-kit
+  const { setNodeRef, isOver } = useDroppable({
+    id: status,
+    data: {
+      type: 'column',
+      status,
+    },
+  });
+  
   // Get categories for task cards
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"]
@@ -38,18 +49,18 @@ export function TaskColumn({
     queryKey: ["/api/projects"]
   });
   
-  // Handle drag over
+  // Handle drag over - para compatibilidad con navegadores antiguos
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDropTarget(true);
   };
   
-  // Handle drag leave
+  // Handle drag leave - para compatibilidad con navegadores antiguos
   const handleDragLeave = () => {
     setIsDropTarget(false);
   };
   
-  // Handle drop
+  // Handle drop - para compatibilidad con navegadores antiguos
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDropTarget(false);
@@ -94,11 +105,14 @@ export function TaskColumn({
   
   return (
     <div 
-      ref={columnRef}
+      ref={(node) => {
+        columnRef.current = node;  // Mantener la referencia original
+        setNodeRef(node);          // Configurar como un área droppable para @dnd-kit
+      }}
       className={cn(
         "p-3 rounded-xl border w-[280px]",
         getColumnStyle(),
-        isDropTarget ? "ring-2 ring-neon-accent ring-opacity-70" : ""
+        (isDropTarget || isOver) ? "ring-2 ring-neon-accent ring-opacity-70" : ""
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}

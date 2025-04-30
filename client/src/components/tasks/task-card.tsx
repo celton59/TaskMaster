@@ -6,7 +6,7 @@ import {
   Calendar, MoreHorizontal, Clock, ArrowUpRight, 
   CheckCircle2, AlertCircle, AlertTriangle, Star, 
   FlameKindling, Clock4, CircleCheck, CircleEllipsis, Circle,
-  Folders
+  Folders, GripVertical
 } from "lucide-react";
 import { format, isBefore, addDays, isAfter, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
@@ -24,6 +24,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { useDraggable } from "@dnd-kit/core";
 import type { Task, Category, Project } from "@shared/schema";
 
 interface TaskCardProps {

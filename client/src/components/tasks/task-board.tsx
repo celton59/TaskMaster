@@ -171,6 +171,38 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     return filteredTasks.filter(task => task.status === status);
   };
   
+  // Componente para renderizar el overlay de arrastre
+  const TaskDragOverlay = ({ task }: { task: Task }) => {
+    if (!task) return null;
+    
+    // Preparamos datos para pasar a componente estilizado similar a TaskCard
+    return (
+      <motion.div
+        className="task-card p-4 rounded-lg shadow-md border border-neon-accent/30 border-l-4 border-l-blue-500 bg-neon-darker/70 shadow-[0_4px_16px_rgba(0,225,255,0.3)] cursor-grabbing w-[280px]"
+        initial={{ scale: 1.05, boxShadow: "0 10px 30px rgba(0, 225, 255, 0.25)" }}
+        animate={{ scale: 1.05, boxShadow: "0 10px 30px rgba(0, 225, 255, 0.25)" }}
+      >
+        <div className="flex items-center justify-between mb-2">
+          <div 
+            className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
+              task.priority === "high" 
+                ? "bg-rose-900/30 text-rose-400 border border-rose-500/30" 
+                : task.priority === "medium" 
+                  ? "bg-amber-900/30 text-amber-300 border border-amber-500/30" 
+                  : "bg-emerald-900/30 text-emerald-400 border border-emerald-500/30"
+            }`}
+          >
+            {task.priority === "high" ? "Alta" : task.priority === "medium" ? "Media" : "Baja"}
+          </div>
+        </div>
+        <h4 className="font-semibold text-sm text-neon-text line-clamp-1 leading-relaxed">{task.title}</h4>
+        {task.description && (
+          <p className="text-xs text-neon-text/70 mt-1 line-clamp-2 leading-relaxed">{task.description}</p>
+        )}
+      </motion.div>
+    );
+  };
+
   return (
     <>
       <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl mt-8">
@@ -203,45 +235,62 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
             />
           </div>
           
-          <div className="flex overflow-x-auto pb-2 -mx-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-max px-2">
-              <TaskColumn 
-                title="Pendiente" 
-                status="pending"
-                badgeColor="bg-amber-500"
-                tasks={getTasksByStatus("pending")}
-                onTaskDrop={handleTaskDrop}
-                isLoading={isLoading}
-              />
-              
-              <TaskColumn 
-                title="En progreso" 
-                status="in-progress"
-                badgeColor="bg-blue-500"
-                tasks={getTasksByStatus("in-progress")}
-                onTaskDrop={handleTaskDrop}
-                isLoading={isLoading}
-              />
-              
-              <TaskColumn 
-                title="Revisión" 
-                status="review"
-                badgeColor="bg-purple-500"
-                tasks={getTasksByStatus("review")}
-                onTaskDrop={handleTaskDrop}
-                isLoading={isLoading}
-              />
-              
-              <TaskColumn 
-                title="Completado" 
-                status="completed"
-                badgeColor="bg-emerald-500"
-                tasks={getTasksByStatus("completed")}
-                onTaskDrop={handleTaskDrop}
-                isLoading={isLoading}
-              />
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="flex overflow-x-auto pb-2 -mx-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-max px-2">
+                <TaskColumn 
+                  title="Pendiente" 
+                  status="pending"
+                  badgeColor="bg-amber-500"
+                  tasks={getTasksByStatus("pending")}
+                  onTaskDrop={handleTaskDrop}
+                  isLoading={isLoading}
+                />
+                
+                <TaskColumn 
+                  title="En progreso" 
+                  status="in-progress"
+                  badgeColor="bg-blue-500"
+                  tasks={getTasksByStatus("in-progress")}
+                  onTaskDrop={handleTaskDrop}
+                  isLoading={isLoading}
+                />
+                
+                <TaskColumn 
+                  title="Revisión" 
+                  status="review"
+                  badgeColor="bg-purple-500"
+                  tasks={getTasksByStatus("review")}
+                  onTaskDrop={handleTaskDrop}
+                  isLoading={isLoading}
+                />
+                
+                <TaskColumn 
+                  title="Completado" 
+                  status="completed"
+                  badgeColor="bg-emerald-500"
+                  tasks={getTasksByStatus("completed")}
+                  onTaskDrop={handleTaskDrop}
+                  isLoading={isLoading}
+                />
+              </div>
             </div>
-          </div>
+            
+            {/* Overlay para la tarea que se está arrastrando */}
+            <DragOverlay modifiers={[restrictToWindowEdges]}>
+              <AnimatePresence>
+                {activeTask && (
+                  <TaskDragOverlay task={activeTask} />
+                )}
+              </AnimatePresence>
+            </DragOverlay>
+          </DndContext>
         </CardContent>
       </Card>
     </>
