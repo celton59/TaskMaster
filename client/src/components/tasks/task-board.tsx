@@ -43,7 +43,9 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
         distance: 5, // Minimum drag distance for activation
       },
     }),
-    useSensor(KeyboardSensor, {})
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
   
   // Update filtered tasks when tasks or filter changes
@@ -110,8 +112,13 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     
     if (!task) return;
     
+    // Depuración
+    console.log("DragOver - Active:", active.id, active.data.current);
+    console.log("DragOver - Over:", over.id, over.data.current);
+    
     // Detectar si estamos sobre una columna o sobre otra tarea
-    const isColumn = !over.data.current?.type || over.data.current.type === 'column';
+    // La forma correcta es comprobar si el tipo del elemento "over" es 'column'
+    const isColumn = over.data.current?.type === 'column';
     
     if (isColumn) {
       // Estamos sobre una columna, así que cambiamos el estado de la tarea
@@ -130,24 +137,34 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
       
       if (!overTask || task.status !== overTask.status) return;
       
-      // Determine si estamos arrastrando hacia arriba o hacia abajo
-      const activeIndex = filteredTasks.findIndex(t => t.id === activeTaskId);
-      const overIndex = filteredTasks.findIndex(t => t.id === overTaskId);
+      // Filtramos para trabajar solo con las tareas de la misma columna
+      const columnTasks = filteredTasks.filter(t => t.status === task.status);
+      const activeIndex = columnTasks.findIndex(t => t.id === activeTaskId);
+      const overIndex = columnTasks.findIndex(t => t.id === overTaskId);
       
       if (activeIndex === -1 || overIndex === -1) return;
       
+      console.log("Reordenando en DragOver:", 
+        { status: task.status, activeId: activeTaskId, overId: overTaskId, 
+          activeIndex, overIndex, columnTasks });
+      
       // Reordenar las tareas en el estado temporal
       setFilteredTasks(prevTasks => {
-        // Crear una copia del array actual
-        const updatedTasks = arrayMove(prevTasks, activeIndex, overIndex);
+        // Primero separamos las tareas de esta columna de las demás
+        const columnTaskIds = columnTasks.map(t => t.id);
+        const otherTasks = prevTasks.filter(t => !columnTaskIds.includes(t.id));
         
-        // Actualizar el orden (position) de cada tarea
-        return updatedTasks.map((t, index) => {
-          if (t.status === task.status) {
-            return { ...t, order: index };
-          }
-          return t;
-        });
+        // Reordenamos las tareas de la columna
+        const reorderedColumnTasks = arrayMove(columnTasks, activeIndex, overIndex);
+        
+        // Actualizamos el orden (position) de cada tarea de la columna
+        const updatedColumnTasks = reorderedColumnTasks.map((t, index) => ({
+          ...t, 
+          order: index
+        }));
+        
+        // Unimos todas las tareas nuevamente
+        return [...otherTasks, ...updatedColumnTasks];
       });
     }
   };
@@ -173,8 +190,13 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     
     if (!task) return;
     
+    // Depuración
+    console.log("DragEnd - Active:", active.id, active.data.current);
+    console.log("DragEnd - Over:", over.id, over.data.current);
+    
     // Detectar si estamos sobre una columna o sobre otra tarea
-    const isColumn = !over.data.current?.type || over.data.current.type === 'column';
+    // La forma correcta es comprobar si el tipo del elemento "over" es 'column'
+    const isColumn = over.data.current?.type === 'column';
     
     if (isColumn) {
       // Estamos sobre una columna, así que cambiamos el estado de la tarea
@@ -202,21 +224,23 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
       
       if (!overTask || task.status !== overTask.status) return;
       
-      // Determine si estamos arrastrando hacia arriba o hacia abajo
-      const activeIndex = filteredTasks.findIndex(t => t.id === activeTaskId);
-      const overIndex = filteredTasks.findIndex(t => t.id === overTaskId);
+      // Filtramos para trabajar solo con las tareas de la misma columna
+      const columnTasks = filteredTasks.filter(t => t.status === task.status);
+      const activeIndex = columnTasks.findIndex(t => t.id === activeTaskId);
+      const overIndex = columnTasks.findIndex(t => t.id === overTaskId);
       
       if (activeIndex === -1 || overIndex === -1) return;
       
+      console.log("Reordenando en DragEnd:", 
+        { status: task.status, activeId: activeTaskId, overId: overTaskId, 
+          activeIndex, overIndex, columnTasks });
+      
       // Reordenar las tareas
-      const reorderedTasks = arrayMove(
-        filteredTasks.filter(t => t.status === task.status),
-        activeIndex,
-        overIndex
-      );
+      const reorderedTasks = arrayMove(columnTasks, activeIndex, overIndex);
       
       // Actualizar las órdenes en el servidor
       reorderedTasks.forEach((t, index) => {
+        console.log(`Actualizando tarea ${t.id} a orden ${index}`);
         updateTaskMutation.mutate({
           taskId: t.id,
           updates: { order: index }
@@ -225,19 +249,18 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
       
       // Actualizar el estado local con nuevos órdenes
       setFilteredTasks(prevTasks => {
-        // Crear un mapa de id -> orden para las tareas reordenadas
-        const orderMap = new Map();
-        reorderedTasks.forEach((t, index) => {
-          orderMap.set(t.id, index);
-        });
+        // Primero separamos las tareas de esta columna de las demás
+        const columnTaskIds = columnTasks.map(t => t.id);
+        const otherTasks = prevTasks.filter(t => !columnTaskIds.includes(t.id));
         
-        // Actualizar todas las tareas con sus nuevos órdenes
-        return prevTasks.map(t => {
-          if (orderMap.has(t.id)) {
-            return { ...t, order: orderMap.get(t.id) };
-          }
-          return t;
-        });
+        // Actualizamos el orden de las tareas reordenadas
+        const updatedColumnTasks = reorderedTasks.map((t, index) => ({
+          ...t, 
+          order: index
+        }));
+        
+        // Unimos todas las tareas nuevamente
+        return [...otherTasks, ...updatedColumnTasks];
       });
     }
   };
@@ -280,16 +303,16 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     
     // Ordenar las tareas primero por order y luego por id como respaldo
     return statusTasks.sort((a, b) => {
-      // Si ambas tareas tienen una orden definida, comparar por orden
-      if (a.order !== undefined && b.order !== undefined) {
-        return a.order - b.order;
+      // Asignar un valor por defecto (0) a orden si es null o undefined
+      const orderA = typeof a.order === 'number' ? a.order : 0;
+      const orderB = typeof b.order === 'number' ? b.order : 0;
+      
+      // Primero intentar ordenar por order
+      if (orderA !== orderB) {
+        return orderA - orderB;
       }
       
-      // Si solo una tarea tiene orden definida, esa va primero
-      if (a.order !== undefined) return -1;
-      if (b.order !== undefined) return 1;
-      
-      // Si ninguna tiene orden definida, ordenar por ID como respaldo
+      // Si tienen el mismo order (o ambos son 0), ordenar por id
       return a.id - b.id;
     });
   };
