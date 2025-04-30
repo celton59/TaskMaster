@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Plus, MoreHorizontal } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useDroppable } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { motion } from "framer-motion";
 import type { Task, Category, Project } from "@shared/schema";
 
@@ -144,16 +145,21 @@ export function TaskColumn({
             </div>
           </div>
         ) : (
-          // Task cards
-          tasks.map(task => (
-            <TaskCard 
-              key={task.id} 
-              task={task} 
-              categories={categories}
-              projects={projects}
-              onDragStart={() => {}}
-            />
-          ))
+          // Task cards con contexto de ordenación
+          <SortableContext 
+            items={tasks.map(task => task.id.toString())} 
+            strategy={verticalListSortingStrategy}
+          >
+            {tasks.map(task => (
+              <TaskCard 
+                key={task.id} 
+                task={task} 
+                categories={categories}
+                projects={projects}
+                onDragStart={() => {}}
+              />
+            ))}
+          </SortableContext>
         )}
       </div>
     </div>
