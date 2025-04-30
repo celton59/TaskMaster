@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SimpleTaskBoard } from "@/components/tasks/new/simple-task-board";
+import { TaskBoard } from "@/components/tasks/task-board";
 import { TaskList } from "@/components/tasks/task-list";
 import { TaskForm } from "@/components/tasks/task-form";
 import { Button } from "@/components/ui/button";
@@ -84,7 +84,7 @@ export default function Tasks() {
       
       {/* Vista de Tareas (Tablero o Lista) */}
       {viewMode === "board" ? (
-        <SimpleTaskBoard 
+        <TaskBoard 
           tasks={tasks} 
           categories={categories}
           isLoading={isLoadingTasks || isLoadingCategories} 

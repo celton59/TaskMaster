@@ -25,8 +25,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useDraggable } from "@dnd-kit/core";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import type { Task, Category, Project } from "@shared/schema";
 
 interface TaskCardProps {
@@ -40,16 +38,9 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
   const { toast } = useToast();
   const [, navigate] = useLocation();
   
-  // Configurar la tarea como un elemento sortable para @dnd-kit
-  const { 
-    attributes, 
-    listeners, 
-    setNodeRef, 
-    transform, 
-    isDragging,
-    transition,
-  } = useSortable({
-    id: task.id.toString(),
+  // Configurar la tarea como un elemento draggable para @dnd-kit
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: task.id,
     data: {
       type: 'task',
       task,
@@ -346,8 +337,7 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
       {...attributes}
       {...listeners}
       style={{
-        transform: CSS.Transform.toString(transform),
-        transition,
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
       }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
