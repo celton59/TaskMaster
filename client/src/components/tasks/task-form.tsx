@@ -79,9 +79,12 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
     queryKey: ["/api/tasks", taskId],
     queryFn: async () => {
       if (!taskId) return null;
+      console.log("Obteniendo datos para la tarea ID:", taskId);
       const res = await fetch(`/api/tasks/${taskId}`);
       if (!res.ok) throw new Error("Failed to fetch task");
-      return res.json();
+      const data = await res.json();
+      console.log("Datos de tarea recibidos:", data);
+      return data;
     },
     enabled: !!taskId,
   });
@@ -105,14 +108,17 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
   // Usamos useEffect en lugar de useState para que se ejecute cuando cambie taskData
   useEffect(() => {
     if (taskData) {
-      console.log("Configurando formulario con datos de tarea:", taskData);
+      // Si es un array, tomamos el primer elemento (esto es temporal mientras arreglamos la API)
+      const taskToUse = Array.isArray(taskData) ? taskData[0] : taskData;
+      
+      console.log("Usando datos de tarea para el formulario:", taskToUse);
       form.reset({
-        ...taskData,
-        deadline: taskData.deadline ? new Date(taskData.deadline) : null,
+        ...taskToUse,
+        deadline: taskToUse.deadline ? new Date(taskToUse.deadline) : null,
       });
       
-      if (taskData.deadline) {
-        setSelectedDate(new Date(taskData.deadline));
+      if (taskToUse.deadline) {
+        setSelectedDate(new Date(taskToUse.deadline));
       }
     }
   }, [taskData, form]);

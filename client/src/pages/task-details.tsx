@@ -43,13 +43,25 @@ export default function TaskDetails() {
   
   // Fetch task data
   const { 
-    data: task, 
+    data: taskData, 
     isLoading: isLoadingTask,
     error
-  } = useQuery<Task>({
+  } = useQuery<Task | Task[]>({
     queryKey: ["/api/tasks", taskId],
+    queryFn: async () => {
+      if (isNaN(taskId)) return null;
+      console.log("Obteniendo datos para la tarea ID:", taskId);
+      const res = await fetch(`/api/tasks/${taskId}`);
+      if (!res.ok) throw new Error("Error al obtener la tarea");
+      const data = await res.json();
+      console.log("Datos de tarea recibidos:", data);
+      return data;
+    },
     enabled: !isNaN(taskId)
   });
+  
+  // Si es un array, tomamos el primer elemento
+  const task = taskData && Array.isArray(taskData) ? taskData[0] : taskData;
   
   // Fetch categories
   const { data: categories = [] } = useQuery<Category[]>({

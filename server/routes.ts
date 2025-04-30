@@ -50,14 +50,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.get("/tasks/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      console.log(`Obteniendo tarea específica con ID: ${id}`);
       const task = await storage.getTask(id);
       
       if (!task) {
+        console.log(`No se encontró la tarea con ID: ${id}`);
         return res.status(404).json({ message: "Task not found" });
       }
       
-      res.json(task);
+      // Asegurar que el resultado sea un objeto y no un array
+      if (Array.isArray(task)) {
+        console.log(`La tarea con ID ${id} se obtuvo como array, convirtiendo a objeto...`);
+        if (task.length > 0) {
+          res.json(task[0]);
+        } else {
+          return res.status(404).json({ message: "Task not found" });
+        }
+      } else {
+        console.log(`Enviando tarea con ID: ${id}`);
+        res.json(task);
+      }
     } catch (error) {
+      console.error(`Error al obtener tarea con ID ${req.params.id}:`, error);
       res.status(500).json({ message: "Failed to fetch task" });
     }
   });
