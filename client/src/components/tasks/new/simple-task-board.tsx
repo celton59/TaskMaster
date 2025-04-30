@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { TaskColumn } from "@/components/tasks/task-column";
+import { SimpleTaskColumn } from "@/components/tasks/new/simple-task-column";
 import { TaskFilter } from "@/components/tasks/task-filter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Filter, ArrowDownUp } from "lucide-react";
 import { Task, Category, TaskStatus } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -20,7 +20,6 @@ import {
   DragEndEvent
 } from "@dnd-kit/core";
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
-import { motion, AnimatePresence } from "framer-motion";
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -136,6 +135,21 @@ export function SimpleTaskBoard({ tasks: initialTasks, categories, isLoading: pa
     }
   };
   
+  // Handle task drop into column
+  const handleTaskDrop = (taskId: number, status: string) => {
+    console.log(`Task ${taskId} dropped into ${status}`);
+    
+    // Find the task
+    const task = findTaskById(taskId);
+    if (!task || task.status === status) return;
+    
+    // Update the task status
+    updateTaskMutation.mutate({
+      taskId,
+      updates: { status }
+    });
+  };
+  
   // Get tasks for each status column
   const pendingTasks = filteredTasks.filter(task => task.status === TaskStatus.PENDING)
     .sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -164,7 +178,7 @@ export function SimpleTaskBoard({ tasks: initialTasks, categories, isLoading: pa
             <TaskFilter 
               categories={categories} 
               activeFilter={activeFilter}
-              onChange={setActiveFilter}
+              onFilterChange={setActiveFilter}
             />
           </CardContent>
         </Card>
@@ -186,44 +200,44 @@ export function SimpleTaskBoard({ tasks: initialTasks, categories, isLoading: pa
         onDragEnd={handleDragEnd}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <TaskColumn 
-            id={TaskStatus.PENDING}
+          <SimpleTaskColumn 
             title="Pendientes"
+            status={TaskStatus.PENDING}
+            badgeColor="bg-amber-400"
             tasks={pendingTasks}
-            color="bg-gradient-to-r from-orange-400/20 to-amber-500/20"
-            borderColor="border-orange-500/40"
-            iconColor="text-orange-400"
+            onTaskDrop={handleTaskDrop}
             isLoading={parentLoading}
+            categories={categories}
           />
           
-          <TaskColumn 
-            id={TaskStatus.IN_PROGRESS}
+          <SimpleTaskColumn 
             title="En progreso"
+            status={TaskStatus.IN_PROGRESS}
+            badgeColor="bg-blue-400"
             tasks={inProgressTasks}
-            color="bg-gradient-to-r from-blue-400/20 to-indigo-500/20"
-            borderColor="border-blue-500/40"
-            iconColor="text-blue-400"
+            onTaskDrop={handleTaskDrop}
             isLoading={parentLoading}
+            categories={categories}
           />
           
-          <TaskColumn 
-            id={TaskStatus.REVIEW}
+          <SimpleTaskColumn 
             title="Revisión"
+            status={TaskStatus.REVIEW}
+            badgeColor="bg-purple-400"
             tasks={reviewTasks}
-            color="bg-gradient-to-r from-purple-400/20 to-pink-500/20"
-            borderColor="border-purple-500/40"
-            iconColor="text-purple-400"
+            onTaskDrop={handleTaskDrop}
             isLoading={parentLoading}
+            categories={categories}
           />
           
-          <TaskColumn 
-            id={TaskStatus.COMPLETED}
+          <SimpleTaskColumn 
             title="Completadas"
+            status={TaskStatus.COMPLETED}
+            badgeColor="bg-green-400"
             tasks={completedTasks}
-            color="bg-gradient-to-r from-green-400/20 to-emerald-500/20"
-            borderColor="border-green-500/40"
-            iconColor="text-green-400"
+            onTaskDrop={handleTaskDrop}
             isLoading={parentLoading}
+            categories={categories}
           />
         </div>
         
@@ -231,7 +245,11 @@ export function SimpleTaskBoard({ tasks: initialTasks, categories, isLoading: pa
         <DragOverlay modifiers={[restrictToWindowEdges]}>
           {activeTask ? (
             <div className="w-60 opacity-80 shadow-xl rotate-3">
-              <TaskColumn.Card task={activeTask} categories={categories} />
+              {activeTask && (
+                <div className="bg-neon-medium/20 p-3 rounded-lg border border-neon-accent/30 shadow-md">
+                  <h3 className="text-sm font-medium text-neon-text">{activeTask.title}</h3>
+                </div>
+              )}
             </div>
           ) : null}
         </DragOverlay>

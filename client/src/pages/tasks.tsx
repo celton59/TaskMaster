@@ -84,7 +84,7 @@ export default function Tasks() {
       
       {/* Vista de Tareas (Tablero o Lista) */}
       {viewMode === "board" ? (
-        <TaskBoard 
+        <SimpleTaskBoard 
           tasks={tasks} 
           categories={categories}
           isLoading={isLoadingTasks || isLoadingCategories} 
