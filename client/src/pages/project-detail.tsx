@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProjectTimeline } from "@/components/projects/project-timeline";
+import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { 
@@ -307,35 +308,77 @@ export default function ProjectDetail() {
               </TabsList>
               
               <TabsContent value="lista" className="mt-0">
-                <div className="space-y-2">
-                  {tasksArray.map(task => (
-                    <div
+                <motion.div 
+                  className="space-y-2"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {tasksArray.map((task, index) => (
+                    <motion.div
                       key={task.id}
-                      className="flex items-center justify-between p-3 bg-neon-dark rounded-md border border-neon-accent/10 hover:border-neon-accent/30 transition-all duration-300 cursor-pointer"
+                      className="flex items-center justify-between p-3 bg-neon-dark rounded-md border border-neon-accent/10 hover:border-neon-accent/30 cursor-pointer"
                       onClick={() => setLocation(`/tasks/${task.id}`)}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: 0, 
+                        transition: { 
+                          delay: index * 0.05,
+                          duration: 0.4,
+                          type: "spring",
+                          stiffness: 100,
+                          damping: 10
+                        }
+                      }}
+                      whileHover={{ 
+                        scale: 1.02, 
+                        boxShadow: "0 0 15px rgba(0, 225, 255, 0.2)",
+                        borderColor: "rgba(0, 225, 255, 0.5)",
+                        transition: { duration: 0.2 }
+                      }}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className={`h-2 w-2 rounded-full ${
-                          task.status === 'completed' ? 'bg-emerald-500' :
-                          task.status === 'in_progress' || task.status === 'in-progress' ? 'bg-amber-500' :
-                          task.status === 'review' ? 'bg-blue-500' :
-                          'bg-rose-500'
-                        }`}></div>
+                        <motion.div 
+                          className={`h-2 w-2 rounded-full ${
+                            task.status === 'completed' ? 'bg-emerald-500' :
+                            task.status === 'in_progress' || task.status === 'in-progress' ? 'bg-amber-500' :
+                            task.status === 'review' ? 'bg-blue-500' :
+                            'bg-rose-500'
+                          }`}
+                          whileHover={{ scale: 1.5 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                        ></motion.div>
                         <span className="text-neon-text font-medium">{task.title}</span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Badge className="bg-neon-medium border-0 text-neon-text text-xs">
-                          {task.priority || "Normal"}
-                        </Badge>
-                        <ChevronRight className="h-4 w-4 text-neon-accent/70" />
+                        <motion.div whileHover={{ scale: 1.1 }}>
+                          <Badge className="bg-neon-medium border-0 text-neon-text text-xs">
+                            {task.priority || "Normal"}
+                          </Badge>
+                        </motion.div>
+                        <motion.div 
+                          whileHover={{ x: 3 }} 
+                          transition={{ type: "spring", stiffness: 300 }}
+                        >
+                          <ChevronRight className="h-4 w-4 text-neon-accent/70" />
+                        </motion.div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </TabsContent>
               
               <TabsContent value="timeline" className="mt-0">
-                <ProjectTimeline tasks={tasksArray} />
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <ProjectTimeline tasks={tasksArray} />
+                </motion.div>
               </TabsContent>
             </Tabs>
           )}
