@@ -138,7 +138,11 @@ export function TaskCard({ task, categories, projects = [], onDragStart }: TaskC
   // Get project details
   const getProject = () => {
     // Verifica si hay un ID de proyecto asignado
-    const projectId = task.projectId;
+    // Buscar primero como projectId (camelCase en el esquema) o project_id (snake_case en DB)
+    const projectId = task.projectId || (task as any).project_id;
+    
+    console.log("Task:", task.id, task.title, "ProjectID:", projectId, "Available Projects:", projects);
+    
     if (!projectId) return null;
     
     const project = projects.find(p => p.id === projectId);
