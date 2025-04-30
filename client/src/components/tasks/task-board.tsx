@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { TaskColumn } from "@/components/tasks/task-column";
 import { TaskFilter } from "@/components/tasks/task-filter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Filter, ArrowDownUp } from "lucide-react";
-import { Task, Category } from "@shared/schema";
+import { Task, Category, TaskStatus } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { 
   DndContext, 
@@ -30,11 +30,27 @@ interface TaskBoardProps {
   isLoading: boolean;
 }
 
-export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
+export function TaskBoard({ tasks: initialTasks, categories, isLoading: parentLoading }: TaskBoardProps) {
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>(initialTasks);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  
+  // Directo fetch de tareas para asegurar datos actualizados
+  const { 
+    data: tasks = initialTasks, 
+    isLoading,
+    refetch 
+  } = useQuery({
+    queryKey: ['/api/tasks'],
+    initialData: initialTasks,
+    refetchOnWindowFocus: true,
+  });
+  
+  // Función para refrescar tareas después de un cambio significativo
+  const refreshTasks = useCallback(() => {
+    refetch();
+  }, [refetch]);
   
   // Set up DnD sensors for different interaction methods
   const sensors = useSensors(
