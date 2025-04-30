@@ -141,8 +141,6 @@ export function TaskCard({ task, categories, projects = [], onDragStart }: TaskC
     // Buscar primero como projectId (camelCase en el esquema) o project_id (snake_case en DB)
     const projectId = task.projectId || (task as any).project_id;
     
-    console.log("Task:", task.id, task.title, "ProjectID:", projectId, "Available Projects:", projects);
-    
     if (!projectId) return null;
     
     const project = projects.find(p => p.id === projectId);
@@ -398,7 +396,14 @@ export function TaskCard({ task, categories, projects = [], onDragStart }: TaskC
       <div className="flex items-center flex-wrap gap-2 mt-3">
         <Badge 
           variant="outline" 
-          className="rounded-md border border-neon-accent/30 bg-neon-medium/20 hover:bg-neon-medium/30 hover:border-neon-accent/40 text-neon-text/90 font-normal text-xs py-0 h-5"
+          className={`rounded-md border py-0 h-5 font-normal text-xs
+            ${category.color === "blue" ? "border-blue-500/30 bg-blue-900/20 hover:bg-blue-900/30 hover:border-blue-500/40 text-blue-400" : 
+            category.color === "green" ? "border-emerald-500/30 bg-emerald-900/20 hover:bg-emerald-900/30 hover:border-emerald-500/40 text-emerald-400" :
+            category.color === "red" ? "border-rose-500/30 bg-rose-900/20 hover:bg-rose-900/30 hover:border-rose-500/40 text-rose-400" :
+            category.color === "purple" ? "border-purple-500/30 bg-purple-900/20 hover:bg-purple-900/30 hover:border-purple-500/40 text-purple-400" :
+            category.color === "orange" ? "border-amber-500/30 bg-amber-900/20 hover:bg-amber-900/30 hover:border-amber-500/40 text-amber-300" :
+            "border-neon-accent/30 bg-neon-medium/20 hover:bg-neon-medium/30 hover:border-neon-accent/40 text-neon-text/90"
+          }`}
         >
           <div className={`h-2 w-2 rounded-full mr-1.5 ${
             category.color === "blue" ? "bg-blue-500" :
@@ -413,9 +418,19 @@ export function TaskCard({ task, categories, projects = [], onDragStart }: TaskC
         {project && (
           <Badge 
             variant="outline" 
-            className="rounded-md border border-blue-500/30 bg-blue-900/20 hover:bg-blue-900/30 hover:border-blue-500/40 text-blue-400 font-normal text-xs py-0 h-5"
+            className={`rounded-md border py-0 h-5 font-normal text-xs
+              ${project.color === "blue" ? "border-blue-500/30 bg-blue-900/20 hover:bg-blue-900/30 hover:border-blue-500/40 text-blue-400" : 
+              project.color === "green" ? "border-emerald-500/30 bg-emerald-900/20 hover:bg-emerald-900/30 hover:border-emerald-500/40 text-emerald-400" :
+              project.color === "red" ? "border-rose-500/30 bg-rose-900/20 hover:bg-rose-900/30 hover:border-rose-500/40 text-rose-400" :
+              project.color === "purple" ? "border-purple-500/30 bg-purple-900/20 hover:bg-purple-900/30 hover:border-purple-500/40 text-purple-400" :
+              project.color === "orange" ? "border-amber-500/30 bg-amber-900/20 hover:bg-amber-900/30 hover:border-amber-500/40 text-amber-300" :
+              project.color === "cyan" ? "border-cyan-500/30 bg-cyan-900/20 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-cyan-400" :
+              project.color === "pink" ? "border-pink-500/30 bg-pink-900/20 hover:bg-pink-900/30 hover:border-pink-500/40 text-pink-400" :
+              project.color === "yellow" ? "border-yellow-500/30 bg-yellow-900/20 hover:bg-yellow-900/30 hover:border-yellow-500/40 text-yellow-300" :
+              "border-neon-accent/30 bg-neon-medium/20 hover:bg-neon-medium/30 hover:border-neon-accent/40 text-neon-accent"
+            }`}
           >
-            <Folders className="h-3 w-3 mr-1" />
+            <Folders className="h-3 w-3 mr-1.5" />
             {project.name}
           </Badge>
         )}
