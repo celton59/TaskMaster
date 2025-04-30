@@ -8,7 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { insertTaskSchema, TaskStatus, TaskPriority, type Category } from "@shared/schema";
+import { insertTaskSchema, TaskStatus, TaskPriority, type Category, type Project } from "@shared/schema";
 
 import {
   Dialog,
@@ -69,6 +69,11 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
     queryKey: ["/api/categories"]
   });
   
+  // Get projects
+  const { data: projects = [] } = useQuery<Project[]>({
+    queryKey: ["/api/projects"]
+  });
+  
   // Get task data if editing
   const { data: taskData, isLoading: isLoadingTask } = useQuery({
     queryKey: ["/api/tasks", taskId],
@@ -90,6 +95,7 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
       status: TaskStatus.PENDING,
       priority: TaskPriority.MEDIUM,
       categoryId: undefined,
+      projectId: undefined,
       deadline: null,
       assignedTo: undefined,
     }
@@ -309,46 +315,75 @@ export function TaskForm({ isOpen, taskId, onClose }: TaskFormProps) {
               
               <FormField
                 control={form.control}
-                name="deadline"
+                name="projectId"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel className="text-foreground font-medium">Fecha límite</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal bg-background border-border text-foreground focus-visible:ring-offset-0 focus-visible:ring-[#00E1FF]/50",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Seleccionar fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value || undefined}
-                          onSelect={(date) => {
-                            field.onChange(date);
-                            setSelectedDate(date);
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                  <FormItem>
+                    <FormLabel className="text-foreground font-medium">Proyecto</FormLabel>
+                    <Select 
+                      onValueChange={(value) => field.onChange(value ? parseInt(value, 10) : null)} 
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-background border-border text-foreground focus-visible:ring-offset-0 focus-visible:ring-[#00E1FF]/50">
+                          <SelectValue placeholder="Seleccionar proyecto" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="0">Sin proyecto</SelectItem>
+                        {projects.map((project) => (
+                          <SelectItem key={project.id} value={project.id.toString()}>
+                            {project.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage className="text-destructive" />
                   </FormItem>
                 )}
               />
             </div>
+            
+            <FormField
+              control={form.control}
+              name="deadline"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel className="text-foreground font-medium">Fecha límite</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal bg-background border-border text-foreground focus-visible:ring-offset-0 focus-visible:ring-[#00E1FF]/50",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Seleccionar fecha</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value || undefined}
+                        onSelect={(date) => {
+                          field.onChange(date);
+                          setSelectedDate(date);
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage className="text-destructive" />
+                </FormItem>
+              )}
+            />
             
             <DialogFooter>
               <Button 
