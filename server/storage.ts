@@ -756,33 +756,26 @@ export class PostgresStorage implements IStorage {
     try {
       console.log("Creando tarea con datos:", task);
       
-      // Crear SQL manualmente con las columnas exactas y sus valores
-      const columns = [];
-      const values = [];
-      const placeholders = [];
-      let paramIndex = 1;
+      // Sanitizar y preparar los valores para inclusión directa en SQL
+      const title = task.title ? `'${task.title.replace(/'/g, "''")}'` : "''";
+      const description = task.description ? `'${task.description.replace(/'/g, "''")}'` : "NULL";
+      const status = task.status ? `'${task.status.replace(/'/g, "''")}'` : "'pending'";
+      const priority = task.priority ? `'${task.priority.replace(/'/g, "''")}'` : "NULL";
+      const categoryId = task.categoryId ? task.categoryId : "NULL";
+      const deadline = task.deadline ? `'${new Date(task.deadline).toISOString()}'` : "NULL";
+      const assignedTo = task.assignedTo ? task.assignedTo : "NULL";
+      const createdAt = `'${new Date().toISOString()}'`;
       
-      // Agregar columnas que sabemos que existen
-      columns.push("title"); values.push(task.title); placeholders.push(`$${paramIndex++}`);
-      columns.push("description"); values.push(task.description); placeholders.push(`$${paramIndex++}`);
-      columns.push("status"); values.push(task.status || 'pending'); placeholders.push(`$${paramIndex++}`);
-      columns.push("priority"); values.push(task.priority); placeholders.push(`$${paramIndex++}`);
-      columns.push('"categoryId"'); values.push(task.categoryId || null); placeholders.push(`$${paramIndex++}`);
-      columns.push("deadline"); values.push(task.deadline); placeholders.push(`$${paramIndex++}`);
-      columns.push('"assignedTo"'); values.push(task.assignedTo || null); placeholders.push(`$${paramIndex++}`);
-      columns.push('"createdAt"'); values.push(new Date()); placeholders.push(`$${paramIndex++}`);
-      
-      // Construir la consulta
+      // Construir la consulta directamente con los valores
       const query = `
-        INSERT INTO tasks (${columns.join(", ")})
-        VALUES (${placeholders.join(", ")})
+        INSERT INTO tasks (title, description, status, priority, "categoryId", deadline, "assignedTo", "createdAt")
+        VALUES (${title}, ${description}, ${status}, ${priority}, ${categoryId}, ${deadline}, ${assignedTo}, ${createdAt})
         RETURNING *
       `;
       
       console.log("SQL ejecutado:", query);
-      console.log("Parámetros:", values);
       
-      const result = await this.db.execute(query, values);
+      const result = await this.db.execute(query);
       
       console.log("Tarea creada con éxito:", result.rows[0]);
       return result.rows[0] as Task;
