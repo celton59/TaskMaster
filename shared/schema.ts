@@ -41,11 +41,11 @@ export const tasks = pgTable("tasks", {
   description: text("description"),
   status: text("status").notNull().default("pending"),
   priority: text("priority"),
-  categoryId: integer("category_id"),
+  categoryId: integer("categoryId"),
   projectId: integer("project_id").references(() => projects.id),
   deadline: timestamp("deadline"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  assignedTo: integer("assigned_to"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  assignedTo: integer("assignedTo"),
   order: integer("order").default(0), // para ordenar tareas dentro del proyecto
   startDate: timestamp("start_date"), // para la línea de tiempo
   completedAt: timestamp("completed_at"), // para calcular duración real
