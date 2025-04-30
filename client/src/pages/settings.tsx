@@ -63,7 +63,6 @@ const notificationsFormSchema = z.object({
 
 // Esquema para configuración de apariencia
 const appearanceFormSchema = z.object({
-  theme: z.enum(["dark", "light", "system"]).default("dark"),
   accentColor: z.enum(["blue", "purple", "green", "pink", "yellow"]).default("blue"),
   fontSize: z.number().min(80).max(120).default(100),
   animations: z.boolean().default(true),
@@ -107,7 +106,6 @@ export default function SettingsPage() {
   const appearanceForm = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
     defaultValues: {
-      theme: "dark",
       accentColor: "blue",
       fontSize: 100,
       animations: true,
@@ -392,62 +390,19 @@ export default function SettingsPage() {
             <CardContent className="pt-6">
               <Form {...appearanceForm}>
                 <form onSubmit={appearanceForm.handleSubmit(onAppearanceSave)} className="space-y-6">
-                  <FormField
-                    control={appearanceForm.control}
-                    name="theme"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-neon-text">Tema</FormLabel>
-                        <div className="flex flex-col space-y-1.5">
-                          <div className="grid grid-cols-3 gap-3 pt-2">
-                            <div className={`flex flex-col items-center space-y-2 ${field.value === 'dark' ? 'opacity-100' : 'opacity-60'} transition-opacity`}>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="lg"
-                                className={`w-full h-16 border-neon-purple/30 bg-gray-950 hover:bg-gray-900 hover:border-neon-purple hover:shadow-[0_0_12px_rgba(187,0,255,0.3)] active:scale-95 transition-all ${field.value === 'dark' && 'border-neon-purple shadow-[0_0_12px_rgba(187,0,255,0.3)]'}`}
-                                onClick={() => field.onChange('dark')}
-                              >
-                                <Moon className="h-6 w-6 text-neon-purple" />
-                              </Button>
-                              <FormLabel className="text-neon-text text-sm font-normal cursor-pointer">Oscuro</FormLabel>
-                            </div>
-                            
-                            <div className={`flex flex-col items-center space-y-2 ${field.value === 'light' ? 'opacity-100' : 'opacity-60'} transition-opacity`}>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="lg"
-                                className={`w-full h-16 border-neon-purple/30 bg-gray-50 hover:bg-white hover:border-neon-purple hover:shadow-[0_0_12px_rgba(187,0,255,0.3)] active:scale-95 transition-all ${field.value === 'light' && 'border-neon-purple shadow-[0_0_12px_rgba(187,0,255,0.3)]'}`}
-                                onClick={() => field.onChange('light')}
-                              >
-                                <Sun className="h-6 w-6 text-neon-purple" />
-                              </Button>
-                              <FormLabel className="text-neon-text text-sm font-normal cursor-pointer">Claro</FormLabel>
-                            </div>
-                            
-                            <div className={`flex flex-col items-center space-y-2 ${field.value === 'system' ? 'opacity-100' : 'opacity-60'} transition-opacity`}>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="lg"
-                                className={`w-full h-16 border-neon-purple/30 bg-gradient-to-r from-gray-50 to-gray-950 hover:border-neon-purple hover:shadow-[0_0_12px_rgba(187,0,255,0.3)] active:scale-95 transition-all ${field.value === 'system' && 'border-neon-purple shadow-[0_0_12px_rgba(187,0,255,0.3)]'}`}
-                                onClick={() => field.onChange('system')}
-                              >
-                                <Laptop className="h-6 w-6 text-neon-purple" />
-                              </Button>
-                              <FormLabel className="text-neon-text text-sm font-normal cursor-pointer">Sistema</FormLabel>
-                            </div>
-                          </div>
-                        </div>
-                        <FormDescription className="text-neon-text/60 text-center pt-2">
-                          Selecciona el modo que más te guste
-                        </FormDescription>
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex items-center justify-center my-4">
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="h-16 w-16 border-2 border-neon-purple/30 bg-gray-950 rounded-full flex items-center justify-center shadow-[0_0_12px_rgba(187,0,255,0.3)]">
+                        <Moon className="h-8 w-8 text-neon-purple" />
+                      </div>
+                      <p className="text-neon-text text-sm font-normal">Modo Oscuro</p>
+                      <p className="text-xs text-neon-text/60 max-w-xs text-center">
+                        El modo oscuro está optimizado para el diseño neón de la aplicación
+                      </p>
+                    </div>
+                  </div>
                   
-                  <Separator className="my-4 bg-neon-purple/20" />
+                  <Separator className="my-6 bg-neon-purple/20" />
                   
                   <FormField
                     control={appearanceForm.control}
