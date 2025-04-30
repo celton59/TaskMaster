@@ -7,6 +7,7 @@ import {
   insertCategorySchema,
   insertHabitSchema,
   insertHabitLogSchema,
+  insertProjectSchema,
   HabitFrequency 
 } from "@shared/schema";
 import { ZodError } from "zod";
@@ -322,6 +323,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
         action: 'error',
         message: "Error al procesar la solicitud con el sistema orquestado" 
       });
+    }
+  });
+
+  // Rutas de Proyectos
+  apiRouter.get("/projects", async (req, res) => {
+    try {
+      const projects = await storage.getProjects();
+      res.json(projects);
+    } catch (error) {
+      console.error("Error al obtener proyectos:", error);
+      res.status(500).json({ message: "Error al obtener proyectos" });
+    }
+  });
+
+  apiRouter.get("/projects/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const project = await storage.getProject(id);
+      
+      if (!project) {
+        return res.status(404).json({ message: "Proyecto no encontrado" });
+      }
+      
+      res.json(project);
+    } catch (error) {
+      console.error("Error al obtener proyecto:", error);
+      res.status(500).json({ message: "Error al obtener proyecto" });
+    }
+  });
+
+  apiRouter.post("/projects", async (req, res) => {
+    try {
+      const projectData = insertProjectSchema.parse(req.body);
+      const project = await storage.createProject(projectData);
+      res.status(201).json(project);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      console.error("Error al crear proyecto:", error);
+      res.status(500).json({ message: "Error al crear proyecto" });
+    }
+  });
+
+  apiRouter.patch("/projects/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const projectData = insertProjectSchema.partial().parse(req.body);
+      
+      const updatedProject = await storage.updateProject(id, projectData);
+      
+      if (!updatedProject) {
+        return res.status(404).json({ message: "Proyecto no encontrado" });
+      }
+      
+      res.json(updatedProject);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      console.error("Error al actualizar proyecto:", error);
+      res.status(500).json({ message: "Error al actualizar proyecto" });
+    }
+  });
+
+  apiRouter.delete("/projects/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteProject(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Proyecto no encontrado" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error al eliminar proyecto:", error);
+      res.status(500).json({ message: "Error al eliminar proyecto" });
+    }
+  });
+
+  apiRouter.get("/projects/:id/tasks", async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const tasks = await storage.getTasksByProject(projectId);
+      res.json(tasks);
+    } catch (error) {
+      console.error("Error al obtener tareas del proyecto:", error);
+      res.status(500).json({ message: "Error al obtener tareas del proyecto" });
+    }
+  });
+
+  apiRouter.get("/projects/:id/with-tasks", async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const projectWithTasks = await storage.getProjectWithTasks(projectId);
+      res.json(projectWithTasks);
+    } catch (error) {
+      console.error("Error al obtener proyecto con tareas:", error);
+      res.status(500).json({ message: "Error al obtener proyecto con tareas" });
+    }
+  });
+
+  apiRouter.get("/projects/:id/progress", async (req, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const progress = await storage.getProjectProgress(projectId);
+      res.json(progress);
+    } catch (error) {
+      console.error("Error al obtener progreso del proyecto:", error);
+      res.status(500).json({ message: "Error al obtener progreso del proyecto" });
     }
   });
   
