@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { useTheme } from "@/hooks/use-theme";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -83,6 +84,14 @@ export default function Reports() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("general");
   const [timeRange, setTimeRange] = useState("semana");
+  
+  // Obtener el tema actual
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
+  
+  // Seleccionar colores según el tema actual
+  const COLORS = isDarkMode ? darkColors : lightColors;
+  const STATUS_COLORS = isDarkMode ? darkStatusColors : lightStatusColors;
   
   // Obtener las tareas
   const { data: tasks = [] as Task[], isLoading: isLoadingTasks } = useQuery<Task[]>({

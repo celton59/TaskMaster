@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, Link } from "wouter";
+import { useTheme } from "@/hooks/use-theme";
 import { motion } from "framer-motion";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { TaskChart } from "@/components/dashboard/task-chart";
@@ -29,6 +30,10 @@ import type { Task, Category } from "@shared/schema";
 export default function Dashboard() {
   const [, navigate] = useLocation();
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
+  
+  // Obtener el tema actual
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
   
   // Fetch tasks
   const { 
@@ -88,15 +93,21 @@ export default function Dashboard() {
   
   return (
     <div className="py-8 px-6 space-y-8">
-      <div className="neon-card rounded-lg p-5 mb-6 shadow-xl bg-neon-dark border border-neon-purple/30">
+      <div className={isDarkMode 
+          ? "neon-card rounded-lg p-5 mb-6 shadow-xl bg-neon-dark border border-neon-purple/30" 
+          : "rounded-lg p-5 mb-6 shadow-md bg-white border border-gray-200"
+        }>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <div className="flex items-center">
               <h1 className="text-3xl font-bold tracking-tight flex items-center">
-                <span className="bg-neon-purple/10 text-neon-purple p-1.5 rounded-md mr-3 border border-neon-purple/30 shadow-[0_0_8px_rgba(187,0,255,0.2)]">
+                <span className={isDarkMode
+                  ? "bg-neon-purple/10 text-neon-purple p-1.5 rounded-md mr-3 border border-neon-purple/30 shadow-[0_0_8px_rgba(187,0,255,0.2)]"
+                  : "bg-purple-50 text-purple-700 p-1.5 rounded-md mr-3 border border-purple-200"
+                }>
                   <LayoutDashboard className="h-5 w-5" />
                 </span>
-                <span className="terminal-text">Panel de Control</span>
+                <span className={isDarkMode ? "terminal-text" : "text-gray-800"}>Panel de Control</span>
               </h1>
 
             </div>
