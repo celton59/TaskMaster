@@ -359,6 +359,7 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
   
   return (
     <motion.div
+      layout
       ref={setNodeRef}
       className={cn(
         "task-card p-4 rounded-lg cursor-grab group border-l-4",
@@ -375,7 +376,7 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
       }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.2, layout: { type: "spring", stiffness: 500, damping: 30 } }}
       whileHover={!isDragging ? { 
         y: -2, 
         boxShadow: isDarkMode 
