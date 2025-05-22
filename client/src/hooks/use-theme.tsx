@@ -47,11 +47,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.style.setProperty('--neon-darker', '#f5f5f7');
       root.style.setProperty('--neon-dark', '#ffffff');
       root.style.setProperty('--neon-medium', '#eaeaea');
-      root.style.setProperty('--neon-accent', '#0080ff');
+      root.style.setProperty('--neon-accent', '#2b6cb0');  // Azul más apagado
       root.style.setProperty('--neon-text', '#333333');
-      root.style.setProperty('--neon-purple', '#8855d7');
-      root.style.setProperty('--neon-green', '#38a169');
-      root.style.setProperty('--neon-yellow', '#d69e2e');
+      root.style.setProperty('--neon-purple', '#6b46c1');  // Morado más apagado
+      root.style.setProperty('--neon-green', '#2f855a');   // Verde más apagado
+      root.style.setProperty('--neon-yellow', '#b7791f');  // Amarillo más apagado
     }
   }, [theme]);
 
