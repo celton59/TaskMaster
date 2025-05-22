@@ -131,11 +131,15 @@ export default function Dashboard() {
             <Button 
               onClick={() => setIsTaskFormOpen(true)}
               size="sm" 
-              className="h-9 bg-gradient-to-r from-neon-pink to-neon-pink/80 hover:from-neon-pink/90 hover:to-neon-pink 
-              text-neon-darker rounded-md transition-all font-medium shadow-[0_0_10px_rgba(255,0,230,0.4)] 
-              hover:shadow-[0_0_15px_rgba(255,0,230,0.6)] border border-neon-pink/50"
+              className={isDarkMode 
+                ? "h-9 bg-gradient-to-r from-neon-pink to-neon-pink/80 hover:from-neon-pink/90 hover:to-neon-pink text-neon-darker rounded-md transition-all font-medium shadow-[0_0_10px_rgba(255,0,230,0.4)] hover:shadow-[0_0_15px_rgba(255,0,230,0.6)] border border-neon-pink/50"
+                : "h-9 bg-pink-600 hover:bg-pink-700 text-white rounded-md transition-colors duration-300 font-medium"
+              }
             >
-              <Plus className="mr-2 h-4 w-4 animate-pulse-slow" />
+              <Plus className={isDarkMode 
+                ? "mr-2 h-4 w-4 animate-pulse-slow" 
+                : "mr-2 h-4 w-4"
+              } />
               Nueva tarea
             </Button>
           </div>
