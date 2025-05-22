@@ -86,7 +86,7 @@ type PrivacyFormValues = z.infer<typeof privacyFormSchema>;
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, setTheme } = useTheme();
   const [isProcessing, setIsProcessing] = useState(false);
   
   // Formulario de notificaciones
