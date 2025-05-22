@@ -163,60 +163,108 @@ const mockDocuments: Document[] = [
 function CategoryCard({ category }: { category: Category }) {
   const { isDarkMode } = useTheme();
   
-  // Clases para el modo oscuro (neon)
-  const darkModeClasses: Record<string, string> = {
-    blue: "border-neon-accent/30 bg-neon-accent/10 text-neon-accent shadow-[0_0_15px_rgba(0,225,255,0.1)]",
-    green: "border-neon-green/30 bg-neon-green/10 text-neon-green shadow-[0_0_15px_rgba(0,255,157,0.1)]",
-    purple: "border-neon-purple/30 bg-neon-purple/10 text-neon-purple shadow-[0_0_15px_rgba(187,0,255,0.1)]",
-    yellow: "border-neon-yellow/30 bg-neon-yellow/10 text-neon-yellow shadow-[0_0_15px_rgba(255,234,0,0.1)]",
-    red: "border-red-500/30 bg-red-500/10 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.1)]",
+  // Mapeo de colores para ambos modos
+  const colorMapping = {
+    blue: {
+      dark: {
+        card: "border-neon-accent/30 bg-neon-darker shadow-[0_0_15px_rgba(0,225,255,0.15)]",
+        icon: "bg-neon-accent/10 border-neon-accent/40 text-neon-accent",
+        title: "text-neon-accent",
+        count: "text-neon-text/70"
+      },
+      light: {
+        card: "border-blue-300 bg-white shadow-md",
+        icon: "bg-blue-50 border-blue-300 text-blue-600",
+        title: "text-blue-700",
+        count: "text-gray-600"
+      }
+    },
+    green: {
+      dark: {
+        card: "border-neon-green/30 bg-neon-darker shadow-[0_0_15px_rgba(0,255,157,0.15)]",
+        icon: "bg-neon-green/10 border-neon-green/40 text-neon-green",
+        title: "text-neon-green",
+        count: "text-neon-text/70"
+      },
+      light: {
+        card: "border-emerald-300 bg-white shadow-md",
+        icon: "bg-emerald-50 border-emerald-300 text-emerald-600",
+        title: "text-emerald-700",
+        count: "text-gray-600"
+      }
+    },
+    purple: {
+      dark: {
+        card: "border-neon-purple/30 bg-neon-darker shadow-[0_0_15px_rgba(187,0,255,0.15)]",
+        icon: "bg-neon-purple/10 border-neon-purple/40 text-neon-purple",
+        title: "text-neon-purple",
+        count: "text-neon-text/70"
+      },
+      light: {
+        card: "border-purple-300 bg-white shadow-md",
+        icon: "bg-purple-50 border-purple-300 text-purple-600",
+        title: "text-purple-700",
+        count: "text-gray-600"
+      }
+    },
+    yellow: {
+      dark: {
+        card: "border-neon-yellow/30 bg-neon-darker shadow-[0_0_15px_rgba(255,234,0,0.15)]",
+        icon: "bg-neon-yellow/10 border-neon-yellow/40 text-neon-yellow",
+        title: "text-neon-yellow",
+        count: "text-neon-text/70"
+      },
+      light: {
+        card: "border-amber-300 bg-white shadow-md",
+        icon: "bg-amber-50 border-amber-300 text-amber-600",
+        title: "text-amber-700",
+        count: "text-gray-600"
+      }
+    },
+    red: {
+      dark: {
+        card: "border-red-500/30 bg-neon-darker shadow-[0_0_15px_rgba(239,68,68,0.15)]",
+        icon: "bg-red-500/10 border-red-500/40 text-red-500",
+        title: "text-red-500",
+        count: "text-neon-text/70"
+      },
+      light: {
+        card: "border-red-300 bg-white shadow-md",
+        icon: "bg-red-50 border-red-300 text-red-600",
+        title: "text-red-700",
+        count: "text-gray-600"
+      }
+    }
   };
   
-  // Clases para el modo claro
-  const lightModeClasses: Record<string, string> = {
-    blue: "border-blue-300 bg-blue-50 text-blue-700 shadow-sm",
-    green: "border-emerald-300 bg-emerald-50 text-emerald-700 shadow-sm",
-    purple: "border-purple-300 bg-purple-50 text-purple-700 shadow-sm",
-    yellow: "border-amber-300 bg-amber-50 text-amber-700 shadow-sm", 
-    red: "border-red-300 bg-red-50 text-red-700 shadow-sm",
-  };
-  
-  const colorKey = category.color as keyof typeof darkModeClasses;
-  const colorClasses = isDarkMode ? darkModeClasses : lightModeClasses;
-  
-  const iconClass = cn(
-    "h-10 w-10",
-    isDarkMode 
-      ? darkModeClasses[colorKey].split(" ")[2]
-      : lightModeClasses[colorKey].split(" ")[2]
-  );
-
-  const bgClass = isDarkMode ? "bg-neon-darker" : "bg-white";
+  const colorKey = category.color as keyof typeof colorMapping;
+  const theme = isDarkMode ? 'dark' : 'light';
+  const styles = colorMapping[colorKey][theme];
   
   return (
     <Card className={cn(
-      "hover:scale-105 transition-transform cursor-pointer border",
-      colorClasses[colorKey]
+      "transition-all cursor-pointer hover:scale-105 active:scale-95",
+      styles.card
     )}>
       <CardContent className="p-6 flex items-center space-x-4">
         <div className={cn(
-          "rounded-full p-2 border",
-          isDarkMode 
-            ? darkModeClasses[colorKey].split(" ")[0] 
-            : lightModeClasses[colorKey].split(" ")[0],
-          bgClass
+          "rounded-full p-3 flex items-center justify-center",
+          styles.icon
         )}>
-          <FolderOpen className={iconClass} />
+          <FolderOpen className="h-6 w-6" />
         </div>
         <div className="flex-1">
           <h3 className={cn(
-            "font-medium text-lg",
-            isDarkMode ? colorClasses[colorKey].split(" ")[2] : lightModeClasses[colorKey].split(" ")[2]
+            "font-medium text-lg mb-1",
+            styles.title
           )}>{category.name}</h3>
-          <p className={cn(
-            "text-sm",
-            isDarkMode ? "text-neon-text/70" : "text-gray-600"
-          )}>{category.count} documentos</p>
+          <div className={cn(
+            "text-sm flex items-center",
+            styles.count
+          )}>
+            <FileText className="h-3 w-3 mr-1 opacity-70" />
+            {category.count} documentos
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -700,43 +748,57 @@ export default function DocumentationPage() {
         </div>
       </div>
       
-      {isLoadingCategories ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Card 
-              key={i} 
-              className={cn(
-                "animate-pulse",
-                isDarkMode
-                  ? "bg-neon-darker/50 border-neon-accent/20"
-                  : "bg-gray-100 border-gray-200"
-              )}
-            >
-              <CardContent className="h-24 p-6">
-                <div className={cn(
-                  "h-full rounded-md",
-                  isDarkMode ? "bg-neon-darker" : "bg-gray-200"
-                )}></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-          {categories.map((category) => (
-            <div 
-              key={category.id} 
-              onClick={() => {
-                setSelectedCategory(category.id);
-                setCurrentTab("filtered");
-              }}
-              className="transition-transform hover:scale-105 active:scale-95"
-            >
-              <CategoryCard category={category} />
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="py-2">
+        {isLoadingCategories ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Card 
+                key={i} 
+                className={cn(
+                  "animate-pulse",
+                  isDarkMode
+                    ? "bg-neon-darker border-neon-accent/20"
+                    : "bg-white border-gray-200 shadow-md"
+                )}
+              >
+                <CardContent className="h-24 p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className={cn(
+                      "rounded-full h-12 w-12",
+                      isDarkMode ? "bg-neon-medium/20" : "bg-gray-200"
+                    )}></div>
+                    <div className="space-y-2 flex-1">
+                      <div className={cn(
+                        "h-4 rounded",
+                        isDarkMode ? "bg-neon-medium/20" : "bg-gray-200"
+                      )}></div>
+                      <div className={cn(
+                        "h-3 rounded w-1/2",
+                        isDarkMode ? "bg-neon-medium/10" : "bg-gray-100"
+                      )}></div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
+            {categories.map((category) => (
+              <div 
+                key={category.id} 
+                onClick={() => {
+                  setSelectedCategory(category.id);
+                  setCurrentTab("filtered");
+                }}
+                className="h-full"
+              >
+                <CategoryCard category={category} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       
       {/* Tabs y documentos */}
       <div className="mt-8">
