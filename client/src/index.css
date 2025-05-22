@@ -307,10 +307,9 @@
 }
 
 .light-theme .task-card {
-  border: 1px solid rgba(0, 120, 212, 0.5);
-  background: linear-gradient(135deg, rgba(5, 26, 48, 0.9) 0%, rgba(14, 42, 71, 0.9) 100%);
-  box-shadow: 0 0 15px rgba(0, 120, 212, 0.15);
-  backdrop-filter: blur(5px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .task-card:hover {
@@ -320,9 +319,10 @@
 }
 
 .light-theme .task-card:hover {
-  box-shadow: 0 0 20px rgba(0, 120, 212, 0.5), inset 0 0 10px rgba(0, 120, 212, 0.2);
-  border-color: var(--neon-accent);
-  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border-color: rgba(191, 219, 254, 1);
+  background-color: #fafafa;
+  transform: translateY(-2px);
 }
 
 /* Clases de utilidad para el tema neón */
@@ -702,6 +702,32 @@
   .progress-purple .progress-value {
     background: linear-gradient(to right, rgba(168, 85, 247, 0.5), rgba(168, 85, 247, 0.8));
     box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+  }
+  
+  /* Barras de progreso para el modo claro */
+  .progress-light-green .progress-value {
+    background: rgb(16, 185, 129);
+    box-shadow: none;
+  }
+  
+  .progress-light-blue .progress-value {
+    background: rgb(59, 130, 246);
+    box-shadow: none;
+  }
+  
+  .progress-light-amber .progress-value {
+    background: rgb(245, 158, 11);
+    box-shadow: none;
+  }
+  
+  .progress-light-rose .progress-value {
+    background: rgb(244, 63, 94);
+    box-shadow: none;
+  }
+  
+  .progress-light-purple .progress-value {
+    background: rgb(168, 85, 247);
+    box-shadow: none;
   }
   
   /* Animación para el efecto de impulso en las barras */
