@@ -94,13 +94,19 @@ export function Header() {
         <div className="ml-4 flex items-center md:ml-6 space-x-3">
           <div className="relative flex-1 max-w-md hidden md:block">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="text-neon-accent/70 h-4 w-4" />
+              <Search className={cn(
+                "h-4 w-4",
+                isDarkMode ? "text-neon-accent/70" : "text-gray-400"
+              )} />
             </div>
             <Input
               placeholder="Buscar tareas, proyectos..."
-              className="pl-10 pr-3 py-2 h-9 bg-neon-dark/50 border-neon-accent/30 rounded-lg text-sm text-neon-text 
-              focus-visible:ring-neon-accent focus-visible:border-neon-accent/50 focus-visible:ring-opacity-40
-              placeholder:text-neon-text/40"
+              className={cn(
+                "pl-10 pr-3 py-2 h-9 text-sm rounded-lg",
+                isDarkMode 
+                  ? "bg-neon-dark/50 border-neon-accent/30 text-neon-text focus-visible:ring-neon-accent focus-visible:border-neon-accent/50 focus-visible:ring-opacity-40 placeholder:text-neon-text/40" 
+                  : "bg-gray-50 border-gray-200 text-gray-800 focus-visible:ring-blue-500 focus-visible:border-blue-400 focus-visible:ring-opacity-40 placeholder:text-gray-400"
+              )}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -108,31 +114,80 @@ export function Header() {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="relative h-8 w-8 rounded-full bg-neon-medium/50 border border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80 focus:outline-none transition-all duration-300 flex items-center justify-center neon-box">
+              <button className={cn(
+                "relative h-8 w-8 rounded-full border focus:outline-none transition-all duration-300 flex items-center justify-center",
+                isDarkMode 
+                  ? "bg-neon-medium/50 border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80" 
+                  : "bg-gray-100 border-gray-200 text-gray-600 hover:text-blue-600 hover:bg-gray-200"
+              )}>
                 <Bell className="h-4 w-4" />
-                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-neon-accent border-2 border-neon-dark rounded-full shadow-[0_0_4px_rgba(0,225,255,0.7)]"></span>
+                <span className={cn(
+                  "absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full",
+                  isDarkMode 
+                    ? "bg-neon-accent border-2 border-neon-dark shadow-[0_0_4px_rgba(0,225,255,0.7)]"
+                    : "bg-blue-500 border-2 border-white"
+                )}></span>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-80 p-0 overflow-hidden rounded-xl border border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] bg-neon-dark" align="end">
-              <div className="px-4 py-3 bg-neon-darker/70 border-b border-neon-accent/30 flex justify-between items-center">
-                <h3 className="text-sm font-semibold text-neon-text neon-text">Notificaciones</h3>
-                <Badge className="bg-neon-medium border-neon-accent/30 text-neon-accent hover:bg-neon-medium">3 nuevas</Badge>
+            <DropdownMenuContent className={cn(
+              "w-80 p-0 overflow-hidden rounded-xl border",
+              isDarkMode
+                ? "border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] bg-neon-dark"
+                : "border-gray-200 shadow-lg bg-white"
+            )} align="end">
+              <div className={cn(
+                "px-4 py-3 border-b flex justify-between items-center",
+                isDarkMode 
+                  ? "bg-neon-darker/70 border-neon-accent/30" 
+                  : "bg-gray-50 border-gray-200"
+              )}>
+                <h3 className={cn(
+                  "text-sm font-semibold",
+                  isDarkMode ? "text-neon-text" : "text-gray-800"
+                )}>Notificaciones</h3>
+                <Badge className={cn(
+                  isDarkMode
+                    ? "bg-neon-medium border-neon-accent/30 text-neon-accent hover:bg-neon-medium"
+                    : "bg-blue-100 border-blue-200 text-blue-600 hover:bg-blue-200"
+                )}>3 nuevas</Badge>
               </div>
-              <div className="max-h-[320px] overflow-y-auto divide-y divide-neon-accent/20">
+              <div className={cn(
+                "max-h-[320px] overflow-y-auto divide-y",
+                isDarkMode ? "divide-neon-accent/20" : "divide-gray-200"
+              )}>
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="px-4 py-3 hover:bg-neon-medium/20 cursor-pointer transition-all duration-300">
+                  <div key={i} className={cn(
+                    "px-4 py-3 cursor-pointer transition-all duration-300",
+                    isDarkMode 
+                      ? "hover:bg-neon-medium/20" 
+                      : "hover:bg-gray-50"
+                  )}>
                     <div className="flex items-start">
                       <div className="flex-shrink-0 mt-0.5">
-                        <div className="h-9 w-9 rounded-full bg-neon-medium/50 flex items-center justify-center text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+                        <div className={cn(
+                          "h-9 w-9 rounded-full flex items-center justify-center border",
+                          isDarkMode 
+                            ? "bg-neon-medium/50 text-neon-accent border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]" 
+                            : "bg-blue-100 text-blue-600 border-blue-200"
+                        )}>
                           <Bell className="h-4 w-4" />
                         </div>
                       </div>
                       <div className="ml-3 flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-medium text-neon-text">Tarea actualizada</p>
-                          <p className="text-xs text-neon-text/60">2h</p>
+                          <p className={cn(
+                            "text-sm font-medium",
+                            isDarkMode ? "text-neon-text" : "text-gray-800"
+                          )}>Tarea actualizada</p>
+                          <p className={cn(
+                            "text-xs",
+                            isDarkMode ? "text-neon-text/60" : "text-gray-500"
+                          )}>2h</p>
                         </div>
-                        <p className="text-xs text-neon-text/80 leading-relaxed">
+                        <p className={cn(
+                          "text-xs leading-relaxed",
+                          isDarkMode ? "text-neon-text/80" : "text-gray-600"
+                        )}>
                           Se ha actualizado el estado de la tarea "Diseño de UI" a completado.
                         </p>
                       </div>
@@ -140,70 +195,151 @@ export function Header() {
                   </div>
                 ))}
               </div>
-              <div className="p-3 border-t border-neon-accent/20 bg-neon-darker/70">
-                <button className="w-full text-center text-xs font-medium text-neon-accent hover:text-neon-accent/80 py-1 neon-text">
+              <div className={cn(
+                "p-3 border-t",
+                isDarkMode 
+                  ? "border-neon-accent/20 bg-neon-darker/70" 
+                  : "border-gray-200 bg-gray-50"
+              )}>
+                <button className={cn(
+                  "w-full text-center text-xs font-medium py-1",
+                  isDarkMode 
+                    ? "text-neon-accent hover:text-neon-accent/80" 
+                    : "text-blue-600 hover:text-blue-700"
+                )}>
                   Ver todas las notificaciones
                 </button>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <button className="h-8 w-8 rounded-full bg-neon-medium/50 border border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80 focus:outline-none transition-all duration-300 flex items-center justify-center neon-box">
+          <button className={cn(
+            "h-8 w-8 rounded-full border focus:outline-none transition-all duration-300 flex items-center justify-center",
+            isDarkMode 
+              ? "bg-neon-medium/50 border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80" 
+              : "bg-gray-100 border-gray-200 text-gray-600 hover:text-blue-600 hover:bg-gray-200"
+          )}>
             <HelpCircle className="h-4 w-4" />
           </button>
           
           <button 
             onClick={toggleTheme}
-            className="h-8 w-8 rounded-full bg-neon-medium/50 border border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80 focus:outline-none transition-all duration-300 flex items-center justify-center neon-box"
+            className={cn(
+              "h-8 w-8 rounded-full border focus:outline-none transition-all duration-300 flex items-center justify-center",
+              isDarkMode 
+                ? "bg-neon-medium/50 border-neon-accent/30 text-neon-text hover:text-neon-accent hover:bg-neon-medium/80" 
+                : "bg-gray-100 border-gray-200 text-gray-600 hover:text-blue-600 hover:bg-gray-200"
+            )}
             title={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           
-          <Separator orientation="vertical" className="h-6 mx-1 bg-neon-accent/20" />
+          <Separator orientation="vertical" className={cn(
+            "h-6 mx-1",
+            isDarkMode ? "bg-neon-accent/20" : "bg-gray-200"
+          )} />
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center space-x-2 focus:outline-none">
-                <Avatar className="h-8 w-8 border border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]">
+                <Avatar className={cn(
+                  "h-8 w-8 border",
+                  isDarkMode 
+                    ? "border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]" 
+                    : "border-gray-200"
+                )}>
                   <AvatarImage src="/avatar.png" />
-                  <AvatarFallback className="bg-neon-medium text-neon-accent text-xs">
+                  <AvatarFallback className={cn(
+                    "text-xs",
+                    isDarkMode 
+                      ? "bg-neon-medium text-neon-accent" 
+                      : "bg-blue-100 text-blue-600"
+                  )}>
                     {user?.username ? user.username.substring(0, 2).toUpperCase() : 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block text-left">
-                  <p className="text-sm font-medium text-neon-text">{user?.name || user?.username || 'Usuario'}</p>
-                  <p className="text-xs text-neon-text/70">{user?.email || ''}</p>
+                  <p className={cn(
+                    "text-sm font-medium",
+                    isDarkMode ? "text-neon-text" : "text-gray-800"
+                  )}>{user?.name || user?.username || 'Usuario'}</p>
+                  <p className={cn(
+                    "text-xs",
+                    isDarkMode ? "text-neon-text/70" : "text-gray-500"
+                  )}>{user?.email || ''}</p>
                 </div>
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 rounded-xl border border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] bg-neon-dark" align="end">
-              <div className="p-3 border-b border-neon-accent/20 bg-neon-darker/70">
-                <p className="text-sm font-medium text-neon-text">{user?.name || user?.username || 'Usuario'}</p>
-                <p className="text-xs text-neon-text/70">{user?.email || ''}</p>
+            <DropdownMenuContent className={cn(
+              "w-56 rounded-xl border",
+              isDarkMode 
+                ? "border-neon-accent/30 shadow-[0_0_20px_rgba(0,225,255,0.15)] bg-neon-dark" 
+                : "border-gray-200 shadow-lg bg-white"
+            )} align="end">
+              <div className={cn(
+                "p-3 border-b",
+                isDarkMode 
+                  ? "border-neon-accent/20 bg-neon-darker/70" 
+                  : "border-gray-200 bg-gray-50"
+              )}>
+                <p className={cn(
+                  "text-sm font-medium",
+                  isDarkMode ? "text-neon-text" : "text-gray-800"
+                )}>{user?.name || user?.username || 'Usuario'}</p>
+                <p className={cn(
+                  "text-xs",
+                  isDarkMode ? "text-neon-text/70" : "text-gray-500"
+                )}>{user?.email || ''}</p>
               </div>
               <DropdownMenuGroup>
                 <DropdownMenuItem 
-                  className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors"
+                  className={cn(
+                    "transition-colors",
+                    isDarkMode 
+                      ? "focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20" 
+                      : "focus:bg-blue-50 focus:text-blue-700 text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                  )}
                   onClick={() => navigate("/profile")}
                 >
-                  <User className="mr-2 h-4 w-4 text-neon-text/70" />
+                  <User className={cn(
+                    "mr-2 h-4 w-4",
+                    isDarkMode ? "text-neon-text/70" : "text-gray-500"
+                  )} />
                   <span>Mi perfil</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors"
+                  className={cn(
+                    "transition-colors",
+                    isDarkMode 
+                      ? "focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20" 
+                      : "focus:bg-blue-50 focus:text-blue-700 text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                  )}
                   onClick={() => navigate("/settings")}
                 >
-                  <Settings className="mr-2 h-4 w-4 text-neon-text/70" />
+                  <Settings className={cn(
+                    "mr-2 h-4 w-4",
+                    isDarkMode ? "text-neon-text/70" : "text-gray-500"
+                  )} />
                   <span>Configuración</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
-              <DropdownMenuSeparator className="bg-neon-accent/20" />
+              <DropdownMenuSeparator className={cn(
+                isDarkMode ? "bg-neon-accent/20" : "bg-gray-200"
+              )} />
               <DropdownMenuItem 
-                className="focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20 transition-colors"
+                className={cn(
+                  "transition-colors",
+                  isDarkMode 
+                    ? "focus:bg-neon-medium/30 focus:text-neon-accent text-neon-text hover:text-neon-accent hover:bg-neon-medium/20" 
+                    : "focus:bg-blue-50 focus:text-blue-700 text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                )}
                 onClick={handleLogout}
               >
-                <LogOut className="mr-2 h-4 w-4 text-neon-text/70" />
+                <LogOut className={cn(
+                  "mr-2 h-4 w-4",
+                  isDarkMode ? "text-neon-text/70" : "text-gray-500"
+                )} />
                 <span>Cerrar sesión</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
