@@ -97,63 +97,87 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
   // Handle drag over
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
-    
+
     if (!over) return;
-    
-    // Extract task ID from active drag item
+
     const activeTaskId = parseInt(active.id.toString());
-    // Extract column ID (status) from the drop target
-    const overColumnId = over.id.toString();
-    
-    // Find the task being dragged
-    const task = findTaskById(activeTaskId);
-    
-    if (!task) return;
-    
-    // Actualizamos el estado de la tarea temporalmente para dar feedback visual
-    // La actualización real se hará en handleDragEnd
-    setFilteredTasks(prevTasks => prevTasks.map(t => 
-      t.id === activeTaskId 
-        ? { ...t, status: overColumnId } 
-        : t
-    ));
+    const overData = over.data.current as any;
+
+    let newStatus: string | null = null;
+    if (overData?.type === "column") {
+      newStatus = over.id.toString();
+    } else if (overData?.type === "task") {
+      newStatus = overData.task.status;
+    }
+
+    if (!newStatus) return;
+
+    setFilteredTasks(prevTasks =>
+      prevTasks.map(t =>
+        t.id === activeTaskId ? { ...t, status: newStatus! } : t
+      )
+    );
   };
   
   // Handle drag end
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
-    // Reset active task
+
     setActiveTask(null);
-    
     if (!over) return;
-    
-    // Extract task ID from active drag item
+
     const activeTaskId = parseInt(active.id.toString());
-    // Extract column ID (status) from the drop target
-    const overColumnId = over.id.toString();
-    
-    // Update if there's a valid task ID and column ID
-    if (activeTaskId && overColumnId) {
-      const task = findTaskById(activeTaskId);
-      
-      if (task) {
-        // Siempre actualizamos el estado de la tarea,
-        // incluso si la columna es la misma, para asegurar consistencia
-        updateTaskMutation.mutate({
-          taskId: activeTaskId,
-          updates: { status: overColumnId }
-        });
-        
-        // Aseguramos que el estado local refleje el cambio
-        // ya que esto garantizará la sincronización con el servidor
-        setFilteredTasks(prevTasks => prevTasks.map(t => 
-          t.id === activeTaskId 
-            ? { ...t, status: overColumnId } 
-            : t
-        ));
-      }
+    const activeTask = filteredTasks.find(t => t.id === activeTaskId);
+    if (!activeTask) return;
+
+    const overData = over.data.current as any;
+
+    let newStatus = activeTask.status;
+    let overTaskId: number | null = null;
+
+    if (overData?.type === "column") {
+      newStatus = over.id.toString();
+    } else if (overData?.type === "task") {
+      newStatus = overData.task.status;
+      overTaskId = overData.task.id;
     }
+
+    const grouped: Record<string, Task[]> = {};
+    filteredTasks.forEach(task => {
+      const arr = grouped[task.status] || (grouped[task.status] = []);
+      arr.push({ ...task });
+    });
+
+    const fromArray = grouped[activeTask.status];
+    const fromIndex = fromArray.findIndex(t => t.id === activeTaskId);
+    const [moved] = fromArray.splice(fromIndex, 1);
+    moved.status = newStatus;
+
+    const toArray = grouped[newStatus] || (grouped[newStatus] = []);
+    let newIndex = toArray.length;
+    if (overTaskId !== null) {
+      const overIndex = toArray.findIndex(t => t.id === overTaskId);
+      if (overIndex !== -1) newIndex = overIndex;
+    }
+    toArray.splice(newIndex, 0, moved);
+
+    Object.values(grouped).forEach(arr => {
+      arr.forEach((task, idx) => {
+        task.order = idx;
+      });
+    });
+
+    const newTasks = Object.values(grouped).flat();
+
+    // Actualizar tareas modificadas en el servidor
+    newTasks.forEach(t => {
+      const original = filteredTasks.find(orig => orig.id === t.id);
+      if (!original || original.status !== t.status || original.order !== t.order) {
+        updateTaskMutation.mutate({ taskId: t.id, updates: { status: t.status, order: t.order } });
+      }
+    });
+
+    setFilteredTasks(newTasks);
   };
   
   // Handle task drop (legacy method, used as backup)
@@ -168,26 +192,28 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
   const getTasksByStatus = (status: string) => {
     if (status === "pending") {
       // Match both "pending" and "pendiente"
-      return filteredTasks.filter(task => 
-        task.status === "pending" || task.status === "pendiente"
-      );
+      return filteredTasks
+        .filter(task => task.status === "pending" || task.status === "pendiente")
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     } else if (status === "in-progress") {
       // Match both "in-progress" and "en_progreso"
-      return filteredTasks.filter(task => 
-        task.status === "in-progress" || task.status === "en_progreso"
-      );
+      return filteredTasks
+        .filter(task => task.status === "in-progress" || task.status === "en_progreso")
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     } else if (status === "review") {
       // Match both "review" and "revision"
-      return filteredTasks.filter(task => 
-        task.status === "review" || task.status === "revision"
-      );
+      return filteredTasks
+        .filter(task => task.status === "review" || task.status === "revision")
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     } else if (status === "completed") {
       // Match both "completed" and "completada"
-      return filteredTasks.filter(task => 
-        task.status === "completed" || task.status === "completada"
-      );
+      return filteredTasks
+        .filter(task => task.status === "completed" || task.status === "completada")
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     }
-    return filteredTasks.filter(task => task.status === status);
+    return filteredTasks
+      .filter(task => task.status === status)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   };
   
   // Componente para renderizar el overlay de arrastre
@@ -197,6 +223,7 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     // Preparamos datos para pasar a componente estilizado similar a TaskCard
     return (
       <motion.div
+        layoutId={`task-${task.id}`}
         className={cn(
           "task-card p-4 rounded-lg border-l-4 cursor-grabbing w-[280px]",
           isDarkMode
