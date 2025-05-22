@@ -452,13 +452,30 @@ export default function ConfiguracionDirectorioPage() {
                     ? "border-neon-medium/30 hover:bg-neon-darker" 
                     : "border-gray-200 hover:bg-gray-50"
                 )}>
-                  <TableHead className="w-[50px]">ID</TableHead>
-                  <TableHead className="w-[200px]">Empleado</TableHead>
-                  <TableHead>Contacto</TableHead>
-                  <TableHead>Departamento</TableHead>
-                  <TableHead>Rol</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableHead className={cn(
+                    "w-[50px]",
+                    isDarkMode ? "text-neon-accent" : "text-blue-700 font-medium"
+                  )}>ID</TableHead>
+                  <TableHead className={cn(
+                    "w-[200px]",
+                    isDarkMode ? "text-neon-accent" : "text-blue-700 font-medium"
+                  )}>Empleado</TableHead>
+                  <TableHead className={cn(
+                    isDarkMode ? "text-neon-accent" : "text-blue-700 font-medium"
+                  )}>Contacto</TableHead>
+                  <TableHead className={cn(
+                    isDarkMode ? "text-neon-accent" : "text-blue-700 font-medium"
+                  )}>Departamento</TableHead>
+                  <TableHead className={cn(
+                    isDarkMode ? "text-neon-accent" : "text-blue-700 font-medium"
+                  )}>Rol</TableHead>
+                  <TableHead className={cn(
+                    isDarkMode ? "text-neon-accent" : "text-blue-700 font-medium"
+                  )}>Estado</TableHead>
+                  <TableHead className={cn(
+                    "text-right",
+                    isDarkMode ? "text-neon-accent" : "text-blue-700 font-medium"
+                  )}>Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
