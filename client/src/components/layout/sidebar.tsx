@@ -215,12 +215,6 @@ export function Sidebar() {
                   label="Directorio" 
                   isSubmenu
                 />
-                <NavLink 
-                  href="/configuracion/directorio" 
-                  icon={<Settings className="h-4 w-4" />} 
-                  label="Config. Directorio" 
-                  isSubmenu
-                />
               </CollapsibleContent>
             </Collapsible>
             
@@ -467,12 +461,6 @@ export function Sidebar() {
                         href="/directorio" 
                         icon={<Users className="h-4 w-4" />} 
                         label="Directorio" 
-                        isSubmenu
-                      />
-                      <NavLink 
-                        href="/configuracion/directorio" 
-                        icon={<Settings className="h-4 w-4" />} 
-                        label="Config. Directorio" 
                         isSubmenu
                       />
                     </CollapsibleContent>

@@ -415,9 +415,24 @@ export default function ConfiguracionDirectorioPage() {
           ? "bg-neon-dark border-neon-medium/50" 
           : "bg-white border-gray-200"
       )}>
-        <CardHeader className="pb-3">
-          <CardTitle>Gestionar Empleados</CardTitle>
-          <CardDescription>
+        <CardHeader className={cn(
+          "pb-3",
+          isDarkMode 
+            ? "text-neon-text" 
+            : "text-gray-900"
+        )}>
+          <CardTitle className={cn(
+            isDarkMode 
+              ? "text-neon-accent" 
+              : "text-blue-700"
+          )}>
+            Gestionar Empleados
+          </CardTitle>
+          <CardDescription className={cn(
+            isDarkMode 
+              ? "text-neon-text/70" 
+              : "text-gray-500"
+          )}>
             Añade, edita o elimina empleados del directorio.
           </CardDescription>
         </CardHeader>
