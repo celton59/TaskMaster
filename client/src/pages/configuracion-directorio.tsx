@@ -63,7 +63,8 @@ import {
   CheckCircle2,
   UserCircle,
   RefreshCw,
-  Save
+  Save,
+  ArrowLeft
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -347,15 +348,34 @@ export default function ConfiguracionDirectorioPage() {
       isDarkMode ? "bg-neon-darker text-neon-text" : "bg-gray-50 text-gray-900"
     )}>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <h1 className={cn(
-          "text-3xl font-bold",
-          isDarkMode ? "text-neon-accent" : "text-blue-700"
-        )}>
-          <div className="flex items-center gap-2">
-            <Users size={28} className={isDarkMode ? "text-neon-accent" : "text-blue-600"} />
-            Configuración del Directorio
-          </div>
-        </h1>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            className={cn(
+              "flex items-center gap-1",
+              isDarkMode 
+                ? "border-neon-medium/50 text-neon-text hover:bg-neon-medium/20" 
+                : "text-gray-700 hover:bg-gray-100"
+            )}
+            asChild
+          >
+            <Link to="/directorio">
+              <ArrowLeft className="h-4 w-4" />
+              Volver al directorio
+            </Link>
+          </Button>
+          
+          <h1 className={cn(
+            "text-3xl font-bold",
+            isDarkMode ? "text-neon-accent" : "text-blue-700"
+          )}>
+            <div className="flex items-center gap-2">
+              <Users size={28} className={isDarkMode ? "text-neon-accent" : "text-blue-600"} />
+              Configuración del Directorio
+            </div>
+          </h1>
+        </div>
         
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <div className="relative w-full md:w-64">
