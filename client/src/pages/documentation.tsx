@@ -171,9 +171,9 @@ function CategoryCard({ category }: { category: Category }) {
   const iconClass = `h-10 w-10 ${colorClasses[colorKey].split(" ")[2]}`;
   
   return (
-    <Card className={`hover:scale-105 transition-transform cursor-pointer border ${colorClasses[category.color]}`}>
+    <Card className={`hover:scale-105 transition-transform cursor-pointer border ${colorClasses[colorKey]}`}>
       <CardContent className="p-6 flex items-center space-x-4">
-        <div className={`rounded-full p-2 border ${colorClasses[category.color].split(" ")[0]} bg-neon-darker`}>
+        <div className={`rounded-full p-2 border ${colorClasses[colorKey].split(" ")[0]} bg-neon-darker`}>
           <FolderOpen className={iconClass} />
         </div>
         <div className="flex-1">
