@@ -14,6 +14,8 @@ import {
   Loader2,
   FilePlus
 } from "lucide-react";
+import { useTheme } from "@/hooks/use-theme";
+import { cn } from "@/lib/utils";
 import { 
   Card, 
   CardContent, 
@@ -304,6 +306,7 @@ export default function DocumentationPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showNewDocumentDialog, setShowNewDocumentDialog] = useState(false);
   const [currentTab, setCurrentTab] = useState("all");
+  const { isDarkMode } = useTheme();
   
   // Simulación de consulta a la API
   const { data: categories = mockCategories, isLoading: isLoadingCategories } = useQuery({
@@ -384,26 +387,48 @@ export default function DocumentationPage() {
         
         <div className="flex gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neon-text/50" />
+            <Search className={cn(
+              "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
+              isDarkMode ? "text-neon-text/50" : "text-gray-400"
+            )} />
             <Input 
               placeholder="Buscar documentos..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent" 
+              className={cn(
+                "pl-9",
+                isDarkMode
+                  ? "border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent"
+                  : "border-gray-300 bg-white text-gray-900 focus:border-blue-500"
+              )}
             />
           </div>
           
           <Dialog open={showNewDocumentDialog} onOpenChange={setShowNewDocumentDialog}>
             <DialogTrigger asChild>
-              <Button className="bg-neon-accent hover:bg-neon-accent/90 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]">
+              <Button 
+                className={cn(
+                  isDarkMode 
+                    ? "bg-neon-accent hover:bg-neon-accent/90 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                )}
+              >
                 <Plus className="mr-1 h-4 w-4" />
                 Nuevo
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-neon-darker border-neon-accent/30 text-neon-text">
+            <DialogContent className={cn(
+                isDarkMode 
+                  ? "bg-neon-darker border-neon-accent/30 text-neon-text"
+                  : "bg-white border-gray-200 text-gray-900"
+              )}>
               <DialogHeader>
-                <DialogTitle className="text-neon-accent [text-shadow:0_0_10px_rgba(0,225,255,0.3)] font-mono">Crear nuevo documento</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className={cn(
+                  isDarkMode 
+                    ? "text-neon-accent [text-shadow:0_0_10px_rgba(0,225,255,0.3)] font-mono"
+                    : "text-blue-600 font-medium"
+                )}>Crear nuevo documento</DialogTitle>
+                <DialogDescription className={isDarkMode ? "" : "text-gray-600"}>
                   Añade un nuevo documento a la base de conocimientos.
                 </DialogDescription>
               </DialogHeader>
@@ -415,11 +440,15 @@ export default function DocumentationPage() {
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-neon-text">Título</FormLabel>
+                        <FormLabel className={isDarkMode ? "text-neon-text" : "text-gray-700"}>Título</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="Introduce el título del documento" 
-                            className="border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent" 
+                            className={cn(
+                              isDarkMode 
+                                ? "border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent" 
+                                : "border-gray-300 bg-white text-gray-900 focus:border-blue-500"
+                            )}
                             {...field} 
                           />
                         </FormControl>
