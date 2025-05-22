@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useTheme } from "@/hooks/use-theme";
 import { 
   LayoutDashboard, 
   ListTodo, 
@@ -42,6 +43,7 @@ export function Sidebar() {
     tasks: true,
     reports: false
   });
+  const { isDarkMode } = useTheme();
   
   // Get categories
   const { data: categories = [] } = useQuery<Category[]>({
@@ -88,18 +90,38 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-neon-dark border-r border-neon-accent/20 h-full shrink-0 shadow-lg overflow-hidden">
+      <aside className={cn(
+        "hidden md:flex flex-col w-64 h-full shrink-0 shadow-lg overflow-hidden border-r",
+        isDarkMode 
+          ? "bg-neon-dark border-neon-accent/20" 
+          : "bg-white border-gray-200"
+      )}>
         <div className="py-4 px-4 flex items-center justify-between">
           <Link to="/" className="flex items-center cursor-pointer">
-            <div className="h-8 w-8 rounded-lg bg-neon-accent/90 flex items-center justify-center text-neon-dark neon-box">
+            <div className={cn(
+              "h-8 w-8 rounded-lg flex items-center justify-center",
+              isDarkMode 
+                ? "bg-neon-accent/90 text-neon-dark" 
+                : "bg-blue-600 text-white"
+            )}>
               <CheckCircle2 className="h-4 w-4" />
             </div>
-            <h1 className="font-bold text-base ml-2 text-neon-text neon-text">Aitorin</h1>
+            <h1 className={cn(
+              "font-bold text-base ml-2",
+              isDarkMode ? "text-neon-text" : "text-gray-800"
+            )}>
+              Aitorin
+            </h1>
           </Link>
           <Button 
             size="icon" 
             variant="ghost" 
-            className="h-7 w-7 rounded-full text-neon-text hover:text-neon-accent hover:bg-neon-medium"
+            className={cn(
+              "h-7 w-7 rounded-full",
+              isDarkMode 
+                ? "text-neon-text hover:text-neon-accent hover:bg-neon-medium" 
+                : "text-gray-600 hover:text-blue-600 hover:bg-gray-100"
+            )}
           >
             <Bell className="h-4 w-4" />
           </Button>
@@ -365,6 +387,7 @@ interface NavLinkProps {
 function NavLink({ href, icon, label, isSubmenu = false }: NavLinkProps) {
   const [location] = useLocation();
   const isActive = location === href;
+  const { isDarkMode } = useTheme();
   
   // For main menu items
   if (!isSubmenu) {
@@ -373,25 +396,40 @@ function NavLink({ href, icon, label, isSubmenu = false }: NavLinkProps) {
         to={href}
         className={cn(
           "flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-pointer transition-all duration-300 relative overflow-hidden",
-          isActive 
-            ? "text-neon-accent bg-neon-medium/40 shadow-[0_0_8px_rgba(0,225,255,0.3)]" 
-            : "text-neon-text hover:bg-neon-medium/30 hover:text-neon-accent"
+          isDarkMode
+            ? isActive 
+              ? "text-neon-accent bg-neon-medium/40" 
+              : "text-neon-text hover:bg-neon-medium/30 hover:text-neon-accent"
+            : isActive 
+              ? "text-blue-600 bg-blue-50" 
+              : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
         )}
       >
         <div className={cn(
           "flex-shrink-0 mr-2.5 transition-colors",
-          isActive ? 'text-neon-accent' : 'text-neon-text'
+          isDarkMode
+            ? isActive ? 'text-neon-accent' : 'text-neon-text'
+            : isActive ? 'text-blue-600' : 'text-gray-500'
         )}>
           {icon}
         </div>
         <span className={cn(
           "truncate",
-          isActive && "text-neon-accent neon-text"
+          isDarkMode
+            ? isActive && "text-neon-accent"
+            : isActive && "text-blue-600 font-medium"
         )}>{label}</span>
         {isActive && (
           <>
-            <div className="absolute inset-y-0 left-0 w-1 bg-neon-accent rounded-r-full shadow-[0_0_8px_rgba(0,225,255,0.6)]" />
-            <div className="absolute inset-0 border border-neon-accent/20 rounded-md pointer-events-none" />
+            <div className={cn(
+              "absolute inset-y-0 left-0 w-1 rounded-r-full",
+              isDarkMode 
+                ? "bg-neon-accent" 
+                : "bg-blue-600"
+            )} />
+            {isDarkMode && (
+              <div className="absolute inset-0 border border-neon-accent/20 rounded-md pointer-events-none" />
+            )}
           </>
         )}
       </Link>
@@ -404,14 +442,20 @@ function NavLink({ href, icon, label, isSubmenu = false }: NavLinkProps) {
       to={href}
       className={cn(
         "flex items-center px-2 py-1.5 text-sm font-medium rounded-md cursor-pointer transition-all duration-300",
-        isActive 
-          ? "text-neon-accent bg-neon-medium/40" 
-          : "text-neon-text/80 hover:bg-neon-medium/30 hover:text-neon-accent"
+        isDarkMode
+          ? isActive 
+            ? "text-neon-accent bg-neon-medium/40" 
+            : "text-neon-text/80 hover:bg-neon-medium/30 hover:text-neon-accent"
+          : isActive 
+            ? "text-blue-600 bg-blue-50/70" 
+            : "text-gray-600 hover:bg-gray-100 hover:text-blue-600"
       )}
     >
       <div className={cn(
         "flex-shrink-0 mr-2 transition-colors",
-        isActive ? 'text-neon-accent' : 'text-neon-text/70'
+        isDarkMode
+          ? isActive ? 'text-neon-accent' : 'text-neon-text/70'
+          : isActive ? 'text-blue-600' : 'text-gray-500'
       )}>
         {icon}
       </div>
