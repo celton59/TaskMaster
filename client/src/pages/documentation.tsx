@@ -462,22 +462,34 @@ export default function DocumentationPage() {
                     name="category"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-neon-text">Categoría</FormLabel>
+                        <FormLabel className={isDarkMode ? "text-neon-text" : "text-gray-700"}>Categoría</FormLabel>
                         <Select 
                           onValueChange={field.onChange} 
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger className="border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent">
+                            <SelectTrigger className={cn(
+                              isDarkMode 
+                                ? "border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent"
+                                : "border-gray-300 bg-white text-gray-900 focus:border-blue-500"
+                            )}>
                               <SelectValue placeholder="Selecciona una categoría" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="bg-neon-darker border-neon-accent/30 text-neon-text">
+                          <SelectContent className={cn(
+                            isDarkMode 
+                              ? "bg-neon-darker border-neon-accent/30 text-neon-text"
+                              : "bg-white border-gray-200 text-gray-900"
+                          )}>
                             {categories.map((category) => (
                               <SelectItem 
                                 key={category.id} 
                                 value={category.id}
-                                className="focus:bg-neon-medium/30 focus:text-neon-accent"
+                                className={cn(
+                                  isDarkMode
+                                    ? "focus:bg-neon-medium/30 focus:text-neon-accent"
+                                    : "focus:bg-blue-50 focus:text-blue-700"
+                                )}
                               >
                                 {category.name}
                               </SelectItem>
@@ -494,11 +506,16 @@ export default function DocumentationPage() {
                     name="content"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-neon-text">Contenido</FormLabel>
+                        <FormLabel className={isDarkMode ? "text-neon-text" : "text-gray-700"}>Contenido</FormLabel>
                         <FormControl>
                           <Textarea 
                             placeholder="Escribe el contenido del documento..." 
-                            className="min-h-[200px] border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent" 
+                            className={cn(
+                              "min-h-[200px]",
+                              isDarkMode 
+                                ? "border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent" 
+                                : "border-gray-300 bg-white text-gray-900 focus:border-blue-500"
+                            )}
                             {...field} 
                           />
                         </FormControl>
@@ -512,15 +529,19 @@ export default function DocumentationPage() {
                     name="tags"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-neon-text">Etiquetas</FormLabel>
+                        <FormLabel className={isDarkMode ? "text-neon-text" : "text-gray-700"}>Etiquetas</FormLabel>
                         <FormControl>
                           <Input 
                             placeholder="Etiquetas separadas por comas" 
-                            className="border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent" 
+                            className={cn(
+                              isDarkMode 
+                                ? "border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent" 
+                                : "border-gray-300 bg-white text-gray-900 focus:border-blue-500"
+                            )}
                             {...field} 
                           />
                         </FormControl>
-                        <FormDescription className="text-neon-text/60">
+                        <FormDescription className={isDarkMode ? "text-neon-text/60" : "text-gray-500"}>
                           Ejemplo: recursos humanos, política, marketing
                         </FormDescription>
                         <FormMessage />
@@ -533,13 +554,21 @@ export default function DocumentationPage() {
                       type="button" 
                       variant="outline" 
                       onClick={() => setShowNewDocumentDialog(false)}
-                      className="border-neon-accent/30 text-neon-text"
+                      className={cn(
+                        isDarkMode 
+                          ? "border-neon-accent/30 text-neon-text" 
+                          : "border-gray-300 text-gray-700 hover:bg-gray-100"
+                      )}
                     >
                       Cancelar
                     </Button>
                     <Button 
                       type="submit" 
-                      className="bg-neon-accent hover:bg-neon-accent/90 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                      className={cn(
+                        isDarkMode 
+                          ? "bg-neon-accent hover:bg-neon-accent/90 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                          : "bg-blue-600 hover:bg-blue-700 text-white"
+                      )}
                     >
                       Guardar documento
                     </Button>
@@ -552,8 +581,14 @@ export default function DocumentationPage() {
       </div>
       
       {/* Sección de categorías */}
-      <h2 className="text-xl font-medium text-neon-text mb-4 flex items-center">
-        <FolderOpen className="mr-2 h-5 w-5 text-neon-accent/70" />
+      <h2 className={cn(
+        "text-xl font-medium mb-4 flex items-center",
+        isDarkMode ? "text-neon-text" : "text-gray-800"
+      )}>
+        <FolderOpen className={cn(
+          "mr-2 h-5 w-5",
+          isDarkMode ? "text-neon-accent/70" : "text-blue-500" 
+        )} />
         Categorías
       </h2>
       
@@ -590,25 +625,42 @@ export default function DocumentationPage() {
           className="w-full"
         >
           <div className="flex justify-between items-center mb-4">
-            <TabsList className="bg-neon-medium/10 border border-neon-accent/30 p-1 rounded-lg">
+            <TabsList className={cn(
+              "p-1 rounded-lg border",
+              isDarkMode 
+                ? "bg-neon-medium/10 border-neon-accent/30" 
+                : "bg-gray-100 border-gray-200"
+            )}>
               <TabsTrigger 
                 value="all" 
                 onClick={() => setSelectedCategory(null)}
-                className="data-[state=active]:bg-neon-darker data-[state=active]:text-neon-accent data-[state=active]:shadow-[0_0_10px_rgba(0,225,255,0.2)]"
+                className={cn(
+                  isDarkMode
+                    ? "data-[state=active]:bg-neon-darker data-[state=active]:text-neon-accent data-[state=active]:shadow-[0_0_10px_rgba(0,225,255,0.2)] text-neon-text"
+                    : "data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700 data-[state=active]:font-medium"
+                )}
               >
                 Todos los documentos
               </TabsTrigger>
               <TabsTrigger 
                 value="filtered" 
                 disabled={!selectedCategory}
-                className="data-[state=active]:bg-neon-darker data-[state=active]:text-neon-accent data-[state=active]:shadow-[0_0_10px_rgba(0,225,255,0.2)]"
+                className={cn(
+                  isDarkMode
+                    ? "data-[state=active]:bg-neon-darker data-[state=active]:text-neon-accent data-[state=active]:shadow-[0_0_10px_rgba(0,225,255,0.2)] text-neon-text"
+                    : "data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700 data-[state=active]:font-medium"
+                )}
               >
                 {selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : "Filtrados"}
               </TabsTrigger>
               <TabsTrigger 
                 value="recent" 
                 onClick={() => setSelectedCategory(null)}
-                className="data-[state=active]:bg-neon-darker data-[state=active]:text-neon-accent data-[state=active]:shadow-[0_0_10px_rgba(0,225,255,0.2)]"
+                className={cn(
+                  isDarkMode
+                    ? "data-[state=active]:bg-neon-darker data-[state=active]:text-neon-accent data-[state=active]:shadow-[0_0_10px_rgba(0,225,255,0.2)] text-neon-text"
+                    : "data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700 data-[state=active]:font-medium"
+                )}
               >
                 Recientes
               </TabsTrigger>
@@ -621,7 +673,11 @@ export default function DocumentationPage() {
                   setSelectedCategory(null);
                   setCurrentTab("all");
                 }}
-                className="text-neon-text hover:text-neon-accent"
+                className={cn(
+                  isDarkMode 
+                    ? "text-neon-text hover:text-neon-accent"
+                    : "text-gray-700 hover:text-blue-700"
+                )}
               >
                 Limpiar filtro
               </Button>
@@ -646,15 +702,28 @@ export default function DocumentationPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <FileText className="h-16 w-16 text-neon-text/30 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-neon-text">No se encontraron documentos</h3>
-                <p className="text-neon-text/70">
+                <FileText className={cn(
+                  "h-16 w-16 mx-auto mb-4",
+                  isDarkMode ? "text-neon-text/30" : "text-gray-300"
+                )} />
+                <h3 className={cn(
+                  "text-lg font-medium",
+                  isDarkMode ? "text-neon-text" : "text-gray-800"
+                )}>No se encontraron documentos</h3>
+                <p className={cn(
+                  isDarkMode ? "text-neon-text/70" : "text-gray-600"
+                )}>
                   {searchQuery 
                     ? "Intenta cambiar tu búsqueda o quitar los filtros" 
                     : "Comienza añadiendo documentos a la base de conocimientos"}
                 </p>
                 <Button 
-                  className="mt-4 bg-neon-accent hover:bg-neon-accent/90 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                  className={cn(
+                    "mt-4",
+                    isDarkMode 
+                      ? "bg-neon-accent hover:bg-neon-accent/90 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  )}
                   onClick={() => setShowNewDocumentDialog(true)}
                 >
                   <FilePlus className="mr-2 h-4 w-4" />
