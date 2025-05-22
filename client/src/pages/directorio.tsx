@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
+import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Tabs,
@@ -29,7 +31,9 @@ import {
   UserCircle,
   AtSign,
   Briefcase,
-  BadgeCheck
+  BadgeCheck,
+  Edit2,
+  Settings
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
@@ -367,7 +371,22 @@ export default function DirectorioPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex gap-2">
+          <Button 
+            className={cn(
+              "md:ml-2",
+              isDarkMode 
+                ? "bg-neon-accent hover:bg-neon-accent/80 text-neon-dark" 
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            )}
+            asChild
+          >
+            <Link to="/configuracion/directorio">
+              <Settings className="h-4 w-4 mr-2" />
+              Administrar
+            </Link>
+          </Button>
+          
+          <div className="flex gap-2 ml-auto">
             <select
               className={cn(
                 "h-10 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2",
