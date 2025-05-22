@@ -30,7 +30,8 @@ import {
   Bot,
   MessageCircle,
   Activity,
-  FolderKanban
+  FolderKanban,
+  Book
 } from "lucide-react";
 import type { Category } from "@shared/schema";
 
@@ -139,6 +140,12 @@ export function Sidebar() {
               href="/habits" 
               icon={<Activity className="h-5 w-5" />} 
               label="Hábitos" 
+            />
+            
+            <NavLink 
+              href="/documentation" 
+              icon={<Book className="h-5 w-5" />} 
+              label="Documentación" 
             />
             
             <NavLink 
@@ -273,6 +280,11 @@ export function Sidebar() {
                     href="/habits" 
                     icon={<Activity className="h-5 w-5" />} 
                     label="Hábitos" 
+                  />
+                  <NavLink 
+                    href="/documentation" 
+                    icon={<Book className="h-5 w-5" />} 
+                    label="Documentación" 
                   />
                   <NavLink 
                     href="/calendar" 
