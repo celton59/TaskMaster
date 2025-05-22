@@ -175,7 +175,7 @@ export default function Dashboard() {
                 onClick={() => navigate("/tasks")}
                 className={isDarkMode
                   ? "h-8 bg-neon-dark/80 border border-neon-accent/50 text-neon-accent/80 hover:bg-neon-accent/10 hover:text-neon-accent hover:border-neon-accent/70 rounded-md transition-all duration-300 shadow-[0_0_8px_rgba(0,225,255,0.2)] hover:shadow-[0_0_12px_rgba(0,225,255,0.4)]"
-                  : "h-8 bg-blue-100 border border-blue-300 text-blue-700 hover:bg-blue-200 hover:border-blue-400"
+                  : "h-8 bg-white border border-blue-300 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-400"
                 }
               >
                 Ver tareas
