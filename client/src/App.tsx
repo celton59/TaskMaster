@@ -20,6 +20,7 @@ import Documentation from "@/pages/documentation";
 import Organigrama from "@/pages/organigrama";
 import Directorio from "@/pages/directorio";
 import ConfiguracionDirectorio from "@/pages/configuracion-directorio";
+import Informes from "@/pages/informes";
 import AuthPage from "@/pages/auth-page";
 import DevLoginPage from "@/pages/dev-login";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -99,6 +100,7 @@ function App() {
                     <Route path="/configuracion/directorio" component={ConfiguracionDirectorio} />
                     <Route path="/profile" component={Profile} />
                     <Route path="/settings" component={Settings} />
+                    <Route path="/informes" component={Informes} />
                     <Route component={NotFound} />
                   </Switch>
                 </main>

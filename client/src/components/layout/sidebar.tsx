@@ -215,6 +215,12 @@ export function Sidebar() {
                   label="Directorio" 
                   isSubmenu
                 />
+                <NavLink 
+                  href="/informes" 
+                  icon={<BarChart className="h-4 w-4" />} 
+                  label="Informes KPI" 
+                  isSubmenu
+                />
               </CollapsibleContent>
             </Collapsible>
             
@@ -461,6 +467,12 @@ export function Sidebar() {
                         href="/directorio" 
                         icon={<Users className="h-4 w-4" />} 
                         label="Directorio" 
+                        isSubmenu
+                      />
+                      <NavLink 
+                        href="/informes" 
+                        icon={<BarChart className="h-4 w-4" />} 
+                        label="Informes KPI" 
                         isSubmenu
                       />
                     </CollapsibleContent>
