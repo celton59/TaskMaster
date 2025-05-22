@@ -440,13 +440,22 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
       <div className="flex items-center flex-wrap gap-2 mt-3">
         <Badge 
           variant="outline" 
-          className={`rounded-md border py-0 h-5 font-normal text-xs
-            ${category.color === "blue" ? "border-blue-500/30 bg-blue-900/20 hover:bg-blue-900/30 hover:border-blue-500/40 text-blue-400" : 
-            category.color === "green" ? "border-emerald-500/30 bg-emerald-900/20 hover:bg-emerald-900/30 hover:border-emerald-500/40 text-emerald-400" :
-            category.color === "red" ? "border-rose-500/30 bg-rose-900/20 hover:bg-rose-900/30 hover:border-rose-500/40 text-rose-400" :
-            category.color === "purple" ? "border-purple-500/30 bg-purple-900/20 hover:bg-purple-900/30 hover:border-purple-500/40 text-purple-400" :
-            category.color === "orange" ? "border-amber-500/30 bg-amber-900/20 hover:bg-amber-900/30 hover:border-amber-500/40 text-amber-300" :
-            "border-neon-accent/30 bg-neon-medium/20 hover:bg-neon-medium/30 hover:border-neon-accent/40 text-neon-text/90"
+          className={`rounded-md border py-0 h-5 font-normal text-xs ${
+            isDarkMode ? (
+              category.color === "blue" ? "border-blue-500/30 bg-blue-900/20 hover:bg-blue-900/30 hover:border-blue-500/40 text-blue-400" : 
+              category.color === "green" ? "border-emerald-500/30 bg-emerald-900/20 hover:bg-emerald-900/30 hover:border-emerald-500/40 text-emerald-400" :
+              category.color === "red" ? "border-rose-500/30 bg-rose-900/20 hover:bg-rose-900/30 hover:border-rose-500/40 text-rose-400" :
+              category.color === "purple" ? "border-purple-500/30 bg-purple-900/20 hover:bg-purple-900/30 hover:border-purple-500/40 text-purple-400" :
+              category.color === "orange" ? "border-amber-500/30 bg-amber-900/20 hover:bg-amber-900/30 hover:border-amber-500/40 text-amber-300" :
+              "border-neon-accent/30 bg-neon-medium/20 hover:bg-neon-medium/30 hover:border-neon-accent/40 text-neon-text/90"
+            ) : (
+              category.color === "blue" ? "border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 text-blue-700" : 
+              category.color === "green" ? "border-emerald-200 bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-300 text-emerald-700" :
+              category.color === "red" ? "border-rose-200 bg-rose-50 hover:bg-rose-100 hover:border-rose-300 text-rose-700" :
+              category.color === "purple" ? "border-purple-200 bg-purple-50 hover:bg-purple-100 hover:border-purple-300 text-purple-700" :
+              category.color === "orange" ? "border-amber-200 bg-amber-50 hover:bg-amber-100 hover:border-amber-300 text-amber-700" :
+              "border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 text-gray-700"
+            )
           }`}
         >
           <div className={`h-2 w-2 rounded-full mr-1.5 ${
@@ -462,19 +471,31 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
         {project && (
           <Badge 
             variant="outline" 
-            className={`rounded-md border py-0 h-5 font-normal text-xs
-              ${project.color === "blue" ? "border-blue-500/30 bg-blue-900/20 hover:bg-blue-900/30 hover:border-blue-500/40 text-blue-400" : 
-              project.color === "green" ? "border-emerald-500/30 bg-emerald-900/20 hover:bg-emerald-900/30 hover:border-emerald-500/40 text-emerald-400" :
-              project.color === "red" ? "border-rose-500/30 bg-rose-900/20 hover:bg-rose-900/30 hover:border-rose-500/40 text-rose-400" :
-              project.color === "purple" ? "border-purple-500/30 bg-purple-900/20 hover:bg-purple-900/30 hover:border-purple-500/40 text-purple-400" :
-              project.color === "orange" ? "border-amber-500/30 bg-amber-900/20 hover:bg-amber-900/30 hover:border-amber-500/40 text-amber-300" :
-              project.color === "cyan" ? "border-cyan-500/30 bg-cyan-900/20 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-cyan-400" :
-              project.color === "pink" ? "border-pink-500/30 bg-pink-900/20 hover:bg-pink-900/30 hover:border-pink-500/40 text-pink-400" :
-              project.color === "yellow" ? "border-yellow-500/30 bg-yellow-900/20 hover:bg-yellow-900/30 hover:border-yellow-500/40 text-yellow-300" :
-              "border-neon-accent/30 bg-neon-medium/20 hover:bg-neon-medium/30 hover:border-neon-accent/40 text-neon-accent"
+            className={`rounded-md border py-0 h-5 font-normal text-xs ${
+              isDarkMode ? (
+                project.color === "blue" ? "border-blue-500/30 bg-blue-900/20 hover:bg-blue-900/30 hover:border-blue-500/40 text-blue-400" : 
+                project.color === "green" ? "border-emerald-500/30 bg-emerald-900/20 hover:bg-emerald-900/30 hover:border-emerald-500/40 text-emerald-400" :
+                project.color === "red" ? "border-rose-500/30 bg-rose-900/20 hover:bg-rose-900/30 hover:border-rose-500/40 text-rose-400" :
+                project.color === "purple" ? "border-purple-500/30 bg-purple-900/20 hover:bg-purple-900/30 hover:border-purple-500/40 text-purple-400" :
+                project.color === "orange" ? "border-amber-500/30 bg-amber-900/20 hover:bg-amber-900/30 hover:border-amber-500/40 text-amber-300" :
+                project.color === "cyan" ? "border-cyan-500/30 bg-cyan-900/20 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-cyan-400" :
+                project.color === "pink" ? "border-pink-500/30 bg-pink-900/20 hover:bg-pink-900/30 hover:border-pink-500/40 text-pink-400" :
+                project.color === "yellow" ? "border-yellow-500/30 bg-yellow-900/20 hover:bg-yellow-900/30 hover:border-yellow-500/40 text-yellow-300" :
+                "border-neon-accent/30 bg-neon-medium/20 hover:bg-neon-medium/30 hover:border-neon-accent/40 text-neon-accent"
+              ) : (
+                project.color === "blue" ? "border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 text-blue-700" : 
+                project.color === "green" ? "border-emerald-200 bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-300 text-emerald-700" :
+                project.color === "red" ? "border-rose-200 bg-rose-50 hover:bg-rose-100 hover:border-rose-300 text-rose-700" :
+                project.color === "purple" ? "border-purple-200 bg-purple-50 hover:bg-purple-100 hover:border-purple-300 text-purple-700" :
+                project.color === "orange" ? "border-amber-200 bg-amber-50 hover:bg-amber-100 hover:border-amber-300 text-amber-700" :
+                project.color === "cyan" ? "border-cyan-200 bg-cyan-50 hover:bg-cyan-100 hover:border-cyan-300 text-cyan-700" :
+                project.color === "pink" ? "border-pink-200 bg-pink-50 hover:bg-pink-100 hover:border-pink-300 text-pink-700" :
+                project.color === "yellow" ? "border-yellow-200 bg-yellow-50 hover:bg-yellow-100 hover:border-yellow-300 text-yellow-700" :
+                "border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300 text-gray-700"
+              )
             }`}
           >
-            <Folders className="h-3 w-3 mr-1.5" />
+            <Folders className={isDarkMode ? "h-3 w-3 mr-1.5" : "h-3 w-3 mr-1.5 text-gray-500"} />
             {project.name}
           </Badge>
         )}
@@ -485,13 +506,20 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
         <Progress 
           value={getProgress()} 
           className={cn(
-            "h-1.5 bg-neon-medium/30",
-            task.status === "completed" ? "progress-green" :
-            task.status === "review" ? "progress-purple" :
-            task.status === "in_progress" || task.status === "in-progress" ? "progress-blue" :
-            getDeadlineStatus(task.deadline) === "overdue" ? "progress-rose" :
-            getDeadlineStatus(task.deadline) === "soon" ? "progress-amber" :
-            ""
+            isDarkMode ? "h-1.5 bg-neon-medium/30" : "h-1.5 bg-gray-100",
+            isDarkMode ? (
+              task.status === "completed" ? "progress-green" :
+              task.status === "review" ? "progress-purple" :
+              task.status === "in_progress" || task.status === "in-progress" ? "progress-blue" :
+              getDeadlineStatus(task.deadline) === "overdue" ? "progress-rose" :
+              getDeadlineStatus(task.deadline) === "soon" ? "progress-amber" : ""
+            ) : (
+              task.status === "completed" ? "progress-light-green" :
+              task.status === "review" ? "progress-light-purple" :
+              task.status === "in_progress" || task.status === "in-progress" ? "progress-light-blue" :
+              getDeadlineStatus(task.deadline) === "overdue" ? "progress-light-rose" :
+              getDeadlineStatus(task.deadline) === "soon" ? "progress-light-amber" : ""
+            )
           )}
           indicatorClassName="progress-value"
         />
