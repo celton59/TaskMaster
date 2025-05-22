@@ -209,6 +209,12 @@ export function Sidebar() {
                   label="Organigrama" 
                   isSubmenu
                 />
+                <NavLink 
+                  href="/directorio" 
+                  icon={<Users className="h-4 w-4" />} 
+                  label="Directorio" 
+                  isSubmenu
+                />
               </CollapsibleContent>
             </Collapsible>
             
@@ -413,6 +419,12 @@ export function Sidebar() {
                         href="/organigrama" 
                         icon={<Network className="h-4 w-4" />} 
                         label="Organigrama" 
+                        isSubmenu
+                      />
+                      <NavLink 
+                        href="/directorio" 
+                        icon={<Users className="h-4 w-4" />} 
+                        label="Directorio" 
                         isSubmenu
                       />
                     </CollapsibleContent>

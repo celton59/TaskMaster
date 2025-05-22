@@ -18,6 +18,7 @@ import Profile from "@/pages/profile";
 import Settings from "@/pages/settings";
 import Documentation from "@/pages/documentation";
 import Organigrama from "@/pages/organigrama";
+import Directorio from "@/pages/directorio";
 import AuthPage from "@/pages/auth-page";
 import DevLoginPage from "@/pages/dev-login";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -93,6 +94,7 @@ function App() {
                     <Route path="/habits" component={Habits} />
                     <Route path="/documentation" component={Documentation} />
                     <Route path="/organigrama" component={Organigrama} />
+                    <Route path="/directorio" component={Directorio} />
                     <Route path="/profile" component={Profile} />
                     <Route path="/settings" component={Settings} />
                     <Route component={NotFound} />
