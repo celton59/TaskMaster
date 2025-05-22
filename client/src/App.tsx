@@ -17,6 +17,7 @@ import ProjectDetail from "@/pages/project-detail";
 import Profile from "@/pages/profile";
 import Settings from "@/pages/settings";
 import Documentation from "@/pages/documentation";
+import Organigrama from "@/pages/organigrama";
 import AuthPage from "@/pages/auth-page";
 import DevLoginPage from "@/pages/dev-login";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -91,6 +92,7 @@ function App() {
                     <Route path="/whatsapp-settings" component={WhatsAppSettings} />
                     <Route path="/habits" component={Habits} />
                     <Route path="/documentation" component={Documentation} />
+                    <Route path="/organigrama" component={Organigrama} />
                     <Route path="/profile" component={Profile} />
                     <Route path="/settings" component={Settings} />
                     <Route component={NotFound} />

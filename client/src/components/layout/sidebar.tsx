@@ -6,6 +6,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { 
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { useTheme } from "@/hooks/use-theme";
 import { 
   LayoutDashboard, 
@@ -32,7 +37,9 @@ import {
   MessageCircle,
   Activity,
   FolderKanban,
-  Book
+  Book,
+  File,
+  Network
 } from "lucide-react";
 import type { Category } from "@shared/schema";
 
@@ -169,11 +176,41 @@ export function Sidebar() {
               label="Hábitos" 
             />
             
-            <NavLink 
-              href="/documentation" 
-              icon={<Book className="h-5 w-5" />} 
-              label="Documentación" 
-            />
+            <Collapsible className="w-full">
+              <CollapsibleTrigger className={cn(
+                "flex items-center justify-between w-full px-2 py-2 text-sm font-medium rounded-md cursor-pointer transition-all duration-300",
+                isDarkMode 
+                  ? "text-neon-text hover:bg-neon-medium/30 hover:text-neon-accent" 
+                  : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+              )}>
+                <div className="flex items-center">
+                  <Book className={cn(
+                    "h-5 w-5 mr-2.5 flex-shrink-0",
+                    isDarkMode ? "text-neon-text" : "text-gray-500"
+                  )} />
+                  <span>Documentación</span>
+                </div>
+                <ChevronRight className={cn(
+                  "h-4 w-4 transition-transform",
+                  isDarkMode ? "text-neon-text/70" : "text-gray-500",
+                  "group-data-[state=open]:rotate-90"
+                )} />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-9 space-y-1 mt-1">
+                <NavLink 
+                  href="/documentation" 
+                  icon={<File className="h-4 w-4" />} 
+                  label="Documentos" 
+                  isSubmenu
+                />
+                <NavLink 
+                  href="/organigrama" 
+                  icon={<Network className="h-4 w-4" />} 
+                  label="Organigrama" 
+                  isSubmenu
+                />
+              </CollapsibleContent>
+            </Collapsible>
             
             <NavLink 
               href="/calendar" 
@@ -354,11 +391,32 @@ export function Sidebar() {
                     icon={<Activity className="h-5 w-5" />} 
                     label="Hábitos" 
                   />
-                  <NavLink 
-                    href="/documentation" 
-                    icon={<Book className="h-5 w-5" />} 
-                    label="Documentación" 
-                  />
+                  <Collapsible className="w-full">
+                    <CollapsibleTrigger className={cn(
+                      "flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-md",
+                      "text-neon-text hover:bg-neon-medium/30 hover:text-neon-accent"
+                    )}>
+                      <div className="flex items-center">
+                        <Book className="h-5 w-5 mr-2.5 flex-shrink-0 text-neon-text" />
+                        <span>Documentación</span>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-neon-text/70 group-data-[state=open]:rotate-90 transition-transform" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pl-9 space-y-1 mt-1">
+                      <NavLink 
+                        href="/documentation" 
+                        icon={<File className="h-4 w-4" />} 
+                        label="Documentos" 
+                        isSubmenu
+                      />
+                      <NavLink 
+                        href="/organigrama" 
+                        icon={<Network className="h-4 w-4" />} 
+                        label="Organigrama" 
+                        isSubmenu
+                      />
+                    </CollapsibleContent>
+                  </Collapsible>
                   <NavLink 
                     href="/calendar" 
                     icon={<Calendar className="h-5 w-5" />} 
