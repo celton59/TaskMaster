@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 import { 
   Menu, 
   Search, 
@@ -31,7 +32,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export function Header() {
   const [searchTerm, setSearchTerm] = useState("");
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, isDarkMode } = useTheme();
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const { user, logoutMutation } = useAuth();
@@ -61,18 +62,31 @@ export function Header() {
   };
   
   return (
-    <header className="border-b border-neon-accent/20 shadow-md z-20 sticky top-0" style={{ backgroundColor: 'var(--neon-darker)' }}>
+    <header className={cn(
+        "border-b shadow-md z-20 sticky top-0",
+        isDarkMode 
+          ? "border-neon-accent/20 bg-neon-darker" 
+          : "border-gray-200 bg-white"
+      )}>
       <div className="px-5 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center">
           <button 
             onClick={toggleMobileMenu}
-            className="md:hidden text-neon-text hover:text-neon-accent focus:outline-none transition-colors"
+            className={cn(
+              "md:hidden focus:outline-none transition-colors",
+              isDarkMode 
+                ? "text-neon-text hover:text-neon-accent" 
+                : "text-gray-600 hover:text-blue-600"
+            )}
           >
             <Menu className="h-6 w-6" />
           </button>
           <div className="md:hidden ml-2 flex items-center">
             <Link to="/" className="cursor-pointer">
-              <span className="font-bold text-lg text-neon-accent neon-text">Aitorin</span>
+              <span className={cn(
+                "font-bold text-lg",
+                isDarkMode ? "text-neon-accent" : "text-blue-600"
+              )}>Aitorin</span>
             </Link>
           </div>
         </div>

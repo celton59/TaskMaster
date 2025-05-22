@@ -129,7 +129,12 @@ export function Sidebar() {
         
         <div className="px-3 py-2">
           <Button 
-            className="w-full bg-transparent text-neon-accent border border-neon-accent hover:bg-neon-medium hover:shadow-[0_0_10px_rgba(0,225,255,0.5)] transition-all duration-300 h-8 neon-button"
+            className={cn(
+              "w-full h-8 transition-all duration-300",
+              isDarkMode 
+                ? "bg-transparent text-neon-accent border border-neon-accent hover:bg-neon-medium" 
+                : "bg-transparent text-blue-600 border border-blue-600 hover:bg-blue-50"
+            )}
             size="sm"
           >
             <PlusCircle className="mr-1.5 h-3.5 w-3.5" />
@@ -201,10 +206,16 @@ export function Sidebar() {
             />
           </div>
           
-          <Separator className="my-3 bg-neon-accent/20 flex-shrink-0" />
+          <Separator className={cn(
+            "my-3 flex-shrink-0",
+            isDarkMode ? "bg-neon-accent/20" : "bg-gray-200"
+          )} />
           
           <div className="px-2 pt-0 flex-shrink-0">
-            <div className="text-sm font-medium text-neon-accent px-2 py-1 uppercase tracking-wider text-xs">
+            <div className={cn(
+              "px-2 py-1 uppercase tracking-wider text-xs font-medium",
+              isDarkMode ? "text-neon-accent" : "text-blue-600"
+            )}>
               Categorías
             </div>
             
@@ -212,14 +223,27 @@ export function Sidebar() {
             {categories.slice(0, 3).map((category) => (
               <div 
                 key={category.id} 
-                className="flex justify-between items-center px-2 py-1.5 text-sm font-medium rounded-md text-neon-text hover:bg-neon-medium/30 cursor-pointer transition-all duration-300"
+                className={cn(
+                  "flex justify-between items-center px-2 py-1.5 text-sm font-medium rounded-md cursor-pointer transition-all duration-300",
+                  isDarkMode 
+                    ? "text-neon-text hover:bg-neon-medium/30" 
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
               >
                 <div className="flex items-center">
-                  <span className={`h-2.5 w-2.5 rounded-full ${getCategoryColor(category.color)} mr-2 shadow-[0_0_4px_rgba(0,225,255,0.7)]`}></span>
+                  <span className={cn(
+                    `h-2.5 w-2.5 rounded-full ${getCategoryColor(category.color)} mr-2`,
+                    isDarkMode && "shadow-[0_0_4px_rgba(0,225,255,0.7)]"
+                  )}></span>
                   {category.name}
                 </div>
                 <Badge 
-                  className="bg-neon-medium border-0 text-xs font-normal h-5 text-neon-text hover:bg-neon-medium/80"
+                  className={cn(
+                    "text-xs font-normal h-5 border-0",
+                    isDarkMode 
+                      ? "bg-neon-medium text-neon-text hover:bg-neon-medium/80" 
+                      : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                  )}
                 >
                   {Math.floor(Math.random() * 10) + 2}
                 </Badge>
@@ -227,29 +251,56 @@ export function Sidebar() {
             ))}
             
             {categories.length > 3 && (
-              <div className="px-2 py-1 text-xs text-neon-accent font-medium cursor-pointer hover:underline">
+              <div className={cn(
+                "px-2 py-1 text-xs font-medium cursor-pointer hover:underline",
+                isDarkMode ? "text-neon-accent" : "text-blue-600"
+              )}>
                 Ver más ({categories.length - 3})
               </div>
             )}
           </div>
         </nav>
         
-        <div className="p-3 border-t border-neon-accent/20 mt-3">
+        <div className={cn(
+          "p-3 border-t mt-3",
+          isDarkMode ? "border-neon-accent/20" : "border-gray-200" 
+        )}>
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Avatar className="h-8 w-8 border border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]">
+              <Avatar className={cn(
+                "h-8 w-8 border",
+                isDarkMode 
+                  ? "border-neon-accent shadow-[0_0_8px_rgba(0,225,255,0.3)]" 
+                  : "border-gray-200"
+              )}>
                 <AvatarImage src="/avatar.png" />
-                <AvatarFallback className="bg-neon-medium text-neon-accent text-xs">AD</AvatarFallback>
+                <AvatarFallback className={cn(
+                  "text-xs",
+                  isDarkMode 
+                    ? "bg-neon-medium text-neon-accent" 
+                    : "bg-blue-100 text-blue-600"
+                )}>AD</AvatarFallback>
               </Avatar>
               <div className="ml-2">
-                <p className="text-sm font-medium text-neon-text">Admin Demo</p>
-                <p className="text-xs text-neon-text/70">admin@example.com</p>
+                <p className={cn(
+                  "text-sm font-medium",
+                  isDarkMode ? "text-neon-text" : "text-gray-800"
+                )}>Admin Demo</p>
+                <p className={cn(
+                  "text-xs",
+                  isDarkMode ? "text-neon-text/70" : "text-gray-500"
+                )}>admin@example.com</p>
               </div>
             </div>
             <Button 
               size="icon" 
               variant="ghost" 
-              className="h-7 w-7 rounded-full text-neon-text hover:text-neon-accent hover:bg-neon-medium"
+              className={cn(
+                "h-7 w-7 rounded-full",
+                isDarkMode 
+                  ? "text-neon-text hover:text-neon-accent hover:bg-neon-medium" 
+                  : "text-gray-600 hover:text-blue-600 hover:bg-gray-100"
+              )}
             >
               <LogOut className="h-3.5 w-3.5" />
             </Button>
