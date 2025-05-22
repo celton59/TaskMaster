@@ -24,7 +24,8 @@ import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { useDraggable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import type { Task, Category, Project } from "@shared/schema";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -40,11 +41,18 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
   const [, navigate] = useLocation();
   const { isDarkMode } = useTheme();
   
-  // Configurar la tarea como un elemento draggable para @dnd-kit
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+  // Configurar la tarea como un elemento sortable para @dnd-kit
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: task.id,
     data: {
-      type: 'task',
+      type: "task",
       task,
     },
   });
@@ -372,7 +380,8 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
       {...attributes}
       {...listeners}
       style={{
-        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        transform: CSS.Transform.toString(transform),
+        transition,
       }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
