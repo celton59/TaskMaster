@@ -51,7 +51,11 @@ export default function ProjectsList() {
           </p>
         </div>
         <Button 
-          className="bg-neon-accent hover:bg-neon-accent/80 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+          className={cn(
+            isDarkMode 
+              ? "bg-neon-accent hover:bg-neon-accent/80 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          )}
           onClick={() => setLocation("/projects/new")}
         >
           <Plus className="h-4 w-4 mr-1.5" />
@@ -102,16 +106,40 @@ export default function ProjectsList() {
         <TabsContent value="active" className="mt-5">
           {isLoadingProjects ? (
             <div className="text-center py-10">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-neon-accent border-r-transparent"></div>
-              <p className="mt-2 text-neon-text">Cargando proyectos...</p>
+              <div className={cn(
+                "inline-block h-8 w-8 animate-spin rounded-full border-4 border-r-transparent",
+                isDarkMode ? "border-neon-accent" : "border-blue-600"
+              )}></div>
+              <p className={cn(
+                "mt-2", 
+                isDarkMode ? "text-neon-text" : "text-gray-700"
+              )}>Cargando proyectos...</p>
             </div>
           ) : filteredProjects.length === 0 ? (
-            <div className="text-center py-12 bg-neon-medium/20 rounded-md border border-neon-accent/20">
-              <FolderKanban className="h-12 w-12 text-neon-accent/40 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-neon-text mb-1">No hay proyectos activos</h3>
-              <p className="text-neon-text/70 mb-4">Crea un nuevo proyecto para empezar a organizar tus tareas</p>
+            <div className={cn(
+              "text-center py-12 rounded-md border",
+              isDarkMode 
+                ? "bg-neon-medium/20 border-neon-accent/20" 
+                : "bg-blue-50 border-blue-200"
+            )}>
+              <FolderKanban className={cn(
+                "h-12 w-12 mx-auto mb-4",
+                isDarkMode ? "text-neon-accent/40" : "text-blue-400"
+              )} />
+              <h3 className={cn(
+                "text-lg font-medium mb-1",
+                isDarkMode ? "text-neon-text" : "text-gray-800"
+              )}>No hay proyectos activos</h3>
+              <p className={cn(
+                "mb-4",
+                isDarkMode ? "text-neon-text/70" : "text-gray-600"
+              )}>Crea un nuevo proyecto para empezar a organizar tus tareas</p>
               <Button 
-                className="bg-neon-accent hover:bg-neon-accent/80 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                className={cn(
+                  isDarkMode 
+                    ? "bg-neon-accent hover:bg-neon-accent/80 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                )}
                 onClick={() => setLocation("/projects/new")}
               >
                 <Plus className="h-4 w-4 mr-1.5" />
@@ -136,14 +164,31 @@ export default function ProjectsList() {
         <TabsContent value="completed" className="mt-5">
           {isLoadingProjects ? (
             <div className="text-center py-10">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-neon-accent border-r-transparent"></div>
-              <p className="mt-2 text-neon-text">Cargando proyectos...</p>
+              <div className={cn(
+                "inline-block h-8 w-8 animate-spin rounded-full border-4 border-r-transparent",
+                isDarkMode ? "border-neon-accent" : "border-blue-600"
+              )}></div>
+              <p className={cn(
+                "mt-2", 
+                isDarkMode ? "text-neon-text" : "text-gray-700"
+              )}>Cargando proyectos...</p>
             </div>
           ) : filteredProjects.length === 0 ? (
-            <div className="text-center py-12 bg-neon-medium/20 rounded-md border border-neon-accent/20">
+            <div className={cn(
+              "text-center py-12 rounded-md border",
+              isDarkMode 
+                ? "bg-neon-medium/20 border-neon-accent/20" 
+                : "bg-blue-50 border-blue-200"
+            )}>
               <CheckCircle2 className="h-12 w-12 text-emerald-500/40 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-neon-text mb-1">No hay proyectos completados</h3>
-              <p className="text-neon-text/70">Completa proyectos activos para verlos aquí</p>
+              <h3 className={cn(
+                "text-lg font-medium mb-1",
+                isDarkMode ? "text-neon-text" : "text-gray-800"
+              )}>No hay proyectos completados</h3>
+              <p className={cn(
+                "mb-4",
+                isDarkMode ? "text-neon-text/70" : "text-gray-600"
+              )}>Completa proyectos activos para verlos aquí</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -163,14 +208,34 @@ export default function ProjectsList() {
         <TabsContent value="archived" className="mt-5">
           {isLoadingProjects ? (
             <div className="text-center py-10">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-neon-accent border-r-transparent"></div>
-              <p className="mt-2 text-neon-text">Cargando proyectos...</p>
+              <div className={cn(
+                "inline-block h-8 w-8 animate-spin rounded-full border-4 border-r-transparent",
+                isDarkMode ? "border-neon-accent" : "border-blue-600"
+              )}></div>
+              <p className={cn(
+                "mt-2", 
+                isDarkMode ? "text-neon-text" : "text-gray-700"
+              )}>Cargando proyectos...</p>
             </div>
           ) : filteredProjects.length === 0 ? (
-            <div className="text-center py-12 bg-neon-medium/20 rounded-md border border-neon-accent/20">
-              <FileText className="h-12 w-12 text-neon-accent/40 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-neon-text mb-1">No hay proyectos archivados</h3>
-              <p className="text-neon-text/70">Los proyectos archivados se mostrarán aquí</p>
+            <div className={cn(
+              "text-center py-12 rounded-md border",
+              isDarkMode 
+                ? "bg-neon-medium/20 border-neon-accent/20" 
+                : "bg-blue-50 border-blue-200"
+            )}>
+              <FileText className={cn(
+                "h-12 w-12 mx-auto mb-4",
+                isDarkMode ? "text-neon-accent/40" : "text-blue-400"
+              )} />
+              <h3 className={cn(
+                "text-lg font-medium mb-1",
+                isDarkMode ? "text-neon-text" : "text-gray-800"
+              )}>No hay proyectos archivados</h3>
+              <p className={cn(
+                "mb-4",
+                isDarkMode ? "text-neon-text/70" : "text-gray-600"
+              )}>Los proyectos archivados se mostrarán aquí</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
