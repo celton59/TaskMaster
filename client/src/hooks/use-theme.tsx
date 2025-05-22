@@ -43,15 +43,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.classList.add('light-theme');
       root.classList.remove('dark-theme');
       
-      // Variables CSS para el tema claro tradicional
-      root.style.setProperty('--neon-darker', '#f5f5f7');
+      // Variables CSS para el tema claro con colores completamente normales
+      root.style.setProperty('--neon-darker', '#ffffff');
       root.style.setProperty('--neon-dark', '#ffffff');
-      root.style.setProperty('--neon-medium', '#eaeaea');
-      root.style.setProperty('--neon-accent', '#2b6cb0');  // Azul más apagado
-      root.style.setProperty('--neon-text', '#333333');
-      root.style.setProperty('--neon-purple', '#6b46c1');  // Morado más apagado
-      root.style.setProperty('--neon-green', '#2f855a');   // Verde más apagado
-      root.style.setProperty('--neon-yellow', '#b7791f');  // Amarillo más apagado
+      root.style.setProperty('--neon-medium', '#ffffff');
+      root.style.setProperty('--neon-accent', '#0078D4');  // Azul estándar
+      root.style.setProperty('--neon-text', '#333333');    // Texto oscuro estándar
+      
+      // Colores categóricos completamente normales
+      root.style.setProperty('--neon-purple', '#6f42c1');  // Morado normal Bootstrap
+      root.style.setProperty('--neon-pink', '#d63384');    // Rosa normal Bootstrap
+      root.style.setProperty('--neon-green', '#198754');   // Verde normal Bootstrap
+      root.style.setProperty('--neon-yellow', '#ffc107');  // Amarillo normal Bootstrap
+      root.style.setProperty('--neon-orange', '#fd7e14');  // Naranja normal Bootstrap
+      root.style.setProperty('--neon-red', '#dc3545');     // Rojo normal Bootstrap
     }
   }, [theme]);
 

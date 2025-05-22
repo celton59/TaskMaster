@@ -33,8 +33,8 @@ import {
 } from "lucide-react";
 import { Task, Category } from "@shared/schema";
 
-// Colores neón para los gráficos
-const COLORS = [
+// Definición de colores según el tema
+const darkColors = [
   "#00E1FF", // Neón Azul (neon-accent)
   "#FF00E6", // Neón Rosa (neon-pink)
   "#BB00FF", // Neón Morado (neon-purple)
@@ -45,12 +45,30 @@ const COLORS = [
   "#1AFFEF", // Neón Turquesa
 ];
 
-// Status para las tareas - Colores neón
-const STATUS_COLORS = {
+const lightColors = [
+  "#0078D4", // Azul estándar
+  "#d63384", // Rosa estándar
+  "#6f42c1", // Morado estándar
+  "#198754", // Verde estándar
+  "#ffc107", // Amarillo estándar
+  "#fd7e14", // Naranja estándar
+  "#dc3545", // Rojo estándar
+  "#20c997", // Turquesa estándar
+];
+
+// Estados para las tareas - Colores adaptados al tema
+const darkStatusColors = {
   "pendiente": "#FFEA00", // Neón Amarillo
   "en_progreso": "#00E1FF", // Neón Azul
   "revision": "#BB00FF", // Neón Morado
   "completada": "#00FF9D" // Neón Verde
+};
+
+const lightStatusColors = {
+  "pendiente": "#ffc107", // Amarillo estándar
+  "en_progreso": "#0078D4", // Azul estándar
+  "revision": "#6f42c1", // Morado estándar
+  "completada": "#198754" // Verde estándar
 };
 
 // Traducciones de estado
