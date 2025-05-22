@@ -182,8 +182,8 @@ export default function InformesPage() {
   const filteredKPIs = kpisProduccion.filter(kpi => {
     const matchesSearch = kpi.kpi.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          kpi.definicion.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFrecuencia = frecuenciaFilter ? kpi.frecuencia.includes(frecuenciaFilter) : true;
-    const matchesRevisor = revisorFilter ? kpi.revisor.includes(revisorFilter) : true;
+    const matchesFrecuencia = frecuenciaFilter && frecuenciaFilter !== "todos" ? kpi.frecuencia.includes(frecuenciaFilter) : true;
+    const matchesRevisor = revisorFilter && revisorFilter !== "todos" ? kpi.revisor.includes(revisorFilter) : true;
     
     return matchesSearch && matchesFrecuencia && matchesRevisor;
   });
@@ -368,7 +368,7 @@ export default function InformesPage() {
                           ? "bg-neon-dark border-neon-medium/50 text-neon-text" 
                           : "bg-white"
                       )}>
-                        <SelectItem value="">Todas las frecuencias</SelectItem>
+                        <SelectItem value="todos">Todas las frecuencias</SelectItem>
                         {frecuencias.map((frecuencia, index) => (
                           <SelectItem key={index} value={frecuencia}>{frecuencia}</SelectItem>
                         ))}
@@ -396,7 +396,7 @@ export default function InformesPage() {
                           ? "bg-neon-dark border-neon-medium/50 text-neon-text" 
                           : "bg-white"
                       )}>
-                        <SelectItem value="">Todos los revisores</SelectItem>
+                        <SelectItem value="todos">Todos los revisores</SelectItem>
                         {revisores.map((revisor, index) => (
                           <SelectItem key={index} value={revisor}>{revisor}</SelectItem>
                         ))}
