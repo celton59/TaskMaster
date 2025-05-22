@@ -7,7 +7,8 @@ import {
   CardContent, 
   CardDescription, 
   CardHeader, 
-  CardTitle 
+  CardTitle,
+  CardFooter
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -37,12 +38,83 @@ import {
   PieChart,
   Calendar,
   Filter,
-  RefreshCw
+  RefreshCw,
+  AlertTriangle,
+  TrendingUp,
+  TrendingDown,
+  FileSpreadsheet,
+  FileDown,
+  Mail,
+  ExternalLink,
+  Clock,
+  CheckSquare,
+  Clock4
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { BarChart as ReBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart as RePieChart, Pie, Cell } from "recharts";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Progress } from "@/components/ui/progress";
 
-// Datos de ejemplo para los KPIs
+// Datos de ejemplo para los KPIs y métricas
+const datosDesempenio = [
+  { name: 'Ene', produccion: 18, revision: 16, objetivo: 20 },
+  { name: 'Feb', produccion: 22, revision: 20, objetivo: 20 },
+  { name: 'Mar', produccion: 17, revision: 16, objetivo: 20 },
+  { name: 'Abr', produccion: 25, revision: 24, objetivo: 20 },
+  { name: 'May', produccion: 24, revision: 22, objetivo: 20 },
+  { name: 'Jun', produccion: 32, revision: 30, objetivo: 20 },
+];
+
+const datosEficiencia = [
+  { name: 'Tiempo medio', value: 76 },
+  { name: 'Tasa de rechazo', value: 8 },
+  { name: 'Cumplimiento', value: 94 },
+  { name: 'Adherencia', value: 88 },
+];
+
+const COLORS = ['#00C49F', '#FF8042', '#FFBB28', '#0088FE'];
+
+// Métricas principales
+const metricasDestacadas = [
+  {
+    titulo: "Backlog actual",
+    valor: "14",
+    descripcion: "Vídeos pendientes",
+    icono: <Clock className="h-5 w-5" />,
+    tendencia: "up",
+    porcentaje: "+27%",
+    color: "red"
+  },
+  {
+    titulo: "Throughput semanal",
+    valor: "32",
+    descripcion: "Vídeos finalizados",
+    icono: <CheckSquare className="h-5 w-5" />,
+    tendencia: "up",
+    porcentaje: "+15%",
+    color: "green"
+  },
+  {
+    titulo: "Tiempo medio",
+    valor: "2.4",
+    descripcion: "Días por vídeo",
+    icono: <Clock4 className="h-5 w-5" />,
+    tendencia: "down",
+    porcentaje: "-8%",
+    color: "green"
+  },
+  {
+    titulo: "Tasa de rechazo",
+    valor: "8%",
+    descripcion: "En revisión",
+    icono: <AlertTriangle className="h-5 w-5" />,
+    tendencia: "down",
+    porcentaje: "-5%",
+    color: "green"
+  }
+];
+
 const kpisProduccion = [
   { 
     id: 1, 
