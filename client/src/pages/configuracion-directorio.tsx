@@ -356,12 +356,15 @@ export default function ConfiguracionDirectorioPage() {
               "flex items-center gap-1",
               isDarkMode 
                 ? "border-neon-medium/50 text-neon-text hover:bg-neon-medium/20" 
-                : "text-gray-700 hover:bg-gray-100"
+                : "border-blue-100 bg-blue-50 text-blue-700 hover:bg-blue-100"
             )}
             asChild
           >
             <Link to="/directorio">
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className={cn(
+                "h-4 w-4",
+                isDarkMode ? "text-neon-text" : "text-blue-600"
+              )} />
               Volver al directorio
             </Link>
           </Button>
