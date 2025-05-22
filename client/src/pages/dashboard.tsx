@@ -479,14 +479,29 @@ export default function Dashboard() {
 
       {/* Overview Tabs */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-6">
-        <Card className="md:col-span-4 neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
-          <CardHeader className="pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className={isDarkMode 
+          ? "md:col-span-4 neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]"
+          : "md:col-span-4 overflow-hidden border border-gray-200 bg-white shadow-sm"
+        }>
+          <CardHeader className={isDarkMode 
+            ? "pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark"
+            : "pb-3 border-b border-gray-200 bg-white"
+          }>
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Resumen de actividad</CardTitle>
-                <CardDescription className="text-neon-text/70">Actividad de tareas en la última semana</CardDescription>
+                <CardTitle className={isDarkMode
+                  ? "text-base font-medium text-neon-accent neon-text font-mono"
+                  : "text-base font-medium text-blue-700"
+                }>Resumen de actividad</CardTitle>
+                <CardDescription className={isDarkMode 
+                  ? "text-neon-text/70"
+                  : "text-gray-500"
+                }>Actividad de tareas en la última semana</CardDescription>
               </div>
-              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+              <div className={isDarkMode
+                ? "h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]"
+                : "h-9 w-9 rounded-full flex items-center justify-center bg-blue-50 text-blue-700 border border-blue-200"
+              }>
                 <BarChart4 className="h-5 w-5" />
               </div>
             </div>
@@ -494,10 +509,22 @@ export default function Dashboard() {
           <CardContent className="p-5">
             <Tabs defaultValue="semana" className="w-full mb-2">
               <div className="flex justify-end mb-3">
-                <TabsList className="grid w-[200px] grid-cols-3 h-8 bg-neon-medium/30 border border-neon-accent/30">
-                  <TabsTrigger value="dia" className="data-[state=active]:bg-neon-accent/30 data-[state=active]:text-neon-accent text-neon-text/80">Día</TabsTrigger>
-                  <TabsTrigger value="semana" className="data-[state=active]:bg-neon-accent/30 data-[state=active]:text-neon-accent text-neon-text/80">Semana</TabsTrigger>
-                  <TabsTrigger value="mes" className="data-[state=active]:bg-neon-accent/30 data-[state=active]:text-neon-accent text-neon-text/80">Mes</TabsTrigger>
+                <TabsList className={isDarkMode
+                  ? "grid w-[200px] grid-cols-3 h-8 bg-neon-medium/30 border border-neon-accent/30"
+                  : "grid w-[200px] grid-cols-3 h-8 bg-gray-100 border border-gray-200"
+                }>
+                  <TabsTrigger className={isDarkMode
+                    ? "data-[state=active]:bg-neon-accent/30 data-[state=active]:text-neon-accent text-neon-text/80"
+                    : "data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 text-gray-600"
+                  } value="dia">Día</TabsTrigger>
+                  <TabsTrigger className={isDarkMode
+                    ? "data-[state=active]:bg-neon-accent/30 data-[state=active]:text-neon-accent text-neon-text/80"
+                    : "data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 text-gray-600"
+                  } value="semana">Semana</TabsTrigger>
+                  <TabsTrigger className={isDarkMode
+                    ? "data-[state=active]:bg-neon-accent/30 data-[state=active]:text-neon-accent text-neon-text/80"
+                    : "data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 text-gray-600"
+                  } value="mes">Mes</TabsTrigger>
                 </TabsList>
               </div>
               <TabsContent value="dia" className="m-0">
@@ -513,13 +540,28 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="md:col-span-2 neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)] animate-card-glow">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker via-neon-medium/20 to-neon-dark bg-[length:200%_100%] animate-flow-gradient">
+        <Card className={isDarkMode 
+          ? "md:col-span-2 neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)] animate-card-glow"
+          : "md:col-span-2 overflow-hidden border border-gray-200 bg-white shadow-sm"
+        }>
+          <CardHeader className={isDarkMode 
+            ? "flex flex-row items-center justify-between pb-2 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker via-neon-medium/20 to-neon-dark bg-[length:200%_100%] animate-flow-gradient"
+            : "flex flex-row items-center justify-between pb-2 border-b border-gray-200 bg-white"
+          }>
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent [text-shadow:0_0_10px_rgba(0,225,255,0.5)] font-mono">Tareas recientes</CardTitle>
-              <CardDescription className="text-neon-text/70">Últimas adiciones</CardDescription>
+              <CardTitle className={isDarkMode
+                ? "text-base font-medium text-neon-accent [text-shadow:0_0_10px_rgba(0,225,255,0.5)] font-mono"
+                : "text-base font-medium text-blue-700"
+              }>Tareas recientes</CardTitle>
+              <CardDescription className={isDarkMode 
+                ? "text-neon-text/70"
+                : "text-gray-500"
+              }>Últimas adiciones</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+            <div className={isDarkMode
+              ? "h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]"
+              : "h-9 w-9 rounded-full flex items-center justify-center bg-blue-50 text-blue-700 border border-blue-200"
+            }>
               <Clock className="h-5 w-5" />
             </div>
           </CardHeader>
@@ -534,39 +576,81 @@ export default function Dashboard() {
 
       {/* Additional Metrics Row */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <Card className="neon-card overflow-hidden border border-neon-green/30 bg-neon-dark shadow-[0_0_10px_rgba(0,255,157,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-green/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className={isDarkMode 
+          ? "neon-card overflow-hidden border border-neon-green/30 bg-neon-dark shadow-[0_0_10px_rgba(0,255,157,0.1)]"
+          : "overflow-hidden border border-gray-200 bg-white shadow-sm"
+        }>
+          <CardHeader className={isDarkMode 
+            ? "flex flex-row items-center justify-between pb-2 border-b border-neon-green/30 bg-gradient-to-r from-neon-darker to-neon-dark"
+            : "flex flex-row items-center justify-between pb-2 border-b border-gray-200 bg-white"
+          }>
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-green neon-text-green font-mono">Proyecto destacado</CardTitle>
-              <CardDescription className="text-neon-text/70">Mayor actividad</CardDescription>
+              <CardTitle className={isDarkMode
+                ? "text-base font-medium text-neon-green neon-text-green font-mono"
+                : "text-base font-medium text-emerald-700"
+              }>Proyecto destacado</CardTitle>
+              <CardDescription className={isDarkMode 
+                ? "text-neon-text/70"
+                : "text-gray-500"
+              }>Mayor actividad</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-green/20 text-neon-green border border-neon-green/30 shadow-[0_0_8px_rgba(0,255,157,0.2)]">
+            <div className={isDarkMode
+              ? "h-9 w-9 rounded-full flex items-center justify-center bg-neon-green/20 text-neon-green border border-neon-green/30 shadow-[0_0_8px_rgba(0,255,157,0.2)]"
+              : "h-9 w-9 rounded-full flex items-center justify-center bg-emerald-50 text-emerald-700 border border-emerald-200"
+            }>
               <BarChart4 className="h-5 w-5" />
             </div>
           </CardHeader>
           <CardContent className="p-5">
-            <div className="text-lg font-bold text-neon-text font-mono">Rediseño de UI</div>
-            <div className="flex items-center text-sm text-neon-text/80 mt-1.5 space-x-4">
+            <div className={isDarkMode 
+              ? "text-lg font-bold text-neon-text font-mono"
+              : "text-lg font-bold text-gray-800"
+            }>Rediseño de UI</div>
+            <div className={isDarkMode 
+              ? "flex items-center text-sm text-neon-text/80 mt-1.5 space-x-4"
+              : "flex items-center text-sm text-gray-600 mt-1.5 space-x-4"
+            }>
               <div className="flex items-center">
-                <Users className="w-3.5 h-3.5 mr-1.5 text-neon-green/60" />
+                <Users className={isDarkMode 
+                  ? "w-3.5 h-3.5 mr-1.5 text-neon-green/60"
+                  : "w-3.5 h-3.5 mr-1.5 text-emerald-500"
+                } />
                 <span className="font-medium">4 miembros</span>
               </div>
               <div className="flex items-center">
-                <CheckCheck className="w-3.5 h-3.5 mr-1.5 text-neon-green/60" />
+                <CheckCheck className={isDarkMode
+                  ? "w-3.5 h-3.5 mr-1.5 text-neon-green/60"
+                  : "w-3.5 h-3.5 mr-1.5 text-emerald-500"
+                } />
                 <span className="font-medium">12 tareas</span>
               </div>
             </div>
             <div className="mt-5 mb-2 space-y-1">
               <div className="flex justify-between items-center text-sm">
-                <span className="font-medium text-neon-text/90">Progreso</span>
-                <span className="font-semibold text-neon-green">75%</span>
+                <span className={isDarkMode
+                  ? "font-medium text-neon-text/90"
+                  : "font-medium text-gray-700"
+                }>Progreso</span>
+                <span className={isDarkMode 
+                  ? "font-semibold text-neon-green"
+                  : "font-semibold text-emerald-600"
+                }>75%</span>
               </div>
-              <div className="h-2.5 w-full bg-neon-medium/30 rounded-full overflow-hidden border border-neon-green/20">
-                <div className="bg-neon-green/80 h-full w-3/4 rounded-full shadow-[0_0_8px_rgba(0,255,157,0.4)]"></div>
+              <div className={isDarkMode
+                ? "h-2.5 w-full bg-neon-medium/30 rounded-full overflow-hidden border border-neon-green/20"
+                : "h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-200"
+              }>
+                <div className={isDarkMode
+                  ? "bg-neon-green/80 h-full w-3/4 rounded-full shadow-[0_0_8px_rgba(0,255,157,0.4)]"
+                  : "bg-emerald-500 h-full w-3/4 rounded-full"
+                }></div>
               </div>
             </div>
             <div className="mt-4 text-xs text-right">
-              <span className="text-neon-green hover:text-neon-green/80 font-medium inline-flex items-center hover:underline cursor-pointer transition-colors" onClick={() => navigate("/projects")}>
+              <span className={isDarkMode
+                ? "text-neon-green hover:text-neon-green/80 font-medium inline-flex items-center hover:underline cursor-pointer transition-colors"
+                : "text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center hover:underline cursor-pointer transition-colors"
+              } onClick={() => navigate("/projects")}>
                 Ver todos los proyectos
                 <ArrowUpRight className="ml-1 h-3 w-3" />
               </span>
@@ -574,35 +658,71 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="neon-card overflow-hidden border border-neon-yellow/30 bg-neon-dark shadow-[0_0_10px_rgba(255,234,0,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-yellow/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className={isDarkMode 
+          ? "neon-card overflow-hidden border border-neon-yellow/30 bg-neon-dark shadow-[0_0_10px_rgba(255,234,0,0.1)]"
+          : "overflow-hidden border border-gray-200 bg-white shadow-sm"
+        }>
+          <CardHeader className={isDarkMode 
+            ? "flex flex-row items-center justify-between pb-2 border-b border-neon-yellow/30 bg-gradient-to-r from-neon-darker to-neon-dark"
+            : "flex flex-row items-center justify-between pb-2 border-b border-gray-200 bg-white"
+          }>
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-yellow neon-text-yellow font-mono">Próximos vencimientos</CardTitle>
-              <CardDescription className="text-neon-text/70">Tareas pendientes</CardDescription>
+              <CardTitle className={isDarkMode
+                ? "text-base font-medium text-neon-yellow neon-text-yellow font-mono"
+                : "text-base font-medium text-amber-700"
+              }>Próximos vencimientos</CardTitle>
+              <CardDescription className={isDarkMode 
+                ? "text-neon-text/70"
+                : "text-gray-500"
+              }>Tareas pendientes</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-yellow/20 text-neon-yellow border border-neon-yellow/30 shadow-[0_0_8px_rgba(255,234,0,0.2)]">
+            <div className={isDarkMode
+              ? "h-9 w-9 rounded-full flex items-center justify-center bg-neon-yellow/20 text-neon-yellow border border-neon-yellow/30 shadow-[0_0_8px_rgba(255,234,0,0.2)]"
+              : "h-9 w-9 rounded-full flex items-center justify-center bg-amber-50 text-amber-700 border border-amber-200"
+            }>
               <CalendarDays className="h-5 w-5" />
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="divide-y divide-neon-yellow/10">
+            <div className={isDarkMode 
+              ? "divide-y divide-neon-yellow/10"
+              : "divide-y divide-gray-100"
+            }>
               {[
                 { title: "Entrega de prototipo", days: 1, category: "Diseño" },
                 { title: "Revisión con cliente", days: 2, category: "Reunión" },
                 { title: "Implementar feedback", days: 3, category: "Desarrollo" }
               ].map((task, i) => (
-                <div key={i} className="flex items-start p-4 hover:bg-neon-medium/10 transition-colors cursor-pointer">
+                <div key={i} className={isDarkMode 
+                  ? "flex items-start p-4 hover:bg-neon-medium/10 transition-colors cursor-pointer"
+                  : "flex items-start p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                }>
                   <div className="flex-shrink-0 mr-3">
-                    <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-yellow/20 text-neon-yellow text-xs font-bold border border-neon-yellow/30 shadow-[0_0_5px_rgba(255,234,0,0.3)]">
+                    <div className={isDarkMode
+                      ? "h-9 w-9 rounded-full flex items-center justify-center bg-neon-yellow/20 text-neon-yellow text-xs font-bold border border-neon-yellow/30 shadow-[0_0_5px_rgba(255,234,0,0.3)]"
+                      : "h-9 w-9 rounded-full flex items-center justify-center bg-amber-50 text-amber-700 text-xs font-bold border border-amber-200"
+                    }>
                       {task.days}d
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-neon-text truncate">{task.title}</div>
+                    <div className={isDarkMode
+                      ? "text-sm font-semibold text-neon-text truncate"
+                      : "text-sm font-semibold text-gray-800 truncate"
+                    }>{task.title}</div>
                     <div className="flex items-center mt-1">
-                      <span className="text-xs text-neon-text/60">{task.category}</span>
-                      <span className="mx-1.5 text-neon-yellow/30">•</span>
-                      <span className="text-xs font-medium text-neon-yellow">
+                      <span className={isDarkMode 
+                        ? "text-xs text-neon-text/60"
+                        : "text-xs text-gray-500"
+                      }>{task.category}</span>
+                      <span className={isDarkMode 
+                        ? "mx-1.5 text-neon-yellow/30"
+                        : "mx-1.5 text-gray-300"
+                      }>•</span>
+                      <span className={isDarkMode 
+                        ? "text-xs font-medium text-neon-yellow"
+                        : "text-xs font-medium text-amber-600"
+                      }>
                         {task.days === 1 ? 'Mañana' : `En ${task.days} días`}
                       </span>
                     </div>
@@ -613,13 +733,28 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="neon-card overflow-hidden border border-neon-purple/30 bg-neon-dark shadow-[0_0_10px_rgba(187,0,255,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-neon-purple/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className={isDarkMode 
+          ? "neon-card overflow-hidden border border-neon-purple/30 bg-neon-dark shadow-[0_0_10px_rgba(187,0,255,0.1)]"
+          : "overflow-hidden border border-gray-200 bg-white shadow-sm"
+        }>
+          <CardHeader className={isDarkMode 
+            ? "flex flex-row items-center justify-between pb-2 border-b border-neon-purple/30 bg-gradient-to-r from-neon-darker to-neon-dark"
+            : "flex flex-row items-center justify-between pb-2 border-b border-gray-200 bg-white"
+          }>
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-purple neon-text-purple font-mono">Rendimiento del equipo</CardTitle>
-              <CardDescription className="text-neon-text/70">Top 3 miembros</CardDescription>
+              <CardTitle className={isDarkMode
+                ? "text-base font-medium text-neon-purple neon-text-purple font-mono"
+                : "text-base font-medium text-purple-700"
+              }>Rendimiento del equipo</CardTitle>
+              <CardDescription className={isDarkMode 
+                ? "text-neon-text/70"
+                : "text-gray-500"
+              }>Top 3 miembros</CardDescription>
             </div>
-            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-purple/20 text-neon-purple border border-neon-purple/30 shadow-[0_0_8px_rgba(187,0,255,0.2)]">
+            <div className={isDarkMode
+              ? "h-9 w-9 rounded-full flex items-center justify-center bg-neon-purple/20 text-neon-purple border border-neon-purple/30 shadow-[0_0_8px_rgba(187,0,255,0.2)]"
+              : "h-9 w-9 rounded-full flex items-center justify-center bg-purple-50 text-purple-700 border border-purple-200"
+            }>
               <Users className="h-5 w-5" />
             </div>
           </CardHeader>
@@ -632,24 +767,49 @@ export default function Dashboard() {
               ].map((member, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <div className="h-10 w-10 rounded-full bg-neon-medium/40 border border-neon-purple/30 text-neon-text flex items-center justify-center text-sm font-medium mr-3 shadow-[0_0_8px_rgba(187,0,255,0.2)]">
+                    <div className={isDarkMode
+                      ? "h-10 w-10 rounded-full bg-neon-medium/40 border border-neon-purple/30 text-neon-text flex items-center justify-center text-sm font-medium mr-3 shadow-[0_0_8px_rgba(187,0,255,0.2)]"
+                      : "h-10 w-10 rounded-full bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center text-sm font-medium mr-3"
+                    }>
                       {member.name.split(" ").map(n => n[0]).join("")}
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-neon-text">{member.name}</div>
-                      <div className="text-xs text-neon-text/60">{member.role}</div>
+                      <div className={isDarkMode
+                        ? "text-sm font-semibold text-neon-text"
+                        : "text-sm font-semibold text-gray-800"
+                      }>{member.name}</div>
+                      <div className={isDarkMode
+                        ? "text-xs text-neon-text/60"
+                        : "text-xs text-gray-500"
+                      }>{member.role}</div>
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i === 0 ? 'bg-neon-purple/30 border-neon-purple text-neon-purple' : 'bg-neon-medium/30 border-neon-purple/30 text-neon-text/80'} text-xs font-bold mr-1.5 border shadow-[0_0_5px_rgba(187,0,255,0.2)]`}>
+                    <div className={
+                      isDarkMode
+                        ? `h-6 w-6 rounded-full flex items-center justify-center ${i === 0 ? 'bg-neon-purple/30 border-neon-purple text-neon-purple' : 'bg-neon-medium/30 border-neon-purple/30 text-neon-text/80'} text-xs font-bold mr-1.5 border shadow-[0_0_5px_rgba(187,0,255,0.2)]`
+                        : `h-6 w-6 rounded-full flex items-center justify-center ${i === 0 ? 'bg-purple-100 border-purple-300 text-purple-700' : 'bg-gray-100 border-gray-200 text-gray-700'} text-xs font-bold mr-1.5 border`
+                    }>
                       {i + 1}
                     </div>
-                    <div className="text-sm font-bold text-neon-purple">{member.score}<span className="text-neon-text/40 font-normal">%</span></div>
+                    <div className={isDarkMode
+                      ? "text-sm font-bold text-neon-purple"
+                      : "text-sm font-bold text-purple-700"
+                    }>{member.score}<span className={isDarkMode 
+                      ? "text-neon-text/40 font-normal"
+                      : "text-gray-400 font-normal"
+                    }>%</span></div>
                   </div>
                 </div>
               ))}
-              <div className="pt-2 mt-1 border-t border-neon-purple/20 text-center">
-                <span className="text-neon-purple hover:text-neon-purple/80 text-xs font-medium inline-flex items-center hover:underline cursor-pointer transition-colors" onClick={() => navigate("/team")}>
+              <div className={isDarkMode
+                ? "pt-2 mt-1 border-t border-neon-purple/20 text-center"
+                : "pt-2 mt-1 border-t border-gray-200 text-center"
+              }>
+                <span className={isDarkMode
+                  ? "text-neon-purple hover:text-neon-purple/80 text-xs font-medium inline-flex items-center hover:underline cursor-pointer transition-colors"
+                  : "text-purple-700 hover:text-purple-800 text-xs font-medium inline-flex items-center hover:underline cursor-pointer transition-colors"
+                } onClick={() => navigate("/team")}>
                   Ver todo el equipo
                   <ArrowUpRight className="ml-1 h-3 w-3" />
                 </span>
