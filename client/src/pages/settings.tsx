@@ -390,14 +390,30 @@ export default function SettingsPage() {
             <CardContent className="pt-6">
               <Form {...appearanceForm}>
                 <form onSubmit={appearanceForm.handleSubmit(onAppearanceSave)} className="space-y-6">
-                  <div className="flex items-center justify-center my-4">
-                    <div className="flex flex-col items-center space-y-2">
-                      <div className="h-16 w-16 border-2 border-neon-purple/30 bg-gray-950 rounded-full flex items-center justify-center shadow-[0_0_12px_rgba(187,0,255,0.3)]">
+                  <div className="flex items-center justify-between my-4 gap-4">
+                    <div 
+                      className={`flex flex-col items-center space-y-2 cursor-pointer p-4 rounded-lg transition-all duration-300 ${theme === 'dark' ? 'bg-neon-medium/30 border border-neon-purple/50 shadow-[0_0_12px_rgba(187,0,255,0.3)]' : 'border border-neon-purple/20'}`}
+                      onClick={() => setTheme('dark')}
+                    >
+                      <div className="h-16 w-16 border-2 border-neon-purple/30 bg-gray-950 rounded-full flex items-center justify-center">
                         <Moon className="h-8 w-8 text-neon-purple" />
                       </div>
-                      <p className="text-neon-text text-sm font-normal">Modo Oscuro</p>
+                      <p className="text-neon-text text-sm font-medium">Modo Oscuro</p>
                       <p className="text-xs text-neon-text/60 max-w-xs text-center">
-                        El modo oscuro está optimizado para el diseño neón de la aplicación
+                        Diseño futurista con efectos neón
+                      </p>
+                    </div>
+                    
+                    <div 
+                      className={`flex flex-col items-center space-y-2 cursor-pointer p-4 rounded-lg transition-all duration-300 ${theme === 'light' ? 'bg-neon-medium/30 border border-neon-purple/50 shadow-[0_0_12px_rgba(187,0,255,0.3)]' : 'border border-neon-purple/20'}`}
+                      onClick={() => setTheme('light')}
+                    >
+                      <div className="h-16 w-16 border-2 border-neon-purple/30 bg-white rounded-full flex items-center justify-center">
+                        <Sun className="h-8 w-8 text-neon-purple" />
+                      </div>
+                      <p className="text-neon-text text-sm font-medium">Modo Claro</p>
+                      <p className="text-xs text-neon-text/60 max-w-xs text-center">
+                        Diseño tradicional y minimalista
                       </p>
                     </div>
                   </div>
