@@ -3,7 +3,8 @@ import { LucideIcon, ArrowUpRight, TrendingUp, TrendingDown } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { neonEffectClasses, neonCardVariants } from "@/lib/neon-effects";
+import { useTheme } from "@/hooks/use-theme";
+import { neonEffectClasses, lightEffectClasses, useThemeVariants, darkNeonCardVariants, lightCardVariants } from "@/lib/neon-effects";
 
 interface MetricCardProps {
   title: string;
@@ -29,14 +30,20 @@ export function MetricCard({
   iconBgColor,
   trend,
 }: MetricCardProps) {
+  const { theme } = useTheme();
+  const { isDark, neonCardVariants: cardVariants } = useThemeVariants();
+  const effectClasses = theme === 'dark' ? neonEffectClasses : lightEffectClasses;
+  
   return (
     <motion.div 
-      className="overflow-hidden rounded-xl group animate-fade-in border border-neon-accent/30 bg-neon-dark
-        shadow-[0_0_15px_rgba(0,225,255,0.15)] hover:shadow-[0_0_25px_rgba(0,225,255,0.25)] animate-card-glow"
+      className={theme === 'dark' 
+        ? "overflow-hidden rounded-xl group animate-fade-in border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] hover:shadow-[0_0_25px_rgba(0,225,255,0.25)] animate-card-glow"
+        : "overflow-hidden rounded-xl group animate-fade-in border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow"
+      }
       initial="default"
       whileHover="hover"
       whileTap="active"
-      variants={neonCardVariants}
+      variants={cardVariants}
     >
       <div className="relative p-6">
         {/* Background gradient effect */}
