@@ -367,6 +367,7 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
   
   return (
     <motion.div
+      layoutId={`task-${task.id}`}
       layout
       ref={setNodeRef}
       className={cn(

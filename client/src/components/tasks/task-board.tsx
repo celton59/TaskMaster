@@ -223,6 +223,7 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     // Preparamos datos para pasar a componente estilizado similar a TaskCard
     return (
       <motion.div
+        layoutId={`task-${task.id}`}
         className={cn(
           "task-card p-4 rounded-lg border-l-4 cursor-grabbing w-[280px]",
           isDarkMode
