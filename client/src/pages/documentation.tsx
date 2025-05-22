@@ -389,7 +389,7 @@ export default function DocumentationPage() {
           <div className="relative flex-1 md:w-64">
             <Search className={cn(
               "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4",
-              isDarkMode ? "text-neon-text/50" : "text-gray-400"
+              isDarkMode ? "text-neon-text/50" : "text-blue-500"
             )} />
             <Input 
               placeholder="Buscar documentos..." 
@@ -399,7 +399,7 @@ export default function DocumentationPage() {
                 "pl-9",
                 isDarkMode
                   ? "border-neon-accent/30 bg-neon-medium/10 text-neon-text focus:border-neon-accent"
-                  : "border-gray-300 bg-white text-gray-900 focus:border-blue-500"
+                  : "border-blue-300 bg-blue-50 text-gray-900 focus:border-blue-500 placeholder:text-blue-700/70"
               )}
             />
           </div>
