@@ -197,26 +197,58 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
     // Preparamos datos para pasar a componente estilizado similar a TaskCard
     return (
       <motion.div
-        className="task-card p-4 rounded-lg shadow-md border border-neon-accent/30 border-l-4 border-l-blue-500 bg-neon-darker/70 shadow-[0_4px_16px_rgba(0,225,255,0.3)] cursor-grabbing w-[280px]"
-        initial={{ scale: 1.05, boxShadow: "0 10px 30px rgba(0, 225, 255, 0.25)" }}
-        animate={{ scale: 1.05, boxShadow: "0 10px 30px rgba(0, 225, 255, 0.25)" }}
+        className={cn(
+          "task-card p-4 rounded-lg border-l-4 cursor-grabbing w-[280px]",
+          isDarkMode
+            ? "shadow-md border border-neon-accent/30 border-l-blue-500 bg-neon-darker/70 shadow-[0_4px_16px_rgba(0,225,255,0.3)]"
+            : "shadow-lg border border-gray-200 border-l-blue-500 bg-white"
+        )}
+        initial={{ 
+          scale: 1.05, 
+          boxShadow: isDarkMode 
+            ? "0 10px 30px rgba(0, 225, 255, 0.25)" 
+            : "0 10px 20px rgba(0, 0, 0, 0.1)" 
+        }}
+        animate={{ 
+          scale: 1.05, 
+          boxShadow: isDarkMode 
+            ? "0 10px 30px rgba(0, 225, 255, 0.25)" 
+            : "0 10px 20px rgba(0, 0, 0, 0.1)" 
+        }}
       >
         <div className="flex items-center justify-between mb-2">
           <div 
-            className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-              task.priority === "high" 
-                ? "bg-rose-900/30 text-rose-400 border border-rose-500/30" 
-                : task.priority === "medium" 
-                  ? "bg-amber-900/30 text-amber-300 border border-amber-500/30" 
-                  : "bg-emerald-900/30 text-emerald-400 border border-emerald-500/30"
-            }`}
+            className={cn(
+              "inline-flex items-center px-2 py-1 rounded-md text-xs font-medium",
+              isDarkMode
+                ? task.priority === "high" 
+                  ? "bg-rose-900/30 text-rose-400 border border-rose-500/30" 
+                  : task.priority === "medium" 
+                    ? "bg-amber-900/30 text-amber-300 border border-amber-500/30" 
+                    : "bg-emerald-900/30 text-emerald-400 border border-emerald-500/30"
+                : task.priority === "high" 
+                  ? "bg-rose-50 text-rose-600 border border-rose-200" 
+                  : task.priority === "medium" 
+                    ? "bg-amber-50 text-amber-600 border border-amber-200" 
+                    : "bg-emerald-50 text-emerald-600 border border-emerald-200"
+            )}
           >
             {task.priority === "high" ? "Alta" : task.priority === "medium" ? "Media" : "Baja"}
           </div>
         </div>
-        <h4 className="font-semibold text-sm text-neon-text line-clamp-1 leading-relaxed">{task.title}</h4>
+        <h4 className={cn(
+          "font-semibold text-sm line-clamp-1 leading-relaxed",
+          isDarkMode ? "text-neon-text" : "text-gray-800"
+        )}>
+          {task.title}
+        </h4>
         {task.description && (
-          <p className="text-xs text-neon-text/70 mt-1 line-clamp-2 leading-relaxed">{task.description}</p>
+          <p className={cn(
+            "text-xs mt-1 line-clamp-2 leading-relaxed",
+            isDarkMode ? "text-neon-text/70" : "text-gray-600"
+          )}>
+            {task.description}
+          </p>
         )}
       </motion.div>
     );
