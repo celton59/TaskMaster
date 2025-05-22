@@ -676,22 +676,48 @@ export default function DocumentationPage() {
       </div>
       
       {/* Sección de categorías */}
-      <h2 className={cn(
-        "text-xl font-medium mb-4 flex items-center",
-        isDarkMode ? "text-neon-text" : "text-gray-800"
+      <div className={cn(
+        "flex items-center justify-between mb-5",
+        isDarkMode ? "border-b border-neon-accent/20 pb-2" : "border-b border-gray-200 pb-2"
       )}>
-        <FolderOpen className={cn(
-          "mr-2 h-5 w-5",
-          isDarkMode ? "text-neon-accent/70" : "text-blue-500" 
-        )} />
-        Categorías
-      </h2>
+        <h2 className={cn(
+          "text-xl font-medium flex items-center",
+          isDarkMode ? "text-neon-text" : "text-gray-800"
+        )}>
+          <FolderOpen className={cn(
+            "mr-2 h-5 w-5",
+            isDarkMode ? "text-neon-accent" : "text-blue-600" 
+          )} />
+          Categorías
+        </h2>
+        <div className={cn(
+          "text-sm px-2 py-0.5 rounded-full",
+          isDarkMode 
+            ? "bg-neon-medium/10 text-neon-accent border border-neon-accent/30"
+            : "bg-blue-50 text-blue-700 border border-blue-200"
+        )}>
+          {categories.length} categorías
+        </div>
+      </div>
       
       {isLoadingCategories ? (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Card key={i} className="bg-neon-darker/50 border-neon-accent/20 animate-pulse">
-              <CardContent className="h-24 p-6"></CardContent>
+            <Card 
+              key={i} 
+              className={cn(
+                "animate-pulse",
+                isDarkMode
+                  ? "bg-neon-darker/50 border-neon-accent/20"
+                  : "bg-gray-100 border-gray-200"
+              )}
+            >
+              <CardContent className="h-24 p-6">
+                <div className={cn(
+                  "h-full rounded-md",
+                  isDarkMode ? "bg-neon-darker" : "bg-gray-200"
+                )}></div>
+              </CardContent>
             </Card>
           ))}
         </div>
@@ -704,6 +730,7 @@ export default function DocumentationPage() {
                 setSelectedCategory(category.id);
                 setCurrentTab("filtered");
               }}
+              className="transition-transform hover:scale-105 active:scale-95"
             >
               <CategoryCard category={category} />
             </div>
