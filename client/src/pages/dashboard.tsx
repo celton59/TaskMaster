@@ -144,24 +144,39 @@ export default function Dashboard() {
 
       {/* Task Status Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className={isDarkMode 
+          ? "neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]"
+          : "overflow-hidden border border-gray-200 bg-white shadow-sm"
+        }>
+          <CardHeader className={isDarkMode 
+            ? "flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark"
+            : "flex flex-row items-center justify-between pb-3 border-b border-gray-200 bg-white"
+          }>
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Distribución de tareas</CardTitle>
-              <CardDescription className="text-neon-text/70">Resumen por estado</CardDescription>
+              <CardTitle className={isDarkMode
+                ? "text-base font-medium text-neon-accent neon-text font-mono"
+                : "text-base font-medium text-blue-700"
+              }>Distribución de tareas</CardTitle>
+              <CardDescription className={isDarkMode 
+                ? "text-neon-text/70" 
+                : "text-gray-500"
+              }>Resumen por estado</CardDescription>
             </div>
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+              <div className={isDarkMode
+                ? "h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]"
+                : "h-9 w-9 rounded-full flex items-center justify-center bg-blue-50 text-blue-700 border border-blue-200"
+              }>
                 <BarChart4 className="h-5 w-5" />
               </div>
               <Button 
-                variant="outline" 
+                variant={isDarkMode ? "outline" : "secondary"}
                 size="sm" 
                 onClick={() => navigate("/tasks")}
-                className="h-8 bg-neon-dark/80 border border-neon-accent/50 text-neon-accent/80 
-                hover:bg-neon-accent/10 hover:text-neon-accent hover:border-neon-accent/70 rounded-md 
-                transition-all duration-300 shadow-[0_0_8px_rgba(0,225,255,0.2)] 
-                hover:shadow-[0_0_12px_rgba(0,225,255,0.4)]"
+                className={isDarkMode
+                  ? "h-8 bg-neon-dark/80 border border-neon-accent/50 text-neon-accent/80 hover:bg-neon-accent/10 hover:text-neon-accent hover:border-neon-accent/70 rounded-md transition-all duration-300 shadow-[0_0_8px_rgba(0,225,255,0.2)] hover:shadow-[0_0_12px_rgba(0,225,255,0.4)]"
+                  : "h-8 border-blue-200 text-blue-700 hover:bg-blue-50"
+                }
               >
                 Ver tareas
                 <ArrowUpRight className="ml-1.5 h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -174,62 +189,134 @@ export default function Dashboard() {
                 <div className="relative pt-1">
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-red/30 bg-neon-red/10 rounded-full shadow-[0_0_5px_rgba(255,45,109,0.15)]">Pendientes</span>
-                      <span className="text-xs font-semibold ml-2 text-neon-red">{stats.pending}</span>
+                      <span className={isDarkMode 
+                        ? "inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-red/30 bg-neon-red/10 rounded-full shadow-[0_0_5px_rgba(255,45,109,0.15)]"
+                        : "inline-block px-2 py-1 text-xs font-semibold text-gray-700 border border-red-200 bg-white rounded-full"
+                      }>Pendientes</span>
+                      <span className={isDarkMode 
+                        ? "text-xs font-semibold ml-2 text-neon-red"
+                        : "text-xs font-semibold ml-2 text-red-600"
+                      }>{stats.pending}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-neon-red">
+                      <span className={isDarkMode
+                        ? "text-xs font-semibold inline-block text-neon-red"
+                        : "text-xs font-semibold inline-block text-red-600"
+                      }>
                         {stats.total > 0 ? Math.round((stats.pending / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-red/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(255,45,109,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-red/80 animate-pulse"></div>
+                  <div className={isDarkMode
+                    ? "overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-red/20"
+                    : "overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-gray-100 border border-gray-200"
+                  }>
+                    <div 
+                      style={{ width: `${stats.total > 0 ? (stats.pending / stats.total) * 100 : 0}%` }} 
+                      className={isDarkMode
+                        ? "shadow-[0_0_10px_rgba(255,45,109,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-red/80 animate-pulse"
+                        : "flex flex-col text-center whitespace-nowrap justify-center bg-red-500"
+                      }>
+                    </div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-yellow/30 bg-neon-yellow/10 rounded-full shadow-[0_0_5px_rgba(255,234,0,0.15)]">En progreso</span>
-                      <span className="text-xs font-semibold ml-2 text-neon-yellow">{stats.inProgress}</span>
+                      <span className={isDarkMode 
+                        ? "inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-yellow/30 bg-neon-yellow/10 rounded-full shadow-[0_0_5px_rgba(255,234,0,0.15)]"
+                        : "inline-block px-2 py-1 text-xs font-semibold text-gray-700 border border-amber-200 bg-white rounded-full"
+                      }>En progreso</span>
+                      <span className={isDarkMode 
+                        ? "text-xs font-semibold ml-2 text-neon-yellow"
+                        : "text-xs font-semibold ml-2 text-amber-600"
+                      }>{stats.inProgress}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-neon-yellow">
+                      <span className={isDarkMode
+                        ? "text-xs font-semibold inline-block text-neon-yellow"
+                        : "text-xs font-semibold inline-block text-amber-600"
+                      }>
                         {stats.total > 0 ? Math.round((stats.inProgress / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-yellow/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.inProgress / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(255,234,0,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-yellow/80 animate-pulse"></div>
+                  <div className={isDarkMode
+                    ? "overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-yellow/20"
+                    : "overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-gray-100 border border-gray-200"
+                  }>
+                    <div 
+                      style={{ width: `${stats.total > 0 ? (stats.inProgress / stats.total) * 100 : 0}%` }} 
+                      className={isDarkMode
+                        ? "shadow-[0_0_10px_rgba(255,234,0,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-yellow/80 animate-pulse"
+                        : "flex flex-col text-center whitespace-nowrap justify-center bg-amber-500"
+                      }>
+                    </div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-purple/30 bg-neon-purple/10 rounded-full shadow-[0_0_5px_rgba(187,0,255,0.15)]">En revisión</span>
-                      <span className="text-xs font-semibold ml-2 text-neon-purple">{stats.review}</span>
+                      <span className={isDarkMode 
+                        ? "inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-purple/30 bg-neon-purple/10 rounded-full shadow-[0_0_5px_rgba(187,0,255,0.15)]"
+                        : "inline-block px-2 py-1 text-xs font-semibold text-gray-700 border border-purple-200 bg-white rounded-full"
+                      }>En revisión</span>
+                      <span className={isDarkMode 
+                        ? "text-xs font-semibold ml-2 text-neon-purple"
+                        : "text-xs font-semibold ml-2 text-purple-600"
+                      }>{stats.review}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-neon-purple">
+                      <span className={isDarkMode
+                        ? "text-xs font-semibold inline-block text-neon-purple"
+                        : "text-xs font-semibold inline-block text-purple-600"
+                      }>
                         {stats.total > 0 ? Math.round((stats.review / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-purple/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.review / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(187,0,255,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-purple/80 animate-pulse"></div>
+                  <div className={isDarkMode
+                    ? "overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-neon-medium/30 border border-neon-purple/20"
+                    : "overflow-hidden h-2 mb-6 text-xs flex rounded-full bg-gray-100 border border-gray-200"
+                  }>
+                    <div 
+                      style={{ width: `${stats.total > 0 ? (stats.review / stats.total) * 100 : 0}%` }} 
+                      className={isDarkMode
+                        ? "shadow-[0_0_10px_rgba(187,0,255,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-purple/80 animate-pulse"
+                        : "flex flex-col text-center whitespace-nowrap justify-center bg-purple-500"
+                      }>
+                    </div>
                   </div>
                   
                   <div className="flex mb-4 items-center justify-between">
                     <div>
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-green/30 bg-neon-green/10 rounded-full shadow-[0_0_5px_rgba(0,255,157,0.15)]">Completadas</span>
-                      <span className="text-xs font-semibold ml-2 text-neon-green">{stats.completed}</span>
+                      <span className={isDarkMode 
+                        ? "inline-block px-2 py-1 text-xs font-semibold text-neon-text border border-neon-green/30 bg-neon-green/10 rounded-full shadow-[0_0_5px_rgba(0,255,157,0.15)]"
+                        : "inline-block px-2 py-1 text-xs font-semibold text-gray-700 border border-emerald-200 bg-white rounded-full"
+                      }>Completadas</span>
+                      <span className={isDarkMode 
+                        ? "text-xs font-semibold ml-2 text-neon-green"
+                        : "text-xs font-semibold ml-2 text-emerald-600"
+                      }>{stats.completed}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-semibold inline-block text-neon-green">
+                      <span className={isDarkMode
+                        ? "text-xs font-semibold inline-block text-neon-green"
+                        : "text-xs font-semibold inline-block text-emerald-600"
+                      }>
                         {stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
                       </span>
                     </div>
                   </div>
-                  <div className="overflow-hidden h-2 text-xs flex rounded-full bg-neon-medium/30 border border-neon-green/20">
-                    <div style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }} className="shadow-[0_0_10px_rgba(0,255,157,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-green/80 animate-pulse"></div>
+                  <div className={isDarkMode
+                    ? "overflow-hidden h-2 text-xs flex rounded-full bg-neon-medium/30 border border-neon-green/20"
+                    : "overflow-hidden h-2 text-xs flex rounded-full bg-gray-100 border border-gray-200"
+                  }>
+                    <div 
+                      style={{ width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` }} 
+                      className={isDarkMode
+                        ? "shadow-[0_0_10px_rgba(0,255,157,0.5)] flex flex-col text-center whitespace-nowrap justify-center bg-neon-green/80 animate-pulse"
+                        : "flex flex-col text-center whitespace-nowrap justify-center bg-emerald-500"
+                      }>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -237,14 +324,29 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card className="neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark">
+        <Card className={isDarkMode 
+          ? "neon-card overflow-hidden border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)]"
+          : "overflow-hidden border border-gray-200 bg-white shadow-sm"
+        }>
+          <CardHeader className={isDarkMode 
+            ? "flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark"
+            : "flex flex-row items-center justify-between pb-3 border-b border-gray-200 bg-white"
+          }>
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent neon-text font-mono">Rendimiento semanal</CardTitle>
-              <CardDescription className="text-neon-text/70">Tareas completadas vs. creadas</CardDescription>
+              <CardTitle className={isDarkMode
+                ? "text-base font-medium text-neon-accent neon-text font-mono"
+                : "text-base font-medium text-blue-700"
+              }>Rendimiento semanal</CardTitle>
+              <CardDescription className={isDarkMode 
+                ? "text-neon-text/70" 
+                : "text-gray-500"
+              }>Tareas completadas vs. creadas</CardDescription>
             </div>
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]">
+              <div className={isDarkMode
+                ? "h-9 w-9 rounded-full flex items-center justify-center bg-neon-accent/20 text-neon-accent border border-neon-accent/30 shadow-[0_0_8px_rgba(0,225,255,0.2)]"
+                : "h-9 w-9 rounded-full flex items-center justify-center bg-blue-50 text-blue-700 border border-blue-200"
+              }>
                 <CheckCheck className="h-5 w-5" />
               </div>
             </div>
@@ -253,8 +355,14 @@ export default function Dashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <div className="text-sm font-medium text-neon-text/90">Eficiencia</div>
-                  <div className="text-2xl font-bold text-neon-accent font-mono neon-text">83%</div>
+                  <div className={isDarkMode 
+                    ? "text-sm font-medium text-neon-text/90" 
+                    : "text-sm font-medium text-gray-700"
+                  }>Eficiencia</div>
+                  <div className={isDarkMode 
+                    ? "text-2xl font-bold text-neon-accent font-mono neon-text" 
+                    : "text-2xl font-bold text-blue-700"
+                  }>83%</div>
                 </div>
                 <div className="flex items-center text-emerald-400 font-medium text-sm">
                   <ArrowUpRight className="h-4 w-4 mr-1" />
@@ -263,34 +371,56 @@ export default function Dashboard() {
               </div>
               
               <div className="space-y-2">
-                <div className="grid grid-cols-3 text-xs text-neon-text/70 font-medium">
+                <div className={isDarkMode 
+                  ? "grid grid-cols-3 text-xs text-neon-text/70 font-medium"
+                  : "grid grid-cols-3 text-xs text-gray-500 font-medium"
+                }>
                   <div>Lun</div>
                   <div>Mié</div>
                   <div>Vie</div>
                 </div>
                 <div className="grid grid-cols-7 gap-1 h-16">
                   {chartData.map((day, i) => (
-                    <div key={i} className="bg-neon-medium/30 rounded-md relative overflow-hidden border border-neon-accent/20">
+                    <div key={i} className={isDarkMode
+                      ? "bg-neon-medium/30 rounded-md relative overflow-hidden border border-neon-accent/20"
+                      : "bg-gray-100 rounded-md relative overflow-hidden border border-gray-200"
+                    }>
                       <div 
-                        className="absolute bottom-0 w-full bg-gradient-to-t from-neon-pink/90 to-neon-pink/70 shadow-[0_0_10px_rgba(0,225,255,0.6)] transition-all duration-500 ease-in-out hover:shadow-[0_0_15px_rgba(0,255,230,0.8)]"
+                        className={isDarkMode
+                          ? "absolute bottom-0 w-full bg-gradient-to-t from-neon-pink/90 to-neon-pink/70 shadow-[0_0_10px_rgba(0,225,255,0.6)] transition-all duration-500 ease-in-out hover:shadow-[0_0_15px_rgba(0,255,230,0.8)]"
+                          : "absolute bottom-0 w-full bg-pink-500 transition-all duration-300"
+                        }
                         style={{ 
                           height: `${(day.completed / Math.max(...chartData.map(d => Math.max(d.created, d.completed)))) * 100}%`,
-                          animation: `pulse-scale 1.5s ease-in-out ${i * 0.15}s infinite alternate`,
+                          animation: isDarkMode ? `pulse-scale 1.5s ease-in-out ${i * 0.15}s infinite alternate` : 'none',
                         }}
                       >
-                        <div className="absolute bottom-0 w-full h-1/4 bg-white/20 opacity-70"></div>
-                        <div className="absolute top-0 w-full h-[1px] bg-white/40 opacity-80"></div>
+                        {isDarkMode && (
+                          <>
+                            <div className="absolute bottom-0 w-full h-1/4 bg-white/20 opacity-70"></div>
+                            <div className="absolute top-0 w-full h-[1px] bg-white/40 opacity-80"></div>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="flex items-center justify-between text-xs text-neon-text/80">
+                <div className={isDarkMode
+                  ? "flex items-center justify-between text-xs text-neon-text/80"
+                  : "flex items-center justify-between text-xs text-gray-600"
+                }>
                   <div className="flex items-center">
-                    <div className="w-3 h-3 bg-neon-pink/80 rounded-sm mr-2 shadow-[0_0_4px_rgba(0,225,255,0.4)]"></div>
+                    <div className={isDarkMode
+                      ? "w-3 h-3 bg-neon-pink/80 rounded-sm mr-2 shadow-[0_0_4px_rgba(0,225,255,0.4)]"
+                      : "w-3 h-3 bg-pink-500 rounded-sm mr-2"
+                    }></div>
                     <span>Completadas ({chartData.reduce((sum, day) => sum + day.completed, 0)})</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-3 h-3 border border-dashed border-neon-accent/60 rounded-sm mr-2"></div>
+                    <div className={isDarkMode
+                      ? "w-3 h-3 border border-dashed border-neon-accent/60 rounded-sm mr-2"
+                      : "w-3 h-3 border border-dashed border-blue-400 rounded-sm mr-2"
+                    }></div>
                     <span>Creadas ({chartData.reduce((sum, day) => sum + day.created, 0)})</span>
                   </div>
                 </div>
