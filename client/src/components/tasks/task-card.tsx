@@ -501,7 +501,7 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
         {project && (
           <Badge 
             variant="outline" 
-            className={`rounded-md border py-0 h-5 font-normal text-xs ${
+            className={`rounded-md border py-0 h-5 font-normal text-xs flex items-center max-w-[140px] ${
               isDarkMode ? (
                 project.color === "blue" ? "border-blue-500/30 bg-blue-900/20 hover:bg-blue-900/30 hover:border-blue-500/40 text-blue-400" : 
                 project.color === "green" ? "border-emerald-500/30 bg-emerald-900/20 hover:bg-emerald-900/30 hover:border-emerald-500/40 text-emerald-400" :
@@ -525,8 +525,8 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
               )
             }`}
           >
-            <Folders className={isDarkMode ? "h-3 w-3 mr-1.5" : "h-3 w-3 mr-1.5 text-gray-500"} />
-            {project.name}
+            <Folders className={isDarkMode ? "h-3 w-3 mr-1.5 flex-shrink-0" : "h-3 w-3 mr-1.5 text-gray-500 flex-shrink-0"} />
+            <span className="truncate">{project.name}</span>
           </Badge>
         )}
       </div>
