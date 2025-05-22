@@ -253,6 +253,42 @@ export function Sidebar() {
               icon={<MessageCircle className="h-5 w-5" />} 
               label="WhatsApp" 
             />
+            
+            <Collapsible className="w-full">
+              <CollapsibleTrigger className={cn(
+                "flex items-center justify-between w-full px-2 py-2 text-sm font-medium rounded-md cursor-pointer transition-all duration-300",
+                isDarkMode 
+                  ? "text-neon-text hover:bg-neon-medium/30 hover:text-neon-accent" 
+                  : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+              )}>
+                <div className="flex items-center">
+                  <Settings className={cn(
+                    "h-5 w-5 mr-2.5 flex-shrink-0",
+                    isDarkMode ? "text-neon-text" : "text-gray-500"
+                  )} />
+                  <span>Configuración</span>
+                </div>
+                <ChevronRight className={cn(
+                  "h-4 w-4 transition-transform",
+                  isDarkMode ? "text-neon-text/70" : "text-gray-500",
+                  "group-data-[state=open]:rotate-90"
+                )} />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-9 space-y-1 mt-1">
+                <NavLink 
+                  href="/configuracion/directorio" 
+                  icon={<Users className="h-4 w-4" />} 
+                  label="Directorio" 
+                  isSubmenu
+                />
+                <NavLink 
+                  href="/settings" 
+                  icon={<Settings className="h-4 w-4" />} 
+                  label="General" 
+                  isSubmenu
+                />
+              </CollapsibleContent>
+            </Collapsible>
           </div>
           
           <Separator className={cn(
@@ -466,6 +502,33 @@ export function Sidebar() {
                     icon={<MessageCircle className="h-5 w-5" />} 
                     label="WhatsApp" 
                   />
+                  
+                  <Collapsible className="w-full">
+                    <CollapsibleTrigger className={cn(
+                      "flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-md",
+                      "text-neon-text hover:bg-neon-medium/30 hover:text-neon-accent"
+                    )}>
+                      <div className="flex items-center">
+                        <Settings className="h-5 w-5 mr-2.5 flex-shrink-0 text-neon-text" />
+                        <span>Configuración</span>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-neon-text/70 group-data-[state=open]:rotate-90 transition-transform" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pl-9 space-y-1 mt-1">
+                      <NavLink 
+                        href="/configuracion/directorio" 
+                        icon={<Users className="h-4 w-4" />} 
+                        label="Directorio" 
+                        isSubmenu
+                      />
+                      <NavLink 
+                        href="/settings" 
+                        icon={<Settings className="h-4 w-4" />} 
+                        label="General" 
+                        isSubmenu
+                      />
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
               </div>
               
