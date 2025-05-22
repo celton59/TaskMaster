@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "@/hooks/use-theme";
+import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { 
   Card, 
