@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Filter, ArrowDownUp } from "lucide-react";
 import { Task, Category } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/hooks/use-theme";
+import { cn } from "@/lib/utils";
 import { 
   DndContext, 
   DragOverlay,
@@ -31,6 +33,7 @@ interface TaskBoardProps {
 
 export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
   const { toast } = useToast();
+  const { isDarkMode } = useTheme();
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -221,20 +224,55 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
 
   return (
     <>
-      <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] overflow-hidden rounded-xl mt-8">
-        <CardHeader className="border-b border-neon-accent/30 pb-4 bg-gradient-to-r from-neon-darker to-neon-dark">
+      <Card className={cn(
+        "overflow-hidden rounded-xl mt-8",
+        isDarkMode 
+          ? "border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)]"
+          : "border border-gray-200 bg-white shadow-md"
+      )}>
+        <CardHeader className={cn(
+          "border-b pb-4",
+          isDarkMode 
+            ? "border-neon-accent/30 bg-gradient-to-r from-neon-darker to-neon-dark"
+            : "border-gray-200 bg-gradient-to-r from-gray-50 to-white"
+        )}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <CardTitle className="text-lg font-semibold text-neon-accent neon-text font-mono">Tablero de tareas</CardTitle>
-              <CardDescription className="text-neon-text/70">Arrastra y suelta para cambiar el estado de las tareas</CardDescription>
+              <CardTitle className={cn(
+                "text-lg font-semibold",
+                isDarkMode 
+                  ? "text-neon-accent neon-text font-mono"
+                  : "text-blue-600 font-sans"
+              )}>Tablero de tareas</CardTitle>
+              <CardDescription className={isDarkMode ? "text-neon-text/70" : "text-gray-600"}>
+                Arrastra y suelta para cambiar el estado de las tareas
+              </CardDescription>
             </div>
             
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="h-8 border-neon-accent/30 bg-neon-medium/30 text-neon-text/80 hover:text-neon-accent hover:bg-neon-accent/20">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn(
+                  "h-8",
+                  isDarkMode
+                    ? "border-neon-accent/30 bg-neon-medium/30 text-neon-text/80 hover:text-neon-accent hover:bg-neon-accent/20"
+                    : "border-blue-200 bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                )}
+              >
                 <Filter className="h-3.5 w-3.5 mr-2" />
                 Filtros
               </Button>
-              <Button variant="outline" size="sm" className="h-8 border-neon-accent/30 bg-neon-medium/30 text-neon-text/80 hover:text-neon-accent hover:bg-neon-accent/20">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn(
+                  "h-8",
+                  isDarkMode
+                    ? "border-neon-accent/30 bg-neon-medium/30 text-neon-text/80 hover:text-neon-accent hover:bg-neon-accent/20"
+                    : "border-blue-200 bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                )}
+              >
                 <ArrowDownUp className="h-3.5 w-3.5 mr-2" />
                 Ordenar
               </Button>
@@ -242,7 +280,7 @@ export function TaskBoard({ tasks, categories, isLoading }: TaskBoardProps) {
           </div>
         </CardHeader>
         
-        <CardContent className="p-4 bg-neon-dark">
+        <CardContent className={cn("p-4", isDarkMode ? "bg-neon-dark" : "bg-white")}>
           <div className="mb-4">
             <TaskFilter 
               categories={categories} 
