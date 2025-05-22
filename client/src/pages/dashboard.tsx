@@ -120,12 +120,15 @@ export default function Dashboard() {
             <Button 
               variant="outline"
               size="sm" 
-              className="h-9 bg-neon-dark/80 border border-neon-green/50 text-neon-green/80 
-              hover:bg-neon-green/10 hover:text-neon-green hover:border-neon-green/70 rounded-md 
-              transition-all duration-300 shadow-[0_0_8px_rgba(0,255,157,0.2)] 
-              hover:shadow-[0_0_12px_rgba(0,255,157,0.4)]"
+              className={isDarkMode 
+                ? "h-9 bg-neon-dark/80 border border-neon-green/50 text-neon-green/80 hover:bg-neon-green/10 hover:text-neon-green hover:border-neon-green/70 rounded-md transition-all duration-300 shadow-[0_0_8px_rgba(0,255,157,0.2)] hover:shadow-[0_0_12px_rgba(0,255,157,0.4)]"
+                : "h-9 bg-emerald-50 border border-emerald-300 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 hover:border-emerald-400 rounded-md transition-colors duration-300"
+              }
             >
-              <Mail className="mr-2 h-4 w-4 text-neon-green" />
+              <Mail className={isDarkMode
+                ? "mr-2 h-4 w-4 text-neon-green"
+                : "mr-2 h-4 w-4 text-emerald-600"
+              } />
               Reportes
             </Button>
             <Button 
