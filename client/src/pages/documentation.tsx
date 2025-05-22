@@ -100,11 +100,69 @@ const mockCategories: Category[] = [
   { id: "guides", name: "Guías", color: "purple", count: 4 },
   { id: "templates", name: "Plantillas", color: "yellow", count: 6 },
   { id: "legal", name: "Legal", color: "red", count: 3 },
+  { id: "organigrama", name: "Organigrama", color: "purple", count: 1 },
 ];
 
 const mockDocuments: Document[] = [
   {
     id: 1,
+    title: "Organigrama Corporativo 2025",
+    category: "organigrama",
+    createdAt: "2025-03-15T10:00:00Z",
+    updatedAt: "2025-05-10T15:45:00Z",
+    content: `
+# Organigrama Corporativo
+
+## Dirección General
+- **CEO:** Ana Martínez González
+  - *Responsable de la dirección estratégica y toma de decisiones a nivel ejecutivo*
+
+## Departamentos Principales
+
+### Tecnología
+- **CTO:** Carlos Rodríguez Sánchez
+  - **Director de Desarrollo:** Miguel Ángel López
+    - Equipo Frontend (6 desarrolladores)
+    - Equipo Backend (8 desarrolladores)
+    - Equipo QA (4 testers)
+  - **Director de Infraestructura:** Laura Fernández
+    - Equipo DevOps (3 ingenieros)
+    - Soporte técnico (5 especialistas)
+
+### Marketing y Ventas
+- **CMO:** Isabel Torres Ramírez
+  - **Director de Marketing Digital:** Javier Méndez
+    - Equipo de Contenido (4 especialistas)
+    - Equipo de Redes Sociales (3 community managers)
+  - **Director Comercial:** Roberto Álvarez
+    - Equipo de Ventas Nacionales (8 ejecutivos)
+    - Equipo de Ventas Internacionales (5 ejecutivos)
+
+### Finanzas y Administración
+- **CFO:** Sergio Navarro García
+  - **Controller:** Patricia Díaz
+    - Equipo de Contabilidad (4 contables)
+  - **Director de RRHH:** Marta Gutiérrez
+    - Equipo de Selección (2 técnicos)
+    - Equipo de Desarrollo de Talento (3 técnicos)
+
+### Operaciones
+- **COO:** Eduardo Martín Blanco
+  - **Director de Logística:** Carmen Vega
+    - Equipo de Almacén (12 operarios)
+    - Equipo de Distribución (8 coordinadores)
+  - **Director de Atención al Cliente:** Francisco Moreno
+    - Equipo de Soporte (15 agentes)
+
+## Comités Transversales
+- Comité de Innovación
+- Comité de Sostenibilidad
+- Comité de Transformación Digital
+`,
+    tags: ["estructura", "empresa", "departamentos", "directivos"]
+  },
+  {
+    id: 2,
     title: "Manual de bienvenida",
     category: "policies",
     createdAt: "2025-02-15T12:00:00Z",
@@ -113,7 +171,7 @@ const mockDocuments: Document[] = [
     tags: ["onboarding", "recursos humanos"]
   },
   {
-    id: 2,
+    id: 3,
     title: "Política de vacaciones",
     category: "policies",
     createdAt: "2025-01-20T14:30:00Z",
