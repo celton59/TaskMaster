@@ -823,70 +823,130 @@ export default function Dashboard() {
       
       {/* Robot Animation Card */}
       <div className="grid grid-cols-1 gap-6 mt-8">
-        <Card className="border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)] overflow-hidden animate-card-glow rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker via-neon-medium/20 to-neon-dark bg-[length:200%_100%] animate-flow-gradient">
+        <Card className={isDarkMode 
+          ? "border border-neon-accent/30 bg-neon-dark shadow-[0_0_10px_rgba(0,225,255,0.1)] overflow-hidden animate-card-glow rounded-xl"
+          : "border border-gray-200 bg-white shadow-sm overflow-hidden rounded-xl"
+        }>
+          <CardHeader className={isDarkMode 
+            ? "flex flex-row items-center justify-between pb-3 border-b border-neon-accent/30 bg-gradient-to-r from-neon-darker via-neon-medium/20 to-neon-dark bg-[length:200%_100%] animate-flow-gradient"
+            : "flex flex-row items-center justify-between pb-3 border-b border-gray-200 bg-white"
+          }>
             <div className="space-y-0.5">
-              <CardTitle className="text-base font-medium text-neon-accent [text-shadow:0_0_10px_rgba(0,225,255,0.5)] font-mono">Asistente Robótico</CardTitle>
-              <CardDescription className="text-neon-text/70">Tu compañero de productividad</CardDescription>
+              <CardTitle className={isDarkMode
+                ? "text-base font-medium text-neon-accent [text-shadow:0_0_10px_rgba(0,225,255,0.5)] font-mono"
+                : "text-base font-medium text-blue-700"
+              }>Asistente Robótico</CardTitle>
+              <CardDescription className={isDarkMode 
+                ? "text-neon-text/70"
+                : "text-gray-500"
+              }>Tu compañero de productividad</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="p-5 flex flex-col md:flex-row items-center gap-6">
             <div className="md:w-1/3 flex justify-center">
-              <div className="w-32 h-32 rounded-full bg-neon-accent/20 flex items-center justify-center border border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.3)]">
-                <Users className="w-16 h-16 text-neon-accent" />
+              <div className={isDarkMode
+                ? "w-32 h-32 rounded-full bg-neon-accent/20 flex items-center justify-center border border-neon-accent/30 shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                : "w-32 h-32 rounded-full bg-blue-50 flex items-center justify-center border border-blue-200"
+              }>
+                <Users className={isDarkMode
+                  ? "w-16 h-16 text-neon-accent"
+                  : "w-16 h-16 text-blue-600"
+                } />
               </div>
             </div>
             <div className="md:w-2/3 space-y-4">
-              <h3 className="text-xl font-medium text-neon-accent">Conoce a NeoBot</h3>
-              <p className="text-neon-text/80">
+              <h3 className={isDarkMode
+                ? "text-xl font-medium text-neon-accent"
+                : "text-xl font-medium text-blue-700"
+              }>Conoce a NeoBot</h3>
+              <p className={isDarkMode
+                ? "text-neon-text/80"
+                : "text-gray-600"
+              }>
                 Tu asistente robótico está aquí para ayudarte a gestionar tus tareas y mantenerte productivo. 
                 Puede gestionar tus mensajes de WhatsApp, organizar tu agenda y mucho más.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                 <div className="flex items-start space-x-3">
-                  <div className="h-8 w-8 rounded-md flex items-center justify-center bg-neon-purple/20 text-neon-purple border border-neon-purple/30">
+                  <div className={isDarkMode
+                    ? "h-8 w-8 rounded-md flex items-center justify-center bg-neon-purple/20 text-neon-purple border border-neon-purple/30"
+                    : "h-8 w-8 rounded-md flex items-center justify-center bg-purple-50 text-purple-700 border border-purple-200"
+                  }>
                     <Mail className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-neon-text">Mensajería</h4>
-                    <p className="text-xs text-neon-text/70">Gestiona tus conversaciones de WhatsApp</p>
+                    <h4 className={isDarkMode
+                      ? "text-sm font-medium text-neon-text"
+                      : "text-sm font-medium text-gray-800"
+                    }>Mensajería</h4>
+                    <p className={isDarkMode
+                      ? "text-xs text-neon-text/70"
+                      : "text-xs text-gray-500"
+                    }>Gestiona tus conversaciones de WhatsApp</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="h-8 w-8 rounded-md flex items-center justify-center bg-neon-green/20 text-neon-green border border-neon-green/30">
+                  <div className={isDarkMode
+                    ? "h-8 w-8 rounded-md flex items-center justify-center bg-neon-green/20 text-neon-green border border-neon-green/30"
+                    : "h-8 w-8 rounded-md flex items-center justify-center bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  }>
                     <CalendarDays className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-neon-text">Planificación</h4>
-                    <p className="text-xs text-neon-text/70">Organiza tu agenda y fechas límite</p>
+                    <h4 className={isDarkMode
+                      ? "text-sm font-medium text-neon-text"
+                      : "text-sm font-medium text-gray-800"
+                    }>Planificación</h4>
+                    <p className={isDarkMode
+                      ? "text-xs text-neon-text/70"
+                      : "text-xs text-gray-500"
+                    }>Organiza tu agenda y fechas límite</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="h-8 w-8 rounded-md flex items-center justify-center bg-neon-yellow/20 text-neon-yellow border border-neon-yellow/30">
+                  <div className={isDarkMode
+                    ? "h-8 w-8 rounded-md flex items-center justify-center bg-neon-yellow/20 text-neon-yellow border border-neon-yellow/30"
+                    : "h-8 w-8 rounded-md flex items-center justify-center bg-amber-50 text-amber-700 border border-amber-200"
+                  }>
                     <CheckCheck className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-neon-text">Tareas</h4>
-                    <p className="text-xs text-neon-text/70">Crea y gestiona tus tareas fácilmente</p>
+                    <h4 className={isDarkMode
+                      ? "text-sm font-medium text-neon-text"
+                      : "text-sm font-medium text-gray-800"
+                    }>Tareas</h4>
+                    <p className={isDarkMode
+                      ? "text-xs text-neon-text/70"
+                      : "text-xs text-gray-500"
+                    }>Crea y gestiona tus tareas fácilmente</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="h-8 w-8 rounded-md flex items-center justify-center bg-neon-pink/20 text-neon-pink border border-neon-pink/30">
+                  <div className={isDarkMode
+                    ? "h-8 w-8 rounded-md flex items-center justify-center bg-neon-pink/20 text-neon-pink border border-neon-pink/30"
+                    : "h-8 w-8 rounded-md flex items-center justify-center bg-pink-50 text-pink-700 border border-pink-200"
+                  }>
                     <BarChart4 className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-neon-text">Estadísticas</h4>
-                    <p className="text-xs text-neon-text/70">Analiza tu productividad</p>
+                    <h4 className={isDarkMode
+                      ? "text-sm font-medium text-neon-text"
+                      : "text-sm font-medium text-gray-800"
+                    }>Estadísticas</h4>
+                    <p className={isDarkMode
+                      ? "text-xs text-neon-text/70"
+                      : "text-xs text-gray-500"
+                    }>Analiza tu productividad</p>
                   </div>
                 </div>
               </div>
               <div className="pt-2">
                 <Button 
                   onClick={() => navigate("/ai-assistant")}
-                  className="bg-gradient-to-r from-neon-accent to-neon-accent/80 hover:from-neon-accent/90 hover:to-neon-accent 
-                  text-neon-darker font-medium shadow-[0_0_15px_rgba(0,225,255,0.4)] 
-                  hover:shadow-[0_0_20px_rgba(0,225,255,0.6)] transition-all duration-300 
-                  border border-neon-accent/50 animate-pulse-slow"
+                  className={isDarkMode
+                    ? "bg-gradient-to-r from-neon-accent to-neon-accent/80 hover:from-neon-accent/90 hover:to-neon-accent text-neon-darker font-medium shadow-[0_0_15px_rgba(0,225,255,0.4)] hover:shadow-[0_0_20px_rgba(0,225,255,0.6)] transition-all duration-300 border border-neon-accent/50 animate-pulse-slow"
+                    : "bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors duration-300"
+                  }
                 >
                   <span className="mr-2">💬</span>
                   Hablar con el asistente
