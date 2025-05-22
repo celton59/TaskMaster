@@ -1,17 +1,6 @@
 /**
  * Biblioteca de efectos de neón para mejorar la experiencia visual de la aplicación
  */
-import { useTheme } from "@/hooks/use-theme";
-
-// Utilidad para obtener las variantes según el tema
-export function useThemeVariants() {
-  const { theme } = useTheme();
-  
-  return {
-    isDark: theme === 'dark',
-    neonCardVariants: theme === 'dark' ? darkNeonCardVariants : lightCardVariants
-  };
-}
 
 // Variantes para componentes con efecto neón (modo oscuro)
 export const darkNeonCardVariants = {
@@ -51,9 +40,6 @@ export const lightCardVariants = {
     transition: { duration: 0.1 }
   }
 };
-
-// Para compatibilidad con código existente
-export const neonCardVariants = darkNeonCardVariants;
 
 // Clases CSS para efectos de neón (modo oscuro)
 export const neonEffectClasses = {
@@ -97,14 +83,11 @@ export const lightEffectClasses = {
   neonCard: "border border-gray-200 bg-white shadow-sm rounded-xl",
 };
 
-// Función para obtener las clases según el tema
-export function useThemeClasses() {
-  const { theme } = useTheme();
-  
-  return {
-    effectClasses: theme === 'dark' ? neonEffectClasses : lightEffectClasses,
-  };
-}
+// Constantes para uso directo
+export const THEME_CLASSES = {
+  DARK: neonEffectClasses,
+  LIGHT: lightEffectClasses
+};
 
 // Efectos combinados por componente
 export const componentEffects = {
