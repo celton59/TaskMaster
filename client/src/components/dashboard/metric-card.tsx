@@ -53,15 +53,26 @@ export function MetricCard({
        iconColor === "text-neon-yellow" ? "text-amber-600 hover:text-amber-700" :
        "text-blue-600 hover:text-blue-700");
 
+  // Diferentes efectos de animación según el tema
+  const cardAnimation = {
+    initial: { scale: 1, opacity: 0.9 },
+    animate: { scale: 1, opacity: 1 },
+    whileHover: isDarkMode ? { scale: 1.02 } : { scale: 1.01 },
+    whileTap: { scale: 0.98 },
+    transition: { duration: 0.2 }
+  };
+
   return (
     <motion.div 
       className={isDarkMode 
         ? "overflow-hidden rounded-xl group animate-fade-in border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] hover:shadow-[0_0_25px_rgba(0,225,255,0.25)] animate-card-glow"
-        : "overflow-hidden rounded-xl group animate-fade-in border border-gray-200 bg-white shadow hover:shadow-md transition-shadow"
+        : "overflow-hidden rounded-xl group border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow"
       }
-      initial={{ scale: 1 }}
-      whileHover={isDarkMode ? { scale: 1.02 } : { scale: 1.01 }}
-      whileTap={{ scale: 0.98 }}
+      initial={cardAnimation.initial}
+      animate={cardAnimation.animate}
+      whileHover={cardAnimation.whileHover}
+      whileTap={cardAnimation.whileTap}
+      transition={cardAnimation.transition}
     >
       <div className="relative p-6">
         {/* Background gradient effect - solo en modo oscuro */}

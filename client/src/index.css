@@ -40,19 +40,20 @@
   --neon-red: #ff2d6d;
 }
 
-/* Tema claro - colores completamente normales, no fosforitos */
+/* Tema claro - colores completamente normales, no fosforitos ni degradados oscuros */
 .light-theme {
+  /* Colores neutros */
   --neon-accent: #0078D4;
-  --neon-dark: #f8f9fa;
+  --neon-dark: #ffffff;
   --neon-darker: #ffffff;
-  --neon-medium: #f1f3f5;
-  --neon-light: #e9ecef;
-  --neon-text: #343a40;
+  --neon-medium: #ffffff;
+  --neon-light: #f8f9fa;
+  --neon-text: #212529;
   
-  /* Versiones normales de los colores para tema claro */
-  --neon-purple: #6f42c1;
-  --neon-pink: #e83e8c;
-  --neon-green: #20c997;
+  /* Colores categóricos estándar para tema claro */
+  --neon-purple: #6610f2;
+  --neon-pink: #d63384;
+  --neon-green: #198754;
   --neon-yellow: #ffc107;
   --neon-orange: #fd7e14;
   --neon-red: #dc3545;
