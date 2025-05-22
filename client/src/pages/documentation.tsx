@@ -161,7 +161,10 @@ const mockDocuments: Document[] = [
 
 // Componente de categoría
 function CategoryCard({ category }: { category: Category }) {
-  const colorClasses: Record<string, string> = {
+  const { isDarkMode } = useTheme();
+  
+  // Clases para el modo oscuro (neon)
+  const darkModeClasses: Record<string, string> = {
     blue: "border-neon-accent/30 bg-neon-accent/10 text-neon-accent shadow-[0_0_15px_rgba(0,225,255,0.1)]",
     green: "border-neon-green/30 bg-neon-green/10 text-neon-green shadow-[0_0_15px_rgba(0,255,157,0.1)]",
     purple: "border-neon-purple/30 bg-neon-purple/10 text-neon-purple shadow-[0_0_15px_rgba(187,0,255,0.1)]",
@@ -169,18 +172,51 @@ function CategoryCard({ category }: { category: Category }) {
     red: "border-red-500/30 bg-red-500/10 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.1)]",
   };
   
-  const colorKey = category.color as keyof typeof colorClasses;
-  const iconClass = `h-10 w-10 ${colorClasses[colorKey].split(" ")[2]}`;
+  // Clases para el modo claro
+  const lightModeClasses: Record<string, string> = {
+    blue: "border-blue-300 bg-blue-50 text-blue-700 shadow-sm",
+    green: "border-emerald-300 bg-emerald-50 text-emerald-700 shadow-sm",
+    purple: "border-purple-300 bg-purple-50 text-purple-700 shadow-sm",
+    yellow: "border-amber-300 bg-amber-50 text-amber-700 shadow-sm", 
+    red: "border-red-300 bg-red-50 text-red-700 shadow-sm",
+  };
+  
+  const colorKey = category.color as keyof typeof darkModeClasses;
+  const colorClasses = isDarkMode ? darkModeClasses : lightModeClasses;
+  
+  const iconClass = cn(
+    "h-10 w-10",
+    isDarkMode 
+      ? darkModeClasses[colorKey].split(" ")[2]
+      : lightModeClasses[colorKey].split(" ")[2]
+  );
+
+  const bgClass = isDarkMode ? "bg-neon-darker" : "bg-white";
   
   return (
-    <Card className={`hover:scale-105 transition-transform cursor-pointer border ${colorClasses[colorKey]}`}>
+    <Card className={cn(
+      "hover:scale-105 transition-transform cursor-pointer border",
+      colorClasses[colorKey]
+    )}>
       <CardContent className="p-6 flex items-center space-x-4">
-        <div className={`rounded-full p-2 border ${colorClasses[colorKey].split(" ")[0]} bg-neon-darker`}>
+        <div className={cn(
+          "rounded-full p-2 border",
+          isDarkMode 
+            ? darkModeClasses[colorKey].split(" ")[0] 
+            : lightModeClasses[colorKey].split(" ")[0],
+          bgClass
+        )}>
           <FolderOpen className={iconClass} />
         </div>
         <div className="flex-1">
-          <h3 className="font-medium text-lg">{category.name}</h3>
-          <p className="text-sm text-neon-text/70">{category.count} documentos</p>
+          <h3 className={cn(
+            "font-medium text-lg",
+            isDarkMode ? colorClasses[colorKey].split(" ")[2] : lightModeClasses[colorKey].split(" ")[2]
+          )}>{category.name}</h3>
+          <p className={cn(
+            "text-sm",
+            isDarkMode ? "text-neon-text/70" : "text-gray-600"
+          )}>{category.count} documentos</p>
         </div>
       </CardContent>
     </Card>
@@ -191,6 +227,7 @@ function CategoryCard({ category }: { category: Category }) {
 function DocumentCard({ document }: { document: Document }) {
   const { toast } = useToast();
   const [isExpanded, setIsExpanded] = useState(false);
+  const { isDarkMode } = useTheme();
   
   // Obtener el color según la categoría
   const getCategoryColor = (categoryId: string) => {
@@ -198,7 +235,8 @@ function DocumentCard({ document }: { document: Document }) {
     return category ? category.color : "blue";
   };
   
-  const colorClass: Record<string, string> = {
+  // Clases de color para tema oscuro
+  const darkModeColorClass: Record<string, string> = {
     blue: "border-neon-accent/30 text-neon-accent",
     green: "border-neon-green/30 text-neon-green",
     purple: "border-neon-purple/30 text-neon-purple",
@@ -206,6 +244,16 @@ function DocumentCard({ document }: { document: Document }) {
     red: "border-red-500/30 text-red-500",
   };
   
+  // Clases de color para tema claro
+  const lightModeColorClass: Record<string, string> = {
+    blue: "border-blue-300 text-blue-700",
+    green: "border-emerald-300 text-emerald-700",
+    purple: "border-purple-300 text-purple-700",
+    yellow: "border-amber-300 text-amber-700",
+    red: "border-red-300 text-red-700",
+  };
+  
+  const colorClass = isDarkMode ? darkModeColorClass : lightModeColorClass;
   const color = getCategoryColor(document.category) as "blue" | "green" | "purple" | "yellow" | "red";
   
   // Formatear fecha
@@ -219,31 +267,59 @@ function DocumentCard({ document }: { document: Document }) {
   };
   
   return (
-    <Card className="bg-neon-darker border-neon-medium/30 hover:shadow-[0_0_15px_rgba(0,225,255,0.1)] transition-shadow">
+    <Card className={cn(
+      "transition-shadow hover:shadow-md",
+      isDarkMode 
+        ? "bg-neon-darker border-neon-medium/30 hover:shadow-[0_0_15px_rgba(0,225,255,0.1)]"
+        : "bg-white border-gray-200"
+    )}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-neon-text">{document.title}</CardTitle>
-            <CardDescription>
+            <CardTitle className={isDarkMode ? "text-neon-text" : "text-gray-800"}>{document.title}</CardTitle>
+            <CardDescription className={isDarkMode ? "" : "text-gray-500"}>
               Actualizado: {formatDate(document.updatedAt)}
             </CardDescription>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-neon-text">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className={cn(
+                  "h-8 w-8",
+                  isDarkMode ? "text-neon-text" : "text-gray-600"
+                )}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-more-vertical"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-neon-dark border-neon-accent/30">
-              <DropdownMenuItem className="text-neon-text hover:text-neon-accent focus:text-neon-accent cursor-pointer">
+            <DropdownMenuContent 
+              align="end" 
+              className={cn(
+                isDarkMode 
+                  ? "bg-neon-dark border-neon-accent/30"
+                  : "bg-white border-gray-200"
+              )}>
+              <DropdownMenuItem className={cn(
+                "cursor-pointer",
+                isDarkMode 
+                  ? "text-neon-text hover:text-neon-accent focus:text-neon-accent" 
+                  : "text-gray-700 hover:text-blue-700 focus:text-blue-700"
+              )}>
                 <Edit className="mr-2 h-4 w-4" />
                 Editar
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-neon-text hover:text-neon-accent focus:text-neon-accent cursor-pointer">
+              <DropdownMenuItem className={cn(
+                "cursor-pointer",
+                isDarkMode 
+                  ? "text-neon-text hover:text-neon-accent focus:text-neon-accent" 
+                  : "text-gray-700 hover:text-blue-700 focus:text-blue-700"
+              )}>
                 <Download className="mr-2 h-4 w-4" />
                 Descargar
               </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-neon-accent/20" />
+              <DropdownMenuSeparator className={isDarkMode ? "bg-neon-accent/20" : "bg-gray-200"} />
               <DropdownMenuItem className="text-red-500 hover:text-red-400 focus:text-red-400 cursor-pointer" onClick={() => {
                 toast({
                   title: "Documento eliminado",
@@ -261,7 +337,11 @@ function DocumentCard({ document }: { document: Document }) {
           {document.tags.map((tag, index) => (
             <span 
               key={index} 
-              className={`text-xs px-2 py-0.5 rounded-full ${colorClass[color]} border bg-neon-medium/10`}
+              className={cn(
+                "text-xs px-2 py-0.5 rounded-full border",
+                colorClass[color],
+                isDarkMode ? "bg-neon-medium/10" : "bg-gray-50"
+              )}
             >
               {tag}
             </span>
@@ -270,24 +350,39 @@ function DocumentCard({ document }: { document: Document }) {
       </CardHeader>
       <CardContent>
         <div className="relative">
-          <div className={`text-neon-text/80 text-sm ${!isExpanded ? "line-clamp-2" : ""}`}>
+          <div className={cn(
+            "text-sm",
+            !isExpanded ? "line-clamp-2" : "",
+            isDarkMode ? "text-neon-text/80" : "text-gray-700"
+          )}>
             {document.content}
           </div>
           {!isExpanded && document.content.length > 150 && (
-            <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-neon-darker to-transparent"></div>
+            <div className={cn(
+              "absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t",
+              isDarkMode ? "from-neon-darker to-transparent" : "from-white to-transparent"
+            )}></div>
           )}
         </div>
         {document.content.length > 150 && (
           <Button 
             variant="link" 
             onClick={() => setIsExpanded(!isExpanded)} 
-            className="mt-1 p-0 h-auto text-neon-accent hover:text-neon-accent/80"
+            className={cn(
+              "mt-1 p-0 h-auto",
+              isDarkMode 
+                ? "text-neon-accent hover:text-neon-accent/80"
+                : "text-blue-600 hover:text-blue-700"
+            )}
           >
             {isExpanded ? "Ver menos" : "Ver más"}
           </Button>
         )}
       </CardContent>
-      <CardFooter className="pt-0 pb-3 text-xs text-neon-text/60 flex justify-between">
+      <CardFooter className={cn(
+        "pt-0 pb-3 text-xs flex justify-between",
+        isDarkMode ? "text-neon-text/60" : "text-gray-500"
+      )}>
         <span>
           {mockCategories.find(cat => cat.id === document.category)?.name}
         </span>
@@ -751,15 +846,28 @@ export default function DocumentationPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <FileText className="h-16 w-16 text-neon-text/30 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-neon-text">No se encontraron documentos</h3>
-                <p className="text-neon-text/70">
+                <FileText className={cn(
+                  "h-16 w-16 mx-auto mb-4",
+                  isDarkMode ? "text-neon-text/30" : "text-gray-300"
+                )} />
+                <h3 className={cn(
+                  "text-lg font-medium",
+                  isDarkMode ? "text-neon-text" : "text-gray-800"
+                )}>No se encontraron documentos</h3>
+                <p className={cn(
+                  isDarkMode ? "text-neon-text/70" : "text-gray-600"
+                )}>
                   {searchQuery 
                     ? "Intenta cambiar tu búsqueda o quitar los filtros" 
                     : `No hay documentos en la categoría ${selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : ""}`}
                 </p>
                 <Button 
-                  className="mt-4 bg-neon-accent hover:bg-neon-accent/90 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                  className={cn(
+                    "mt-4",
+                    isDarkMode 
+                      ? "bg-neon-accent hover:bg-neon-accent/90 text-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.3)]"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  )}
                   onClick={() => setShowNewDocumentDialog(true)}
                 >
                   <FilePlus className="mr-2 h-4 w-4" />
