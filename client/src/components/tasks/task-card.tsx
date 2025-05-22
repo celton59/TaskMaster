@@ -169,28 +169,48 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
     switch (priority) {
       case "high":
         return (
-          <Badge className="bg-rose-900/30 text-rose-400 hover:bg-rose-900/40 border-rose-500/30 font-medium text-xs gap-1">
+          <Badge className={cn(
+            "font-medium text-xs gap-1",
+            isDarkMode 
+              ? "bg-rose-900/30 text-rose-400 hover:bg-rose-900/40 border-rose-500/30"
+              : "bg-rose-50 text-rose-600 hover:bg-rose-100 border-rose-200"
+          )}>
             <FlameKindling className="h-3 w-3" />
             Alta
           </Badge>
         );
       case "medium":
         return (
-          <Badge className="bg-amber-900/30 text-amber-300 hover:bg-amber-900/40 border-amber-500/30 font-medium text-xs gap-1">
+          <Badge className={cn(
+            "font-medium text-xs gap-1",
+            isDarkMode 
+              ? "bg-amber-900/30 text-amber-300 hover:bg-amber-900/40 border-amber-500/30"
+              : "bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200"
+          )}>
             <Star className="h-3 w-3" />
             Media
           </Badge>
         );
       case "low":
         return (
-          <Badge className="bg-emerald-900/30 text-emerald-400 hover:bg-emerald-900/40 border-emerald-500/30 font-medium text-xs gap-1">
+          <Badge className={cn(
+            "font-medium text-xs gap-1",
+            isDarkMode 
+              ? "bg-emerald-900/30 text-emerald-400 hover:bg-emerald-900/40 border-emerald-500/30"
+              : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200"
+          )}>
             <Clock4 className="h-3 w-3" />
             Baja
           </Badge>
         );
       default:
         return (
-          <Badge className="bg-neon-medium/30 text-neon-text/80 hover:bg-neon-medium/40 border-neon-accent/20 font-medium text-xs gap-1">
+          <Badge className={cn(
+            "font-medium text-xs gap-1",
+            isDarkMode 
+              ? "bg-neon-medium/30 text-neon-text/80 hover:bg-neon-medium/40 border-neon-accent/20"
+              : "bg-gray-50 text-gray-600 hover:bg-gray-100 border-gray-200"
+          )}>
             <Circle className="h-3 w-3" />
             Normal
           </Badge>
@@ -217,34 +237,44 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
     switch (status) {
       case "completed":
         return {
-          icon: <CircleCheck className="h-5 w-5 text-emerald-400" />,
+          icon: <CircleCheck className={`h-5 w-5 ${isDarkMode ? "text-emerald-400" : "text-emerald-500"}`} />,
           label: "Completada",
-          className: "bg-emerald-900/30 text-emerald-400 border-emerald-600/30"
+          className: isDarkMode 
+            ? "bg-emerald-900/30 text-emerald-400 border-emerald-600/30"
+            : "bg-emerald-50 text-emerald-600 border-emerald-200"
         };
       case "pending":
         return {
-          icon: <Circle className="h-5 w-5 text-amber-300" />,
+          icon: <Circle className={`h-5 w-5 ${isDarkMode ? "text-amber-300" : "text-amber-500"}`} />,
           label: "Pendiente",
-          className: "bg-amber-900/30 text-amber-300 border-amber-600/30"
+          className: isDarkMode
+            ? "bg-amber-900/30 text-amber-300 border-amber-600/30"
+            : "bg-amber-50 text-amber-600 border-amber-200"
         };
       case "review":
         return {
-          icon: <AlertCircle className="h-5 w-5 text-purple-400" />,
+          icon: <AlertCircle className={`h-5 w-5 ${isDarkMode ? "text-purple-400" : "text-purple-600"}`} />,
           label: "Revisión",
-          className: "bg-purple-900/30 text-purple-400 border-purple-600/30"
+          className: isDarkMode
+            ? "bg-purple-900/30 text-purple-400 border-purple-600/30"
+            : "bg-purple-50 text-purple-600 border-purple-200"
         };
       case "in_progress":
       case "in-progress":
         return {
-          icon: <CircleEllipsis className="h-5 w-5 text-blue-400" />,
+          icon: <CircleEllipsis className={`h-5 w-5 ${isDarkMode ? "text-blue-400" : "text-blue-600"}`} />,
           label: "En progreso",
-          className: "bg-blue-900/30 text-blue-400 border-blue-600/30"
+          className: isDarkMode
+            ? "bg-blue-900/30 text-blue-400 border-blue-600/30"
+            : "bg-blue-50 text-blue-600 border-blue-200"
         };
       default:
         return {
-          icon: <ArrowUpRight className="h-5 w-5 text-neon-text/70" />,
+          icon: <ArrowUpRight className={`h-5 w-5 ${isDarkMode ? "text-neon-text/70" : "text-gray-500"}`} />,
           label: status,
-          className: "bg-neon-medium/30 text-neon-text/80 border-neon-accent/20"
+          className: isDarkMode
+            ? "bg-neon-medium/30 text-neon-text/80 border-neon-accent/20"
+            : "bg-gray-50 text-gray-600 border-gray-200"
         };
     }
   };
