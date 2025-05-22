@@ -6,6 +6,8 @@ import { ProjectCard } from "@/components/project-card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs";
 import { FolderKanban, Plus, CheckCircle2, FileText } from "lucide-react";
+import { useTheme } from "@/hooks/use-theme";
+import { cn } from "@/lib/utils";
 
 // Interfaz para el resumen de proyecto
 interface ProjectSummary extends Project {
@@ -16,6 +18,7 @@ interface ProjectSummary extends Project {
 export default function ProjectsList() {
   const [selectedTab, setSelectedTab] = useState("active");
   const [, setLocation] = useLocation();
+  const { isDarkMode } = useTheme();
   
   // Consulta para obtener el resumen de proyectos con número de tareas y progreso
   const { 
@@ -57,14 +60,41 @@ export default function ProjectsList() {
       </div>
       
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="bg-neon-medium/20 border border-neon-accent/20">
-          <TabsTrigger value="active" className="data-[state=active]:bg-neon-accent data-[state=active]:text-neon-dark">
+        <TabsList className={cn(
+          "border",
+          isDarkMode ? "bg-neon-medium/20 border-neon-accent/20" : "bg-gray-100 border-gray-200"
+        )}>
+          <TabsTrigger 
+            value="active" 
+            className={cn(
+              "data-[state=active]:font-medium",
+              isDarkMode 
+                ? "data-[state=active]:bg-neon-accent data-[state=active]:text-neon-dark text-neon-text" 
+                : "data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700"
+            )}
+          >
             Activos
           </TabsTrigger>
-          <TabsTrigger value="completed" className="data-[state=active]:bg-neon-accent data-[state=active]:text-neon-dark">
+          <TabsTrigger 
+            value="completed" 
+            className={cn(
+              "data-[state=active]:font-medium",
+              isDarkMode 
+                ? "data-[state=active]:bg-neon-accent data-[state=active]:text-neon-dark text-neon-text" 
+                : "data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700"
+            )}
+          >
             Completados
           </TabsTrigger>
-          <TabsTrigger value="archived" className="data-[state=active]:bg-neon-accent data-[state=active]:text-neon-dark">
+          <TabsTrigger 
+            value="archived" 
+            className={cn(
+              "data-[state=active]:font-medium",
+              isDarkMode 
+                ? "data-[state=active]:bg-neon-accent data-[state=active]:text-neon-dark text-neon-text" 
+                : "data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700"
+            )}
+          >
             Archivados
           </TabsTrigger>
         </TabsList>
