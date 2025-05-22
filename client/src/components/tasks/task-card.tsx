@@ -26,6 +26,7 @@ import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useDraggable } from "@dnd-kit/core";
 import type { Task, Category, Project } from "@shared/schema";
+import { useTheme } from "@/hooks/use-theme";
 
 interface TaskCardProps {
   task: Task;
@@ -37,6 +38,7 @@ interface TaskCardProps {
 export function TaskCard({ task, categories, projects = [], onDragStart: parentOnDragStart }: TaskCardProps) {
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  const { isDarkMode } = useTheme();
   
   // Configurar la tarea como un elemento draggable para @dnd-kit
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -329,8 +331,10 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
     <motion.div
       ref={setNodeRef}
       className={cn(
-        "task-card p-4 rounded-lg shadow-md border border-neon-accent/20 cursor-grab group",
-        "border-l-4",
+        "task-card p-4 rounded-lg cursor-grab group border-l-4",
+        isDarkMode 
+          ? "shadow-md border border-neon-accent/20" 
+          : "shadow-sm border border-gray-200 bg-white",
         getCardStyles(),
         isDragging ? 'opacity-50 scale-95' : ''
       )}
@@ -344,7 +348,9 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
       transition={{ duration: 0.2 }}
       whileHover={!isDragging ? { 
         y: -2, 
-        boxShadow: "0 8px 24px -4px rgba(0, 225, 255, 0.15)"
+        boxShadow: isDarkMode 
+          ? "0 8px 24px -4px rgba(0, 225, 255, 0.15)" 
+          : "0 8px 24px -4px rgba(0, 0, 0, 0.08)"
       } : undefined}
       data-task-id={task.id}
       data-priority={task.priority}
@@ -368,34 +374,67 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="text-neon-text/50 hover:text-neon-accent opacity-0 group-hover:opacity-100 transition-opacity">
+            <button className={isDarkMode
+              ? "text-neon-text/50 hover:text-neon-accent opacity-0 group-hover:opacity-100 transition-opacity"
+              : "text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"
+            }>
               <MoreHorizontal size={16} />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 rounded-xl border border-neon-accent/30 bg-neon-darker shadow-[0_0_15px_rgba(0,225,255,0.15)] p-1">
-            <DropdownMenuLabel className="text-xs font-medium text-neon-accent px-2 py-1.5">Acciones</DropdownMenuLabel>
-            <DropdownMenuSeparator className="my-1 bg-neon-accent/20" />
-            <DropdownMenuItem onClick={editTask} className="text-xs rounded-md text-neon-text hover:text-neon-accent focus:bg-neon-medium/20 focus:text-neon-accent px-2 py-1.5 cursor-pointer">
+          <DropdownMenuContent align="end" className={isDarkMode
+            ? "w-48 rounded-xl border border-neon-accent/30 bg-neon-darker shadow-[0_0_15px_rgba(0,225,255,0.15)] p-1"
+            : "w-48 rounded-xl border border-gray-200 bg-white shadow-md p-1"
+          }>
+            <DropdownMenuLabel className={isDarkMode
+              ? "text-xs font-medium text-neon-accent px-2 py-1.5"
+              : "text-xs font-medium text-blue-700 px-2 py-1.5"
+            }>Acciones</DropdownMenuLabel>
+            <DropdownMenuSeparator className={isDarkMode 
+              ? "my-1 bg-neon-accent/20" 
+              : "my-1 bg-gray-200"
+            } />
+            <DropdownMenuItem onClick={editTask} className={isDarkMode
+              ? "text-xs rounded-md text-neon-text hover:text-neon-accent focus:bg-neon-medium/20 focus:text-neon-accent px-2 py-1.5 cursor-pointer"
+              : "text-xs rounded-md text-gray-700 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 px-2 py-1.5 cursor-pointer"
+            }>
               Editar tarea
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}} className="text-xs rounded-md text-neon-text hover:text-neon-accent focus:bg-neon-medium/20 focus:text-neon-accent px-2 py-1.5 cursor-pointer">
+            <DropdownMenuItem onClick={() => {}} className={isDarkMode
+              ? "text-xs rounded-md text-neon-text hover:text-neon-accent focus:bg-neon-medium/20 focus:text-neon-accent px-2 py-1.5 cursor-pointer"
+              : "text-xs rounded-md text-gray-700 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 px-2 py-1.5 cursor-pointer"
+            }>
               Cambiar estado
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}} className="text-xs rounded-md text-neon-text hover:text-neon-accent focus:bg-neon-medium/20 focus:text-neon-accent px-2 py-1.5 cursor-pointer">
+            <DropdownMenuItem onClick={() => {}} className={isDarkMode
+              ? "text-xs rounded-md text-neon-text hover:text-neon-accent focus:bg-neon-medium/20 focus:text-neon-accent px-2 py-1.5 cursor-pointer"
+              : "text-xs rounded-md text-gray-700 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 px-2 py-1.5 cursor-pointer"
+            }>
               Asignar usuario
             </DropdownMenuItem>
-            <DropdownMenuSeparator className="my-1 bg-neon-accent/20" />
-            <DropdownMenuItem onClick={deleteTask} className="text-xs text-rose-400 rounded-md hover:text-rose-300 focus:bg-rose-950/30 focus:text-rose-300 px-2 py-1.5 cursor-pointer">
+            <DropdownMenuSeparator className={isDarkMode 
+              ? "my-1 bg-neon-accent/20" 
+              : "my-1 bg-gray-200"
+            } />
+            <DropdownMenuItem onClick={deleteTask} className={isDarkMode
+              ? "text-xs text-rose-400 rounded-md hover:text-rose-300 focus:bg-rose-950/30 focus:text-rose-300 px-2 py-1.5 cursor-pointer"
+              : "text-xs text-rose-600 rounded-md hover:text-rose-700 focus:bg-rose-50 focus:text-rose-700 px-2 py-1.5 cursor-pointer"
+            }>
               Eliminar tarea
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
       
-      <h4 className="font-semibold text-sm text-neon-text line-clamp-1 leading-relaxed">{task.title}</h4>
+      <h4 className={isDarkMode 
+        ? "font-semibold text-sm text-neon-text line-clamp-1 leading-relaxed"
+        : "font-semibold text-sm text-gray-800 line-clamp-1 leading-relaxed"
+      }>{task.title}</h4>
       
       {task.description && (
-        <p className="text-xs text-neon-text/70 mt-1 line-clamp-2 leading-relaxed">{task.description}</p>
+        <p className={isDarkMode
+          ? "text-xs text-neon-text/70 mt-1 line-clamp-2 leading-relaxed"
+          : "text-xs text-gray-600 mt-1 line-clamp-2 leading-relaxed"
+        }>{task.description}</p>
       )}
       
       <div className="flex items-center flex-wrap gap-2 mt-3">
@@ -458,18 +497,30 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
         />
       </div>
       
-      <div className="mt-3 pt-3 border-t border-neon-accent/10 flex items-center justify-between">
+      <div className={isDarkMode
+        ? "mt-3 pt-3 border-t border-neon-accent/10 flex items-center justify-between"
+        : "mt-3 pt-3 border-t border-gray-200 flex items-center justify-between"
+      }>
         <div className="flex items-center text-xs">
           <div className="flex items-center gap-1">
             {getDeadlineIcon(task.deadline)}
-            <span className={deadlineInfo.className.replace('text-neutral-500', 'text-neon-text/60')}>{deadlineInfo.text}</span>
+            <span className={isDarkMode 
+              ? deadlineInfo.className.replace('text-neutral-500', 'text-neon-text/60')
+              : deadlineInfo.className.replace('text-neutral-500', 'text-gray-500')
+            }>{deadlineInfo.text}</span>
           </div>
         </div>
         
         <div>
           {task.assignedTo && (
-            <Avatar className="h-7 w-7 border-2 border-neon-darker ring-1 ring-neon-accent/20 shadow-[0_0_5px_rgba(0,225,255,0.15)]">
-              <AvatarFallback className="text-[10px] bg-neon-accent/20 text-neon-accent font-medium">
+            <Avatar className={isDarkMode
+              ? "h-7 w-7 border-2 border-neon-darker ring-1 ring-neon-accent/20 shadow-[0_0_5px_rgba(0,225,255,0.15)]"
+              : "h-7 w-7 border-2 border-white ring-1 ring-blue-100 shadow-sm"
+            }>
+              <AvatarFallback className={isDarkMode
+                ? "text-[10px] bg-neon-accent/20 text-neon-accent font-medium"
+                : "text-[10px] bg-blue-100 text-blue-600 font-medium"
+              }>
                 {task.assignedTo === 1 ? 'AD' : 'US'}
               </AvatarFallback>
             </Avatar>
