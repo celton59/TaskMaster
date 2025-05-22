@@ -376,6 +376,7 @@ export function TaskCard({ task, categories, projects = [], onDragStart: parentO
       }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.2, layout: { type: "spring", stiffness: 500, damping: 30 } }}
       whileHover={!isDragging ? { 
         y: -2, 
