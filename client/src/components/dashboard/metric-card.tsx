@@ -57,20 +57,19 @@ export function MetricCard({
     <motion.div 
       className={isDarkMode 
         ? "overflow-hidden rounded-xl group animate-fade-in border border-neon-accent/30 bg-neon-dark shadow-[0_0_15px_rgba(0,225,255,0.15)] hover:shadow-[0_0_25px_rgba(0,225,255,0.25)] animate-card-glow"
-        : "overflow-hidden rounded-xl group animate-fade-in border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow"
+        : "overflow-hidden rounded-xl group animate-fade-in border border-gray-200 bg-white shadow hover:shadow-md transition-shadow"
       }
       initial={{ scale: 1 }}
-      whileHover={{ scale: 1.02 }}
+      whileHover={isDarkMode ? { scale: 1.02 } : { scale: 1.01 }}
       whileTap={{ scale: 0.98 }}
     >
       <div className="relative p-6">
-        {/* Background gradient effect */}
-        <div className={isDarkMode 
-          ? "absolute inset-0 bg-gradient-to-r from-neon-darker via-neon-medium/20 to-neon-dark bg-[length:200%_100%] animate-flow-gradient"
-          : "absolute inset-0 bg-gradient-to-b from-white to-gray-50"
-        }></div>
+        {/* Background gradient effect - solo en modo oscuro */}
+        {isDarkMode ? (
+          <div className="absolute inset-0 bg-gradient-to-r from-neon-darker via-neon-medium/20 to-neon-dark bg-[length:200%_100%] animate-flow-gradient"></div>
+        ) : null}
         
-        <div className="relative z-10">
+        <div className={cn("relative z-10", !isDarkMode && "p-1")}>
           <div className="flex items-center justify-between mb-4">
             {/* Icon container */}
             <div 
@@ -90,10 +89,10 @@ export function MetricCard({
                 )
                 : cn(
                   "flex items-center justify-center w-12 h-12 rounded-lg border shadow-sm",
-                  iconColor === "text-neon-purple" ? "text-purple-600 border-purple-200 bg-purple-50" :
-                  iconColor === "text-neon-green" ? "text-green-600 border-green-200 bg-green-50" :
-                  iconColor === "text-neon-yellow" ? "text-amber-600 border-amber-200 bg-amber-50" :
-                  "text-blue-600 border-blue-200 bg-blue-50"
+                  iconColor === "text-neon-purple" ? "text-purple-700 border-purple-200 bg-white" :
+                  iconColor === "text-neon-green" ? "text-green-700 border-green-200 bg-white" :
+                  iconColor === "text-neon-yellow" ? "text-amber-700 border-amber-200 bg-white" :
+                  "text-blue-700 border-blue-200 bg-white"
                 )
               }
             >
@@ -116,11 +115,11 @@ export function MetricCard({
                     : "border border-neon-accent/50 text-neon-accent/80 hover:bg-neon-accent/20 hover:text-neon-accent hover:border-neon-accent/70"
                 )
                 : cn(
-                  "h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 -translate-x-2 flex items-center justify-center",
-                  iconColor === "text-neon-purple" ? "text-purple-600 border border-purple-200 bg-purple-50 hover:bg-purple-100" :
-                  iconColor === "text-neon-green" ? "text-green-600 border border-green-200 bg-green-50 hover:bg-green-100" :
-                  iconColor === "text-neon-yellow" ? "text-amber-600 border border-amber-200 bg-amber-50 hover:bg-amber-100" :
-                  "text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100"
+                  "h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0 -translate-x-2 flex items-center justify-center bg-white",
+                  iconColor === "text-neon-purple" ? "text-purple-700 border border-purple-300 hover:bg-purple-50" :
+                  iconColor === "text-neon-green" ? "text-green-700 border border-green-300 hover:bg-green-50" :
+                  iconColor === "text-neon-yellow" ? "text-amber-700 border border-amber-300 hover:bg-amber-50" :
+                  "text-blue-700 border border-blue-300 hover:bg-blue-50"
                 )
               }>
                 <ArrowUpRight className="h-4 w-4" />
@@ -168,11 +167,12 @@ export function MetricCard({
                         )
                       : cn(
                           "inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-md border",
-                          trend.isPositive && iconColor === "text-neon-purple" ? "bg-purple-50 text-purple-700 border-purple-200" :
-                          trend.isPositive && iconColor === "text-neon-green" ? "bg-green-50 text-green-700 border-green-200" :
-                          trend.isPositive && iconColor === "text-neon-yellow" ? "bg-amber-50 text-amber-700 border-amber-200" :
-                          trend.isPositive ? "bg-blue-50 text-blue-700 border-blue-200" :
-                          "bg-red-50 text-red-700 border-red-200"
+                          trend.isPositive
+                            ? iconColor === "text-neon-purple" ? "bg-white text-purple-700 border-purple-300" :
+                              iconColor === "text-neon-green" ? "bg-white text-green-700 border-green-300" :
+                              iconColor === "text-neon-yellow" ? "bg-white text-amber-700 border-amber-300" :
+                              "bg-white text-blue-700 border-blue-300"
+                            : "bg-white text-red-700 border-red-300"
                         )
                   }
                 >

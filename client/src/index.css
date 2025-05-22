@@ -40,22 +40,22 @@
   --neon-red: #ff2d6d;
 }
 
-/* Tema claro */
+/* Tema claro - colores completamente normales, no fosforitos */
 .light-theme {
   --neon-accent: #0078D4;
-  --neon-dark: #0e2a47;
-  --neon-darker: #051a30;
-  --neon-medium: #1a3a5a;
-  --neon-light: #264d75;
-  --neon-text: #E0F0FF;
+  --neon-dark: #f8f9fa;
+  --neon-darker: #ffffff;
+  --neon-medium: #f1f3f5;
+  --neon-light: #e9ecef;
+  --neon-text: #343a40;
   
-  /* Versiones menos intensas de los colores neón para tema claro */
-  --neon-purple: #bb00ff;
-  --neon-pink: #ff00e6;
-  --neon-green: #00ff9d;
-  --neon-yellow: #ffea00;
-  --neon-orange: #ff6d00;
-  --neon-red: #ff2d6d;
+  /* Versiones normales de los colores para tema claro */
+  --neon-purple: #6f42c1;
+  --neon-pink: #e83e8c;
+  --neon-green: #20c997;
+  --neon-yellow: #ffc107;
+  --neon-orange: #fd7e14;
+  --neon-red: #dc3545;
 }
 
 /* Estilos personalizados para el calendario - Tema neón */
